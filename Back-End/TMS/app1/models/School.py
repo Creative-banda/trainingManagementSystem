@@ -11,9 +11,9 @@ class School(BaseModel):
     grades = models.ManyToManyField(Grades)
     am = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="academic_manager")
     om = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="operation_manager")
-    contact = models.CharField(max_length=12)
-    erp_code = models.CharField(max_length=12)
-    trainingStatus = models.CharField(max_length=50,choices= TrainingStatus.choices(), default=TrainingStatus.PENDING)
+    contact = models.CharField(max_length=12, blank=True, null=True)
+    erp_code = models.CharField(max_length=12, blank=True, null=True)
+    trainingStatus = models.CharField(max_length=50,choices= TrainingStatus.choices(), default=TrainingStatus.PENDING.value)
     sheet = models.ManyToManyField(TrainingSheet, blank=True)
 
     def __str__(self):
