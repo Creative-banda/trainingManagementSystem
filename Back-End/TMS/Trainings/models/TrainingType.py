@@ -3,7 +3,7 @@ import enum
 @enum.unique
 class TrainingType(enum.Enum):
     ROBOTICS = "ROBOTICS"
-    COMPUTER_SCIENCE = "COMPUTER_SCIENCE"
+    COMPUTER_SCIENCE = "COMPUTER SCIENCE"
 
     @classmethod
     def choices(cls):

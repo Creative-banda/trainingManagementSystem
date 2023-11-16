@@ -1,13 +1,10 @@
 from pathlib import Path
 from dotenv import load_dotenv
 import os
-
 load_dotenv()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 DEBUG = True
@@ -24,11 +21,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # "app1",
     "Accounts",
     "Schools",
     "Trainings",
     'rest_framework',
+    'rest_framework.authtoken',
+    'drf_registration',
 ]
 
 MIDDLEWARE = [
@@ -62,8 +60,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'TMS.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -72,9 +68,6 @@ DATABASES = {
     }
 }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -91,26 +84,42 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'drf_registration.auth.MultiFieldsModelBackend',
+]
 
-# Internationalization
-# https://docs.djangoproject.com/en/4.1/topics/i18n/
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
+
+DRF_REGISTRATION = {
+     'LOGIN_USERNAME_FIELDS': ['email', ],
+     'LOGOUT_REMOVE_TOKEN': False,
+     'USER_FIELDS': (
+        'id',
+        'username',
+        'email',
+        'password',
+        'is_active',
+        'roles',
+    ),
+}
+
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "Accounts.User"

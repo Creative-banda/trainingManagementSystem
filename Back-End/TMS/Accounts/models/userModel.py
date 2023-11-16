@@ -6,7 +6,7 @@ from .manager import userManager
 
 
 class User(BaseModel, AbstractBaseUser, PermissionsMixin):
-    name = models.CharField(max_length=255)
+    username = models.CharField(max_length=255)
     email = models.CharField(max_length=255, unique=True)
     roles = models.ManyToManyField(userRole)
 
@@ -17,7 +17,7 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     objects = userManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['name', 'password']
+    REQUIRED_FIELDS = []
 
     def has_perm(self, object = None):
         return self.is_staff
@@ -33,5 +33,5 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
 
 
     def __str__(self) -> str:
-        return self.name
+        return self.username
 

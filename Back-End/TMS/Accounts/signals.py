@@ -3,6 +3,6 @@ from .models import Profile, User
 from django.dispatch import receiver
 
 @receiver(post_save, sender=User)
-def pre_save_user(sender, instance, created, **kwargs):
+def post_save_user(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user = instance)
