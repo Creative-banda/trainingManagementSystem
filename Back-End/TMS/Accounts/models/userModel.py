@@ -26,8 +26,6 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
         return self.is_staff
 
     class Meta:
-        """Meta definition for User."""
-
         verbose_name = 'User'
         verbose_name_plural = 'Users'
 

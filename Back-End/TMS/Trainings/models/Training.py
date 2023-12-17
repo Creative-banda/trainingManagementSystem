@@ -23,4 +23,4 @@ class Training(BaseModel):
         trainers = ''
         for trainer in objs:
             trainers += trainer.username + ","
-        return f"{trainers} t"
+        return f"{trainers} "

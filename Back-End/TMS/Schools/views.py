@@ -11,7 +11,7 @@ def SchoolsView(request):
     if request.method == 'GET':
         schools = School.objects.filter(active=True)
         serializer = SchoolSerializer(schools, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status = status.HTTP_200_OK)
 
     elif request.method == 'POST':
         serializer = SchoolSerializer(data=request.data)
