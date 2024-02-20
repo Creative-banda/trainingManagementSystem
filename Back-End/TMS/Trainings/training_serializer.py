@@ -9,5 +9,5 @@ class TrainingSerializer(serializers.ModelSerializer):
     grades = GradeSerializer(many=True)
     class Meta:
         model = Training
-        fields = ['id', 'grades', 'schools','trainers']
+        fields = ['id', 'grades', 'schools','trainers', 'trainingStatus', 'trainingType']
         

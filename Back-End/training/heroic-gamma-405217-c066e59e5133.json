@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "heroic-gamma-405217",
+  "private_key_id": "c066e59e51336adfb3cb02e5065be160a6475324",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQChSoWRCNQ5hU1J\np2Widq5rOvtl/KTzxPOSXAxyDDBtMn/GAjwOl7Cs0JMxVzELV58Dnv5Un7DcNO32\nkumXgvlC8qMiw0AaUCJsiqCqtenXQJPmc87sGp+iq5QPcz1ZJhVC7uNLTEkkKjLu\nj1Fbg4MbFgNRM5gf6eEN2nyphcUlif3Snavqk8oyNkpEBVUj1veW3yJmYZczxlU+\n9pZA3Q56j6FHsUIpzx/5uSiau1Bjsv8JxchYa1Gta2YVU9pYrr7Xt9ogMI/n4Qji\nhZ3NFW5ChS06zueaRkTBDMn/ZiaF52ib3VmNmb1OG02S7plD78YoCggwc65M9N4Y\nAYQAOKczAgMBAAECggEAP5s440JdFzYHjbVTMmelTypafBTPJEcWWzCrw8okyttw\nYjD9aC/P/8bdVUbyU2vBjNcFq2+yepTxBx1Wu2ZuUEWJqirfu8DAYpek1s2Yo0eX\nS/l9r8SsEaWiZRloJyEKn3O/9TDnYzi1Dzk7t2A8stDSjBJRurwsAZ+ZK+1SGwQY\no4XVBG78UxWyROj234H1HXzTCIVxtiULpJs4HQazJvs7g+0uPwPLCBqxT1t9Dzns\nQBhP0nuMQEzm07RLV6JcNtp/uDTdrrA6h9IXpUeD9WSe2SltQCrS7+XsHKoz0yHa\nh8GGGCHgxm4NJNUiCgR2wXod8CsuX56AXkd3do0TQQKBgQDXu3rArJPR7X9vzBls\nn9q64dEQ/2w3s3xsKyK/VYd7n2Gc4KoRDE6KeiZi11Fp/XwfsOyqyCjf2ERCLjSr\nZGA7Z+qe+OnehVsyswRIvdYVRHsUFZObDMGfUq2g+eEl7MqSWawtnY69whkaGgY9\nAXyhZF0GnRJIYx1v5txz18tG0wKBgQC/ZaFnLGiAdtqtUIQsV3ufLi0nvrGtt3kX\nTvkL1yEnTwHk/dFqL+VW2VO92TyhC72J9EFUNmpqL/PPalMvbjP9IUQjKnrJFR/Z\nuywc+P0mFyS2C8hOMPGA3Sclbhh3Vp9ILBpZ/Yi8XeRFkfwh6BHY13AdYHTlZTjU\nFD43CSGiIQKBgHkj5MVG42bRh2r+4BP4G7ovTdfOpjUNC8Qt4MAyRfbsQ8L1AWq7\nT2tBNkbwg94Rol6lWfB4n0M7TPEgwyCvJ76UFtKYEbOLjO+GSNSUDSA6KSbZCt7Z\nJezSX39ycbR7KDFQO3gN7nauBKx8ip49NH/oPLiXAQo25fPNXmOKfLJTAoGBAJJJ\nsIq2M410yoFLmCp4FyG8XoERTKa1JBV/o/S70jhEN/N5WJVr1EOESnBB2QhSe+U0\nTrZ5/O36hsRSxQ/skEn6IiUqs7x7q+N0Hyxp1rtFVybZbJju6beP0PrX4lVcXNQB\n+YYstVUcAnx2LxsPUIzHZYbekZo/uqbGbiMMlKthAoGBAMTE+LJ4EFskT0VyNaME\nuxDbVDaywCzjSw4reDu35/Dhenan5ayuvYn+FSchyT0xzmvQ9w2QPDFYxYKS8qjW\nY9ifdDHNJ3t24x14tc0ffVH7GFSy3yv4Px9CvVwJKPcWrtPBf/Ed02t3wFfxKM6Z\nNC2+h7v3R3ih5hDUDzy7ATcI\n-----END PRIVATE KEY-----\n",
+  "client_email": "triningsheet@heroic-gamma-405217.iam.gserviceaccount.com",
+  "client_id": "105287649906622011329",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/triningsheet%40heroic-gamma-405217.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

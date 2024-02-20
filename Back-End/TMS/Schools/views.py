@@ -1,8 +1,8 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import School
-from .school_serializer import SchoolSerializer
+from .models import School, Grades
+from .school_serializer import SchoolSerializer, GradeSerializer
 from django.shortcuts import get_object_or_404
 
 
@@ -41,3 +41,11 @@ def updateSchoolView(request, id):
         school.active = False
         school.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    
+    
+@api_view(["GET"])
+def getGradesView(request):
+    grade = Grades.objects.all();
+    serializer = GradeSerializer(grade, many = True)
+    return Response(serializer.data, status=status.HTTP_200_OK)

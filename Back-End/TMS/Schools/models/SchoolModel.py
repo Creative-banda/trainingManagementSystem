@@ -3,10 +3,12 @@ from .BaseModel import BaseModel
 from .Grades import Grades
 from Accounts.models import User
 from .TrainingStatus import TrainingStatus
+from .CatagoryEnum import CatagoryEnum
 
 class School(BaseModel):
     name = models.CharField(max_length=255)
     address = models.TextField(max_length=500)
+    catagory = models.CharField(choices = CatagoryEnum.choices(), max_length=30, blank = True, null = True);
     grades = models.ManyToManyField(Grades)
     am = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="academic_manager")
     om = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="operation_manager")
@@ -18,4 +20,3 @@ class School(BaseModel):
 
     def __str__(self):
         return self.name
-
