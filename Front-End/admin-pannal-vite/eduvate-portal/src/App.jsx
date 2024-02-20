@@ -1,23 +1,27 @@
 
 import { Route, Routes } from 'react-router-dom'
-import RootComponent from '../components/root-template'
 import './App.css'
+import RootComponent from '../components/root-template'
 import Dashboard from '../components/Dashboard'
 import Schools from '../components/Schools'
 import Training from '../components/Trainings'
+import SchoolRegistration from '../components/SchoolRegistration'
+import Login from '../components/Login'
 
 function App() {
 
   return (
-    <main className='h-screen w-screen'>
+    <main>
       <Routes>
-          <Route path='/' element={<RootComponent/>}>
-            <Route index element={< Dashboard/>}/>
-            <Route path='/dashboard' element={<Dashboard/>}/>
-            <Route path='/schools' element={<Schools/>}/>
-            <Route path='/training' element={<Training/>}/>
-          </Route>
-          <Route path='/login' element={<h1>Login</h1>}/>
+        <Route path='/' element={
+          <RootComponent />
+        }>
+          <Route index element={< Dashboard />} />
+          <Route path='/training' element={<Training />} />
+          <Route path='/schools' element={<Schools />} />
+        </Route>
+        <Route path='/login' element={<Login />} />
+        <Route path='/school-register' element={<SchoolRegistration />} />
       </Routes>
     </main>
   )

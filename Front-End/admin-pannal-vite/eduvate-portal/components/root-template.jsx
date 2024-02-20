@@ -1,68 +1,46 @@
-import React, { useState } from 'react';
-import { MenuFoldOutlined, MenuUnfoldOutlined, UploadOutlined, UserOutlined, VideoCameraOutlined, DashboardOutlined, TeamOutlined, TableOutlined } from '@ant-design/icons';
+import React, { useContext, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
-
-import { Layout, Menu, Button, theme } from 'antd';
 import { useNavigate } from 'react-router-dom';
-const { Header, Sider, Content } = Layout;
+import { Context } from '../context/user_context';
+import { CSTraining, TotalTrainers, TotalTrainings } from './Statistics';
+import Sidebar from './Sidebar';
+
 
 const RootComponent = () => {
-    const [collapsed, setCollapsed] = useState(false);
-    const navigate = useNavigate();
+    const { isAuthenticated } = useContext(Context);
+    const redirect = useNavigate();
 
-    const {
-        token: { colorBgContainer },
-    } = theme.useToken();
+    useEffect(() => {
+        if (!isAuthenticated) {
+            redirect("/login");
+        }
+    }, [isAuthenticated])
+
     return (
-        <Layout className='h-full' hasSider>
-            <Sider trigger={null} collapsible collapsed={collapsed}
-                breakpoint='md'
-                onBreakpoint={(breakpoint) => breakpoint ? setCollapsed(true) : setCollapsed(false)}
-                style={{ overflow: 'auto', height: '100vh' }}
-            >
-                <div className="demo-logo-vertical" />
-                <Menu
-                    theme="dark"
-                    mode="inline"
-                    // defaultSelectedKeys={['1']}
-                    items={[
-                        {
-                            key: '1',
-                            icon: <DashboardOutlined />,
-                            label: 'Dashboard',
-                            onClick: () => { navigate('/dashboard') }
+        <div className='flex gap-2'>
+            {/* Menu Section */}
+            <div className='h-screen fixed top-0 left-0 bottom-0 w-20 sm:w-40'>
+                <Sidebar />
+            </div>
 
-                        },
-                        {
-                            key: '2',
-                            icon: <TeamOutlined />,
-                            label: 'Schools',
-                            onClick: () => { navigate('/schools') }
-                        },
-                        {
-                            key: '3',
-                            icon: <TableOutlined />,
-                            label: 'Training',
-                            onClick : () => { navigate('/training') }
-                        },
-                    ]}
-                />
-            </Sider>
-            <Layout className="site-layout">
-                <Header
-                    style={{padding: 0, background: colorBgContainer}}>
-                    <Button type="text" icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />} onClick={() => setCollapsed(!collapsed)}
-                        style={{ fontSize: '16px', width: 64, height: 64, }} />
-                </Header>
-                <Content style={{ margin: '24px 16px', padding: 24, overflowY : 'scroll' }}>
+            {/* Right Content */}
+            <div className='sm:ml-40 ml-20 flex flex-col w-full gap-2 p-2 border'>
 
+                {/* Header Section */}
+                <div className='flex justify-start items-center gap-4 h-32 w-full'>
+                    <TotalTrainers />
+                    <TotalTrainings />
+                    <CSTraining/>
+                </div>
 
+                {/* Body Section */}
+                <div className='w-full p-2'>
                     <Outlet />
 
+                </div>
 
-                </Content>
-            </Layout>
-        </Layout>
-    );
+            </div>
+        </div>
+    )
 };
 export default React.memo(RootComponent);
