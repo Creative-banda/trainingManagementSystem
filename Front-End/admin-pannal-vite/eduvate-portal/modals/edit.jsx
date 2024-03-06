@@ -29,8 +29,8 @@ const EditModal = ({ id }) => {
     const handleOk = async (values) => {
         setSubmitting(true);
         values["startDate"] = values.startDate.format("YYYY-MM-DD");
-        values["startTime"] = values.startTime.format("HH:MM");
-        values["endTime"] = values.endTime.format("HH:MM");
+        values["startTime"] = values.startTime.format("HH:mm");
+        values["endTime"] = values.endTime.format("HH:mm");
         
         values["currentGrade"] = typeof values.currentGrade === "object" ? values.currentGrade.value : values.currentGrade;
         // console.log(values);

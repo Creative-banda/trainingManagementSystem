@@ -127,7 +127,6 @@ function Training() {
               }
             />
             <div className='flex gap-4'>
-
               <Tooltip title="Add New Training">
                 <Button shape='round' icon={<PlusCircleOutlined />} onClick={() => setTrainingModal(true)}> ADD </Button>
               </Tooltip>

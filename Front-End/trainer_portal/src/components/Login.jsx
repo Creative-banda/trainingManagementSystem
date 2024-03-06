@@ -1,4 +1,4 @@
-import { Button, Input } from 'antd'
+import { Button, Input, message } from 'antd'
 import React, { useContext, useEffect, useState } from 'react'
 import { EyeInvisibleOutlined, EyeTwoTone, MailOutlined, SafetyOutlined } from '@ant-design/icons';
 import api from "../../utilities/axios_interceptor"
@@ -9,6 +9,7 @@ function Login() {
     const [authInfo, setAuthInfo] = useState({email:"", password:""})
     const redirect = useNavigate();
     const {setIsAuthenticated, isAuthenticated} = useContext(Context);
+    const [loading, setLoading ] = useState(false);
 
     const handleUserInfo = (e) => {
         setAuthInfo({
@@ -18,6 +19,7 @@ function Login() {
     }
 
     const fetchUserInfo = async (access) => {
+        setLoading(true);
         await api({
             method: 'GET',
             url:"/account/auth",
@@ -26,11 +28,13 @@ function Login() {
                 "Authorization": "Bearer " + access
             }
         }).then(response => {
+            message.success(`Welcome ${response.data.username}`);
             setIsAuthenticated(true);
+            setLoading(false);
             localStorage.setItem("userInfo", JSON.stringify(response.data));
             redirect("/");
-            console.log(response.data);
         }).catch(err => {
+            setLoading(false);
             console.log(err);
         })
     }
@@ -42,6 +46,7 @@ function Login() {
      * @return {Promise<void>} This function returns a promise with no specific value.
      */
     const handleLogin = async () => {
+        setLoading(true);
         await api({
             method: 'POST',
             url:"/token/",
@@ -50,11 +55,17 @@ function Login() {
                 "Content-Type":"application/json"
             }
         }).then((response) => {
-            localStorage.setItem("access_token", response?.data?.access);
-            localStorage.setItem("refresh_token", response?.data?.refresh);
-            fetchUserInfo(response?.data?.access);
+            if(response.status === 200){
+                localStorage.setItem("access_token", response?.data?.access);
+                localStorage.setItem("refresh_token", response?.data?.refresh);
+                fetchUserInfo(response?.data?.access);
+            }else{
+                setLoading(false);
+                message.error(response.message);
+            }
         }).catch((error) => {
-            console.log(error);
+            setLoading(false);
+            message.error("Some Error");
         })
     }
 
@@ -78,7 +89,7 @@ function Login() {
 
                         <h1 className='text-2xl font-bold text-gray-700 mb-4 select-none'> Hello there 👋 </h1>
 
-                        <form className='flex flex-col gap-4'>
+                        <div className='flex flex-col gap-4'>
                             <div>
                                 <label htmlFor='email' className=' text-slate-500'>Username</label>
                                 <Input type='email' name="email" id="email" placeholder='Email' prefix={<MailOutlined className='text-md mr-2' />} onChange={handleUserInfo} autoComplete='email' required/>
@@ -93,9 +104,9 @@ function Login() {
                                 />
                             </div>
 
-                            <Button className=' bg-blue-700 text-white' onClick={() => handleLogin()}> Login </Button>
+                            <Button className=' bg-blue-700 text-white' onClick={() => handleLogin()} loading={loading}> Login </Button>
 
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -132,7 +132,7 @@ export const useSchoolById = (id) => {
 
     useEffect(() => {
         if(id){
-            editSchoolModel && fetchSchoolById();
+            fetchSchoolById();
         }
     }, [id, editSchoolModel])
 

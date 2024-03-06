@@ -31,7 +31,7 @@ export function DoughnutChart() {
     ],
   };
   return (
-    <div className='flex justify-center items-center bg-white w-full max-h-96 p-4 rounded-lg'>
+    <div className='flex justify-center items-center bg-white w-full max-h-96 p-4 rounded-lg border'>
       <Doughnut data={data}/>
     </div>
   )

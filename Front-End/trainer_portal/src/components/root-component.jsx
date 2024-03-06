@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 import Sidebar from './Sidebar'
-import TodaysTraining, { TotalTrainings } from './Statistics/Statistics'
+import {TodaysTrainings} from './Statistics/Statistics'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { Context } from '../../context/user_context'
 
@@ -16,18 +16,17 @@ function RootComponent() {
     
     return (
         // Main Division
-        <div className='w-full h-full flex gap-2'>
+        <div className='relative w-full h-full flex gap-2'>
             {/* Menu Section */}
-            <div className='h-full border px-2'>
+            <div className='absolute top-0 w-40 left-0 h-screen border px-2'>
                 <Sidebar />
             </div>
 
             {/* Right Content */}
-            <div className='flex flex-col h-full w-full gap-2'>
+            <div className=' ml-44 flex flex-col h-full w-full gap-2'>
                 {/* Header Section */}
-                <div className='flex justify-start items-center gap-12 h-32 w-full'>
-                    <TodaysTraining />
-                    <TotalTrainings/>
+                <div className=' h-32 w-full'>
+                    <TodaysTrainings />
                 </div>
 
                 {/* Body Section */}

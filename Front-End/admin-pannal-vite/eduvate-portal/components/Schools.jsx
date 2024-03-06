@@ -1,12 +1,14 @@
 import React, { useContext, useState, useRef } from 'react'
-import { Button, Table, Tooltip, Input, Space } from 'antd';
-import useSchools from '../hooks/fetch_schools';
-import { DeleteOutlined, EyeOutlined, PlusCircleOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
+import { Button, Table, Tooltip, Input, Space, Skeleton } from 'antd';
+import useSchools, { useSchoolById } from '../hooks/fetch_schools';
+import { ArrowLeftOutlined, DeleteOutlined, EyeOutlined, PlusCircleOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import Highlighter from 'react-highlight-words';
 import { ModalContext } from '../context/modal_context';
 import SchoolModal from '../modals/add_school';
 import EditSchoolModel from '../modals/edit_school';
 import { DeleteSchoolModal } from '../modals/confirm';
+import { useNavigate, useParams } from 'react-router-dom';
+import useSchool from '../hooks/school_hook';
 
 
 
@@ -18,6 +20,9 @@ function Schools() {
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = useRef(null);
+
+  const navigate = useNavigate();
+
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
     setSearchText(selectedKeys[0]);
@@ -48,7 +53,6 @@ function Schools() {
         />
         <Space>
           <Button
-            type="primary"
             onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
             icon={<SearchOutlined />}
             size="small"
@@ -106,7 +110,7 @@ function Schools() {
         setTimeout(() => searchInput.current?.select(), 100);
       }
     },
-    render: (text) =>
+    render: (name, rest) =>
       searchedColumn === dataIndex ? (
         <Highlighter
           highlightStyle={{
@@ -115,10 +119,13 @@ function Schools() {
           }}
           searchWords={[searchText]}
           autoEscape
-          textToHighlight={text ? text.toString() : ''}
+          textToHighlight={name ? name.toString() : ''}
         />
       ) : (
-        text
+        <p className='hover:bg-emerald-400 rounded-lg p-2 hover:text-white cursor-pointer transition'
+          onClick={() => navigate(`/schools/${rest.id}`)} >
+          {name}
+        </p>
       ),
   });
 
@@ -128,8 +135,7 @@ function Schools() {
       title: 'School Name',
       dataIndex: 'name',
       key: 'id',
-      render: (text) => <p> {text} </p>,
-      ...getColumnSearchProps('name'),
+      ...getColumnSearchProps('name', 'rest'),
     },
     {
       title: 'ERP Code',
@@ -142,7 +148,7 @@ function Schools() {
       key: 'id',
       render: (_, { grades }) => (
         <div className='flex gap-1 flex-wrap'>
-          {console.log(grades)}
+          {/* {console.log(grades)} */}
           <p className='p-2 bg-emerald-400 rounded-xl text-white'>{grades[0]?.grades} - {grades.pop()?.grades}</p>
         </div>
       )
@@ -212,3 +218,43 @@ function Schools() {
 }
 
 export default Schools
+
+
+export const ShowSchools = () => {
+  const { id } = useParams()
+  const { school, fetchingSchool } = useSchoolById(id)
+  console.log(school)
+  const navigate = useNavigate()
+
+  return (
+    <div className='w-full'>
+      {/* Header Section */}
+      <header className='w-full border p-2 rounded-md mb-2'>
+        <Button icon={<ArrowLeftOutlined />} onClick={() => navigate(-1)} />
+        <div className='flex gap-4'>
+          <Skeleton loading={fetchingSchool}>
+            <h1> <span className='font-bold'>School Name</span> : {school?.name}</h1>
+          </Skeleton>
+
+          <Skeleton loading={fetchingSchool}>
+            <p> <span className='font-bold'>ERP Code </span> : {school?.erp_code}</p>
+          </Skeleton>
+
+          <Skeleton loading={fetchingSchool}>
+            <p> <span className='font-bold'>Academic Manager </span>: {school?.am?.username} </p>
+          </Skeleton>
+
+          <Skeleton loading={fetchingSchool}>
+            <p> <span className='font-bold'>Operational Manager </span>: {school?.om?.username} </p>
+          </Skeleton>
+
+        </div>
+      </header>
+
+      {/* Body Section */}
+      <main className='w-full border rounded-lg p-2'>
+        Body
+      </main>
+    </div>
+  )
+}

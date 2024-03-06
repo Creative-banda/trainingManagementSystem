@@ -22,7 +22,7 @@ export const options = {
 const LineChart = () => {
     const {dataset} = useTrainingStatistics();
     return (
-        <div className=' flex justify-center items-center bg-white w-full h-full rounded-lg'>
+        <div className=' flex justify-center items-center bg-white w-full h-full rounded-lg border'>
 
             <Line
                 data={dataset}

@@ -1,24 +1,20 @@
 import React from 'react'
-import TrainingCard from './training-card'
-import TrainingChart from './Statistics/Charts'
+import TodaysTraining from './TodaysTraining';
 
 function Dashboard() {
   return (
-    <div className='w-full h-full flex gap-4'>
+    <div className='w-full h-full grid grid-cols-5 gap-2'>
 
-      <div className='flex gap-2 justify-start items-start p-2 rounded-lg border flex-wrap'>
-        <TrainingCard school="Radcliffe Healthcare" startTime="12:00" status={"ONGOING"} />
-        <TrainingCard school="Radcliffe Healthcare" startTime="12:00" status={"COMPLETED"} />
-        <TrainingCard school="Radcliffe Healthcare" startTime="12:00" status={"CANCELLED"} />
+      <div className='col-span-3 rounded-lg border'>
+        <TodaysTraining/>
       </div>
 
-      <div className='border mb-4 rounded-lg'>
-        <TrainingChart/>
-        <p> hi </p>
+      <div className='border mb-4 col-span-2 w-full rounded-lg'>
+        {/* <TrainingSheet/> */}
       </div>
 
     </div>
   )
 }
 
-export default Dashboard
+export default Dashboard;
