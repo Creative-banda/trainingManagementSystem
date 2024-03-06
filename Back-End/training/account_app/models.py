@@ -4,7 +4,17 @@ from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.hashers import make_password
 from django.db import models
 from .BaseModel import BaseModel
+from .userEnums import UserType
 from uuid import uuid4
+
+
+############################### Role Model ###################################
+class Role(BaseModel):
+    id = models.UUIDField(db_index = True, default=uuid4, primary_key = True)
+    role = models.CharField(choices = UserType.choices(), max_length = 30, default = UserType.TRAINER.value, unique = True)
+
+    def __str__(self):
+        return self.role
 
 ################################ User Manager #################################
 
@@ -38,6 +48,7 @@ class User(BaseModel, AbstractUser):
     id = models.UUIDField(db_index = True, default=uuid4, primary_key = True)
     username = models.CharField(unique=False, default="Username", max_length=255, null=True, blank=True)
     email = models.CharField(max_length=255, unique=True)
+    role = models.ManyToManyField(Role, blank=True, related_name = "user_roles")
 
     objects = userManager()
 
@@ -45,7 +56,7 @@ class User(BaseModel, AbstractUser):
     REQUIRED_FIELDS = []
     
     
-    ## I'm adding this save method because default password is not hashing from django admin due to soem reason
+    ## I'm adding this save method because default password is not hashing from django admin due to some reason
     def save(self, *args, **kwargs):
         self.username = f"{self.first_name} {self.last_name}"
    

@@ -8,7 +8,7 @@ class userSerializer(serializers.ModelSerializer):
     total_training = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'total_training']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'total_training', 'role']
     
     def get_total_training(self, user):
         try:
@@ -19,6 +19,7 @@ class userSerializer(serializers.ModelSerializer):
         
 class ProfileSerializer(serializers.ModelSerializer):
     user = userSerializer()
+    # user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
     class Meta:
         model = Profile
         exclude = ['created_at', 'updated_at']

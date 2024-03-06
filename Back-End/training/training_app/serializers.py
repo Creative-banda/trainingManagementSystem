@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Training
+from .models import Training, TrainingDataModel, TrainingSheetModel
 from account_app.models import User
 from account_app.serializers import userSerializer
 from school_app.models import Grades
@@ -23,3 +23,15 @@ class TrainingSerializer(serializers.ModelSerializer):
             representation['grades'] = GradeSerializer(instance.grades.all(), many=True).data
             representation['schools'] = SchoolSerializer(instance.schools.all(), many=True, context=self.context).data
         return representation
+
+
+class TrainingDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TrainingDataModel
+        fields = ["id", "data"]
+
+class TrainingSheetSerializer(serializers.ModelSerializer):
+    trainingData = TrainingDataSerializer(many=True, read_only=True)
+    class Meta:
+        model = TrainingSheetModel
+        exclude = ['updated_at', 'created_at']

@@ -7,8 +7,8 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Training
-from .serializers import TrainingSerializer
+from .models import Training, TrainingSheetModel, TrainingDataModel
+from .serializers import TrainingSerializer, TrainingSheetSerializer, TrainingDataSerializer
 from .filters import TrainingFilter
 
 
@@ -105,6 +105,19 @@ class TrainingsByTrainer(APIView, LimitOffsetPagination):
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
 
 
+################################## To get all the training by Trainer ID without pagination ###################################
+
+class TrainingByTrainerId(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, id):
+        try:
+            training = Training.objects.filter(trainers__id = id, active=True).prefetch_related('trainers', 'schools', 'grades')
+            serializer = TrainingSerializer(training, many = True, context = {"request": request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+
 ################################### Filter class to apply filter operation ###################################
 
 class TrainingFilterView(APIView):
@@ -160,4 +173,51 @@ class TrainingStatisticsView(APIView):
         ]
         return Response(result_list, status=status.HTTP_200_OK)
     
+
+##################################### Training Sheet Data View #####################################
+class TrainingSheetView(APIView):
+    def get(self, request, id):
+        try:
+            training_sheet = TrainingSheetModel.objects.filter(school__id = id, trainingData__active=True).prefetch_related('trainingData').first()
+            serializer = TrainingSheetSerializer(training_sheet)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
     
+    def post(self, request, id):
+        print(id)
+        trainingSheet = TrainingSheetModel.objects.filter(school__id = id).prefetch_related('trainingData').first()
+        trainingData = TrainingDataModel.objects.create(data = request.data)
+        trainingSheet.trainingData.add(trainingData)
+        return Response(trainingData.data, status=status.HTTP_200_OK)
+
+
+##################################### Training Data View #####################################
+class TrainingDataView(APIView):
+    def get(self, request, id):
+        try:
+            training_data = TrainingDataModel.objects.filter(id = id, active=True).first()
+            serializer = TrainingDataSerializer(training_data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+        
+    def put(self, request, id):
+        try:
+            print(request.data)
+            training_data = TrainingDataModel.objects.get(id = id)
+            training_data.data = request.data
+            training_data.save()
+            return Response(training_data.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, id):
+        try:
+            training_data = TrainingDataModel.objects.get(id = id)
+            training_data.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_204_NO_CONTENT)
+        
+

@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django_filters',
     'debug_toolbar',
     'google_sheet_app',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -155,9 +156,9 @@ LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Asia/Kolkata'
 
-TIME_INPUT_FORMATS = ['%I:%M %p']
+TIME_INPUT_FORMATS = ['%H:%M']
 
-USE_I18N = True
+USE_I18N = False
 
 USE_TZ = True
 
@@ -172,5 +173,5 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "account_app.User"
-#GSPREAD_CLIENT = initialize_gspread()  # Starting the gspread client when our server starts speeds things up; it avoids re-authenticating on each request
+# GSPREAD_CLIENT = initialize_gspread()  # Starting the gspread client when our server starts speeds things up; it avoids re-authenticating on each request
 

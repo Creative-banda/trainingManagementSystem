@@ -1,6 +1,4 @@
 from django.db import models
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.core.exceptions import ValidationError
 from uuid import uuid4
 from .BaseModel import BaseModel
@@ -25,7 +23,6 @@ class Training(BaseModel):
     def save(self, *args, **kwargs) -> User:
         if self.endTime < self.startTime:
             raise ValidationError("End time must be greater than start time")
-        
         return super().save(*args, **kwargs)
     
     class Meta:
@@ -35,8 +32,18 @@ class Training(BaseModel):
         return str(self.trainers.first())
 
 
+class TrainingDataModel(BaseModel):
+    id = models.UUIDField(primary_key=True, db_index=True, default=uuid4)
+    data = models.JSONField(blank=True)
+    active = models.BooleanField(default=True, null = True, blank=True)
+    class Meta:
+        ordering = ["-created_at"]
 
+class TrainingSheetModel(BaseModel):
+    id = models.UUIDField(primary_key=True, db_index=True, default=uuid4)
+    school = models.ForeignKey(School, on_delete=models.CASCADE, related_name="training_sheet", db_index=True)
+    trainingData = models.ManyToManyField(TrainingDataModel, blank=True)
 
+    def __str__(self):
+        return str(self.school.name)
 
-    
-    

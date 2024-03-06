@@ -10,3 +10,4 @@ class UserType(enum.Enum):
     @classmethod
     def choices(cls):
         return [(e.value, e.value) for e in cls]
+    
