@@ -3,25 +3,25 @@ import { useToken } from "./token_hooks";
 import api from "../utilities/axios_interceptor";
 import {useEffect, useState } from "react";
 
-export const useSheet = ({ id = 0 }) => {
+export const useSheet = ({ id = 0, subject="" }) => {
     const [loading, setLoading] = useState(false);
     const [sheetData, setSheetData] = useState([]);
     const { access_token } = useToken();
-    // console.log(id);
+    // console.log(sheetData);
 
     const fetchSchoolSheet = async () => {
         setLoading(true);
         await api({
             method: 'GET',
             url: `/training/sheet/${id}/`,
+            params: { subject: subject },
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + access_token
             }
         }).then(response => {
             if (response.status === 200) {
-                console.log(response.data);
-                setSheetData(response.data.trainingData);
+                setSheetData(response.data?.trainingData);
                 setLoading(false);
             } else {
                 setLoading(false);
@@ -35,12 +35,13 @@ export const useSheet = ({ id = 0 }) => {
         })
     }
 
-    const postSchoolSheet = async (data) => {
+    const postSchoolSheet = async (data, subject) => {
         setLoading(true);
         await api({
             method: 'POST',
             url: `/training/sheet/${id}/`,
             data: data,
+            params: { subject: subject },
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + access_token
@@ -117,7 +118,7 @@ export const useSheet = ({ id = 0 }) => {
 
     useEffect(() => {
         id && id !== 0 && fetchSchoolSheet();
-    }, [id]);
+    }, [id, subject]);
 
     return { sheetData, loading, fetchSchoolSheet, postSchoolSheet, patchSheetData, deleteSheetData }
 

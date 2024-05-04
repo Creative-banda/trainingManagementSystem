@@ -26,7 +26,8 @@ const useFilterTraining = (trainingType = null, grade = null, school = null) => 
                     "trainingStatus": "ONGOING",
                     "trainingType": trainingType,
                     "schools": school,
-                    "grades": grade
+                    "grades": grade,
+                    "active":true
                 },
                 headers: {
                     "Content-Type": "application/json",
@@ -59,9 +60,9 @@ const useFilterTraining = (trainingType = null, grade = null, school = null) => 
 
     useEffect(() => {
         fetchTraining();
-    }, [userInfo.id, trainingType, school, grade])
+    }, [userInfo?.id, trainingType, school, grade])
 
-    return { training, loadingTrainings, runningSubjectTrainings }
+    return { training, loadingTrainings, runningSubjectTrainings, fetchTraining }
 }
 
 export default useFilterTraining;

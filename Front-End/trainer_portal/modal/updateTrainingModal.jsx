@@ -4,21 +4,29 @@ import { ModalContext } from '../context/modal_context';
 import dayjs from 'dayjs';
 import { TrainingStatus, TrainingType } from '../utilities/MenuItems';
 import useGrades from '../hooks/fetch_grades';
+import { useTraining} from '../hooks/training_hook'
 
 
 export const UpdateTrainingModal = ({ data }) => {
     const [loading, setLoading] = useState(true);
+    const {updateTraining} = useTraining()
     // console.log(data);
     const { updateTrainingModal, setUpdateTrainingModal } = useContext(ModalContext);
     const [form] = Form.useForm();
     const {grades, gradeLoading} = useGrades();
     
 
-    const handleOk = async (values) => {
+    const handleOk = (values) => {
         values.schools = values.schools.map(school => school.value);
         values.grades = values.grades.map(grade => grade.value);
         values.currentGrade = typeof values.currentGrade === 'object' ? values.currentGrade.value : values.currentGrade;
-        console.log(values);
+        values["startDate"] = data.startDate
+        values["startTime"] = data.startTime
+        values["endTime"] = data.endTime
+        values["trainers"] = data.trainers.map(trainer => trainer.id);
+        updateTraining(values, data?.id);
+        // console.log(values);
+        setUpdateTrainingModal(false);
     };
 
     const handleCancel = () => {

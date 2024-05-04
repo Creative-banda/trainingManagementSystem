@@ -1,0 +1,13 @@
+db.sqlite3
+*.py[cod]
+__pycache__/
+db.sqlite3
+media
+*.bak
+*.log
+local_settings.py
+celerybeat-schedule
+migrations/
+scripts
+*.pyc
+.env

@@ -5,19 +5,24 @@ import Login from "./components/Login";
 import Training from "./components/Trainings";
 import EditTable from "./components/Testing_components/EditableTable";
 import TrainingSheet from "./components/TrainingSheet";
+import SchoolSheets from "./components/SchoolSheets";
+import PageNotFound from "./components/PageNotFound";
+import Schools from "./components/Schools";
 
 const App = () => {
   return (
-    <div className="h-screen w-screen">
+    <div className="">
       <Routes>
         <Route path="/" element={<RootComponent />}>
           <Route index element={<Dashboard />} />
-          <Route path="/trainings" element={<Training />} />
-          <Route path="/school/:id" element={<TrainingSheet/>} />
-          <Route path="/test" element={<EditTable/>}/>
+          <Route exact path="/trainings" element={<Training />} />
+          <Route exact path="/schools" element={<Schools />} />
+          <Route path="/school/:id" element={<TrainingSheet />} />
+          <Route path="/test" element={<EditTable />} />
+          <Route exact path="/sheets" element={<SchoolSheets />} />
         </Route>
-        <Route path="/login" element={<Login />} />
-        <Route path="*" element={<h1> Not Found </h1>} />
+        <Route exact path="/login" element={<Login />} />
+        <Route path="*" element={<PageNotFound />} />
       </Routes>
     </div>
   )

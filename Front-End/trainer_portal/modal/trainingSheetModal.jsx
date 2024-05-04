@@ -1,32 +1,31 @@
-import { Button, Form, Input, Modal, Select } from "antd";
+import { Button, Form, Input, Modal } from "antd";
 import { useContext, useEffect, useState } from "react";
 import { ModalContext } from "../context/modal_context";
 import { useSheet } from "../hooks/fetch_sheet";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 
-export default function TrainingModifyModal({ sheetData = { data: {}, id: "" } }) {
+export default function TrainingModifyModal({ sheetData, setSchool, subject }) {
+    // const location = useLocation();
+    const { id } = useParams();
     const { trainingSheetModifyState, setTrainingSheetModifyState } = useContext(ModalContext);
     const [trainingData, setTrainingData] = useState();
-    const {id} = useParams();
     const { patchSheetData, postSchoolSheet } = useSheet({ id: id });
-    console.log(trainingData);
+    // console.log(sheetData);
 
     const handleUpdate = async (val) => {
         if (sheetData.id) {
-            console.log(val);
             patchSheetData({ id: trainingData?.id, data: val });
-            setTrainingData({ data: {}, id: "" });
+            setSchool({ data: {}, id: "" });
             setTrainingSheetModifyState(false);
         } else {
-            console.log(val);
-            postSchoolSheet(val);
+            postSchoolSheet(val, subject);
             setTrainingSheetModifyState(false);
         }
     }
 
     const handleCancel = () => {
         setTrainingSheetModifyState(false);
-        setTrainingData({ data: {}, id: "" });
+        setSchool({ data: {}, id: "" });
     }
 
     useEffect(() => {
@@ -34,7 +33,7 @@ export default function TrainingModifyModal({ sheetData = { data: {}, id: "" } }
     }, [trainingSheetModifyState]);
 
     return (
-        <Modal open={trainingSheetModifyState} title="Edit Sheet Data" onCancel={() => handleCancel()} centered width={"90%"}
+        <Modal open={trainingSheetModifyState} title="Edit Sheet Data" onCancel={() => handleCancel()} centered
             footer={[]}
         >
             <Form
@@ -43,7 +42,7 @@ export default function TrainingModifyModal({ sheetData = { data: {}, id: "" } }
                 fields={[
                     {
                         name: ["grade"],
-                        value: trainingData?.data?.grade
+                        value: trainingData?.data?.grade ? trainingData?.data?.grade : "Grade 1"
                     },
                     {
                         name: ["topic"],
@@ -51,15 +50,15 @@ export default function TrainingModifyModal({ sheetData = { data: {}, id: "" } }
                     },
                     {
                         name: ["date"],
-                        value: trainingData?.data?.date
+                        value: trainingData?.data?.date ? trainingData?.data?.date : new Date().toISOString().split('T')[0]
                     },
                     {
                         name: ["duration"],
-                        value: trainingData?.data?.duration
+                        value: trainingData?.data?.duration ? trainingData?.data?.duration : "1.5 hours"
                     },
                     {
                         name: ["conducted"],
-                        value: trainingData?.data?.conducted
+                        value: trainingData?.data?.conducted ? trainingData?.data?.conducted : "Conducted"
                     },
                     {
                         name: ["trainerRemark"],
@@ -71,7 +70,7 @@ export default function TrainingModifyModal({ sheetData = { data: {}, id: "" } }
             >
                 <div className="flex-1">
                     <Form.Item label="Grade" name="grade">
-                        <Input value={trainingData?.data?.grade} tabIndex={1} />
+                        <Input value={trainingData?.data?.grade} />
                     </Form.Item>
 
                     <Form.Item label="Topic" name="topic">
@@ -79,7 +78,7 @@ export default function TrainingModifyModal({ sheetData = { data: {}, id: "" } }
                     </Form.Item>
 
                     <Form.Item label="Date" name="date">
-                        <Input value={trainingData?.data?.date} />
+                        <Input value={trainingData?.data?.date ? trainingData?.data?.date : new Date().toISOString().split('T')[0]} />
                     </Form.Item>
 
                 </div>
@@ -94,31 +93,36 @@ export default function TrainingModifyModal({ sheetData = { data: {}, id: "" } }
                     </Form.Item>
 
                     <Form.Item label="Trainer Remark" name="trainerRemark">
-                        <Input value={trainingData?.data?.trainerRemark} />
+                        <Input.TextArea value={trainingData?.data?.trainerRemark} />
                     </Form.Item>
-                    <Form.Item >
-                        {trainingData?.id ? <Button htmlType="submit">Update</Button> : <Button htmlType="submit">ADD</Button>}
-                        <Button onClick={() => handleCancel()}>Cancle</Button>
-                    </Form.Item>
-                </div>
 
+                    <div className="flex gap-4">
+                        <Form.Item>
+                            {trainingData?.id ? <Button htmlType="submit" danger >Update</Button> : <Button htmlType="submit" danger >ADD</Button>}
+                        </Form.Item>
+
+                        <Form.Item>
+                            <Button onClick={() => handleCancel()}>Cancle</Button>
+                        </Form.Item>
+                    </div>
+                </div>
             </Form>
         </Modal>
     )
 }
 
 
-export function TrainingAddModal() {
-    const { trainingSheetAddState, setTrainingSheetAddState } = useContext(ModalContext);
-    // console.log(school);
-    return (
-        <Modal open={trainingSheetAddState} onCancel={() => setTrainingSheetAddState(false)} centered width={"90%"}
-            footer={[
-                <Button key="back" onClick={() => setTrainingSheetAddState(false)}> Cancle </Button>,
-                <Button key="submit" type="danger">Submit</Button>
-            ]}
-        >
+// export function TrainingAddModal() {
+//     const { trainingSheetAddState, setTrainingSheetAddState } = useContext(ModalContext);
+//     // console.log(school);
+//     return (
+//         <Modal open={trainingSheetAddState} onCancel={() => setTrainingSheetAddState(false)} centered width={"90%"}
+//             footer={[
+//                 <Button key="back" onClick={() => setTrainingSheetAddState(false)}> Cancle </Button>,
+//                 <Button key="submit" type="danger">Submit</Button>
+//             ]}
+//         >
 
-        </Modal>
-    )
-}
+//         </Modal>
+//     )
+// }

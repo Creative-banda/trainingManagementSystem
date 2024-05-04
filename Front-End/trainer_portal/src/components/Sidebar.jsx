@@ -1,23 +1,32 @@
 import LinkComponent from './LinkComponent';
-import { Links } from '../assets/links';
-import { PoweroffOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
-import useLogout from '../../hooks/logout_user';
+import { Links } from '../../utilities/MenuItems';
+import { useEffect, useState } from 'react';
+import { useUserInfo } from '../../hooks/token_hooks';
+import { LuFileSpreadsheet, LuSchool } from 'react-icons/lu';
 
-
-function getItem(label, key, icon, children, type) {
-    return {
-        key,
-        icon,
-        children,
-        label,
-        type,
-    };
-}
 
 const Sidebar = () => {
+    const [links, setLinks] = useState(Links());
+    const { is_am_om } = useUserInfo()
 
-    const {handleLogout} = useLogout();
+    const sheet_menu = [
+        {
+            id: 3,
+            label: "Sheets",
+            link: "/sheets",
+            icon: <LuFileSpreadsheet />
+        },
+        {
+            id:4,
+            label: "Schools",
+            link: "/schools",
+            icon: <LuSchool />
+        }
+    ]
+
+    useEffect(() => {
+        is_am_om && setLinks([...links, ...sheet_menu])
+    }, [])
 
     return (
         <div className='h-full w-full flex items-center flex-col gap-8'>
@@ -27,15 +36,10 @@ const Sidebar = () => {
             {/* Menu Section */}
             <div className='flex flex-col w-full gap-4 items-center justify-center'>
                 {
-                    Links.map((menu) => (
+                    links?.map((menu) => (
                         <LinkComponent key={menu.id} label={menu.label} link={menu.link} icon={menu.icon} />
                     ))
                 }
-            </div>
-
-            {/* Logout Section */}
-            <div className='w-full h-full flex justify-center items-end p-4'>
-                <Button type='primary' danger icon={<PoweroffOutlined />} onClick={handleLogout}/>
             </div>
 
         </div>
