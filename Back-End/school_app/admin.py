@@ -9,4 +9,5 @@ class SchoolFilter(admin.ModelAdmin):
     search_fields = ['name']
 
 
-admin.site.register(School, SchoolFilter)   
+admin.site.register(School, SchoolFilter)
+admin.site.register(Grades)

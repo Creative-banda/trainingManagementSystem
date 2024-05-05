@@ -16,23 +16,23 @@ export function TodaysTrainings() {
     <div className='flex w-full h-full items-center justify-start gap-2'>
 
       <div className='px-6 py-2 border-b-4 w-40 border-emerald-400 rounded-lg border cursor-pointer'>
-        <Statistic value={training?.length} title="Today's Training" prefix={<PiChalkboardTeacher />} suffix={`/${trainingsData.length}`} loading={loadingTrainings} />
+        <Statistic value={training?.length} title="Today's Training" prefix={<PiChalkboardTeacher />} suffix={`/${trainingsData?.length}`} loading={loadingTrainings} />
       </div>
 
       <div className='px-6 py-2 border-b-4 w-40 border-emerald-400 rounded-lg border cursor-pointer'>
-        <Statistic value={trainingBySubject.cs.length} title="Computer" prefix={<FaComputer />} suffix={`/${runningSubjectTrainings.computerScience.length}`} loading={loadingTrainings} />
+        <Statistic value={trainingBySubject?.cs?.length} title="Computer" prefix={<FaComputer />} suffix={`/${runningSubjectTrainings?.computerScience?.length}`} loading={loadingTrainings} />
       </div>
 
       <div className='px-6 py-2 border-b-4 w-40 border-emerald-400 rounded-lg border cursor-pointer'>
-        <Statistic value={runningSubjectTrainings.robotics.length} title="Robotics" prefix={<BsRobot />} suffix={`/${trainingBySubject.robotics.length}`} loading={loadingTrainings} />
+        <Statistic value={runningSubjectTrainings?.robotics?.length} title="Robotics" prefix={<BsRobot />} suffix={`/${trainingBySubject?.robotics?.length}`} loading={loadingTrainings} />
       </div>
 
       <div className='px-6 py-2 border-b-4 w-40 border-emerald-400 rounded-lg border cursor-pointer'>
-        <Statistic value={runningSubjectTrainings.aeromodelling.length} title="Aeromodelling" prefix={<MdOutlineFlight />} suffix={`/${trainingBySubject.aeromodelling.length}`} loading={loadingTrainings} />
+        <Statistic value={runningSubjectTrainings?.aeromodelling?.length} title="Aeromodelling" prefix={<MdOutlineFlight />} suffix={`/${trainingBySubject?.aeromodelling?.length}`} loading={loadingTrainings} />
       </div>
 
       <div className='px-6 py-2 border-b-4 w-40 border-emerald-400 rounded-lg border cursor-pointer'>
-        <Statistic value={trainingBySubject.dc.length} title="Doubt Session" prefix={<FaChalkboardTeacher />} suffix={`/${runningSubjectTrainings.doubtSession.length}`} loading={loadingTrainings} />
+        <Statistic value={runningSubjectTrainings?.doubtSession?.length} title="Doubt Session" prefix={<FaChalkboardTeacher />} suffix={`/${trainingBySubject?.dc?.length}`} loading={loadingTrainings} />
       </div>
 
     </div>

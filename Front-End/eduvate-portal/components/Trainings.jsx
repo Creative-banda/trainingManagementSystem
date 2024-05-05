@@ -2,7 +2,6 @@ import React, { useContext, useState } from 'react'
 import { Button, Table, Select, Tooltip, Popover, Popconfirm } from 'antd';
 import { DeleteOutlined, EyeOutlined, PlusCircleOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import useUserOptions from '../hooks/fetch_user';
-import ConfirmModal from '../modals/confirm';
 import { ModalContext } from '../context/modal_context';
 import EditModal from '../modals/edit';
 import AddTrainingModal from '../modals/add_training';
@@ -12,9 +11,8 @@ import RequestTraining from './RequestTraining';
 
 
 function Training() {
-  const [trainingId, setTrainingId] = useState()
   const [trainingData, setTrainingData] = useState({})
-  const { setConfirmModal, setEditModal, setTrainingModal } = useContext(ModalContext);
+  const { setEditModal, setTrainingModal } = useContext(ModalContext);
   const { allSchoolOptions } = useSchools();
   const { userName } = useUserOptions();
   const { pagination, setPagination, trainingsData, loadingTraining, fetchTraining, deleteTraining } = useTrainings();
@@ -96,14 +94,14 @@ function Training() {
       render: (training) => (
         <div className='flex gap-2'>
           <Tooltip title="View Or Edit">
-            <Button icon={<EyeOutlined />} onClick={() => {
+            <Button icon={<EyeOutlined />} size='small' onClick={() => {
               setTrainingData(training);
               setEditModal(true);
             }} />
           </Tooltip>
 
           <Popconfirm title="Are you sure?" onConfirm={() => deleteTraining(training.id)} >
-            <Button danger icon={<DeleteOutlined />} />
+            <Button danger icon={<DeleteOutlined />} size='small' />
           </Popconfirm>
         </div>
       )
@@ -130,7 +128,7 @@ function Training() {
           <div className='flex justify-between'>
 
             <div className='flex gap-2'>
-              <Select placeholder="Search by Trainer" options={userName} onSelect={(value) => setFilter({ ...filter, trainers: value })} onClear={() => setFilter({ ...filter, trainers: "" })} allowClear showSearch optionFilterProp='label'
+              <Select placeholder="Search by Trainer" options={userName} onSelect={(value) => setFilter({ ...filter, trainers: value })} onClear={() => setFilter({ ...filter, trainers: "" })} allowClear showSearch optionFilterProp='label' size='small'
                 optionRender={(user) => (
                   <div className='flex justify-between'>
                     <span>{user.data.label}</span>
@@ -139,21 +137,21 @@ function Training() {
                 )
                 }
               />
-              <Select placeholder="Search by School" allowClear showSearch optionFilterProp='label' options={allSchoolOptions}
+              <Select placeholder="Search by School" allowClear showSearch optionFilterProp='label' options={allSchoolOptions} size='small'
                 onSelect={(value) => setFilter({ ...filter, schools: value })} onClear={() => setFilter({ ...filter, schools: "" })}
               />
 
-              <Button type='primary' icon={<SearchOutlined />} onClick={() => handleFilter()} />
+              <Button type='primary' icon={<SearchOutlined />} onClick={() => handleFilter()} size='small' />
 
             </div>
 
-            <div className='flex gap-4'>
+            <div className='flex gap-2'>
               <Tooltip title="Add New Training">
-                <Button shape='round' icon={<PlusCircleOutlined />} onClick={() => setTrainingModal(true)}> ADD </Button>
+                <Button shape='round' icon={<PlusCircleOutlined />} onClick={() => setTrainingModal(true)} size='small'> ADD </Button>
               </Tooltip>
 
               <Tooltip title="Refresh">
-                <Button icon={<ReloadOutlined />} onClick={() => handleFilter()} />
+                <Button icon={<ReloadOutlined />} onClick={() => handleFilter()} size='small' />
               </Tooltip>
             </div>
           </div>

@@ -17,7 +17,7 @@ export const HeaderStatistics = () => {
         <div className="flex gap-4 overflow-x-auto">
 
             <div className="px-6 py-2 border-b-4 w-44 border-amber-400 rounded-lg border cursor-pointer">
-                <Statistic title="TOTAL TRAININGS" value={ongoingTrainings?.length} prefix={<TableOutlined />} suffix={`/ ${trainingsData?.length}`} loading={loading} />
+                <Statistic title="TOTAL TRAININGS" value={ongoingTrainings?.length} prefix={<TableOutlined />} suffix={`/ ${trainingsData?.length ? trainingsData?.length : 0}`} loading={loading} />
             </div>
 
             <div className="px-6 py-2 border-b-4 w-40 border-emerald-400 rounded-lg border cursor-pointer">
@@ -25,19 +25,19 @@ export const HeaderStatistics = () => {
             </div>
 
             <div className="px-6 py-2 border-b-4 w-40 border-purple-300 rounded-lg border cursor-pointer">
-                <Statistic title="CS" value={ccs.length} prefix={<TableOutlined />} suffix={`/${cs.length}`} loading={loading} />
+                <Statistic title="CS" value={ccs?.length ? ccs?.length : 0} prefix={<TableOutlined />} suffix={`/${cs?.length ? cs?.length : 0}`} loading={loading} />
             </div>
 
             <div className="px-6 py-2 border-b-4 w-40 border-red-300 rounded-lg border cursor-pointer">
-                <Statistic title="ROBOTICS" value={crobotics.length} prefix={<TableOutlined />} suffix={"/" + robotics.length} loading={loading} />
+                <Statistic title="ROBOTICS" value={crobotics?.length ? crobotics?.length : 0} prefix={<TableOutlined />} suffix={"/" + robotics?.length ? robotics?.length : 0} loading={loading} />
             </div>
 
             <div className="px-6 py-2 border-b-4 w-40 border-pink-400 rounded-lg border cursor-pointer">
-                <Statistic title="AEROMODELLING" value={aeromodelling.length} prefix={<TableOutlined />} suffix={`/${caeromodelling.length}`} loading={loading} />
+                <Statistic title="AEROMODELLING" value={aeromodelling?.length ? aeromodelling?.length : 0} prefix={<TableOutlined />} suffix={`/${caeromodelling?.length? caeromodelling?.length : 0}`} loading={loading} />
             </div>
 
             <div className="px-6 py-2 border-b-4 w-40 border-cyan-400 rounded-lg border cursor-pointer">
-                <Statistic title="DOUBT SESSION" value={cdc.length} prefix={<TableOutlined />} suffix={`/${dc.length}`} loading={loading} />
+                <Statistic title="DOUBT SESSION" value={cdc?.length ? cdc?.length : 0} prefix={<TableOutlined />} suffix={`/${dc?.length ? dc?.length : 0}`} loading={loading} />
             </div>
         </div>
     )

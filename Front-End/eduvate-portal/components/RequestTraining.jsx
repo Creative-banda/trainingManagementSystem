@@ -73,7 +73,7 @@ function RequestTraining() {
             key: 7,
             render: (data) => (
                 <div className='flex gap-2'>
-                    <Button className='bg-green-400 text-white' icon={<EyeOutlined/>} onClick={() => {
+                    <Button className='bg-green-400 text-white' size='small' icon={<EyeOutlined/>} onClick={() => {
                         setTrainingData(data);
                         setTrainingModal(true);
                     }} />
@@ -87,21 +87,21 @@ function RequestTraining() {
     }, [])
 
     return (
-        <div className='w-full border rounded-lg p-2'>
+        <div className=''>
             <AddTrainingModal data={trainingData} />
             {/* <h1 className=' text-center font-medium text-teal-400'> Training Requests </h1> */}
-            <Table columns={columns} loading={loading} dataSource={requestedTraining}
+            <Table columns={columns} loading={loading} dataSource={requestedTraining} bordered size='small'
                 title={() => (
                     <div className='flex gap-2'>
-                        <Select options={allSchoolOptions} placeholder="Filter By School" className=' w-40' allowClear onSelect={(value) => setFilters({ ...filters, school: value })} onClear={() => setFilters({ ...filters, school: "" })} />
+                        <Select options={allSchoolOptions} placeholder="Filter By School" className=' w-40' allowClear onSelect={(value) => setFilters({ ...filters, school: value })} onClear={() => setFilters({ ...filters, school: "" })} size='small' />
 
-                        <Select options={TrainingType} placeholder="Filter By Subject" className=' w-40' allowClear onSelect={(value) => setFilters({ ...filters, subject: value })} onClear={() => setFilters({ ...filters, subject: "" })} />
+                        <Select options={TrainingType} placeholder="Filter By Subject" className=' w-40' allowClear onSelect={(value) => setFilters({ ...filters, subject: value })} onClear={() => setFilters({ ...filters, subject: "" })} size='small' />
 
-                        <Select options={userName} placeholder="Filter By Users" className=' w-40' allowClear onSelect={(value) => setFilters({ ...filters, requestor: value })} showSearch optionFilterProp='label' onClear={() => setFilters({ ...filters, requestor: "" })} />
+                        <Select options={userName} placeholder="Filter By Users" className=' w-40' allowClear onSelect={(value) => setFilters({ ...filters, requestor: value })} showSearch optionFilterProp='label' onClear={() => setFilters({ ...filters, requestor: "" })} size='small' />
 
-                        <Select options={TrainingRequestStatus} placeholder="Filter By Status" className=' w-40' allowClear onSelect={(value) => setFilters({ ...filters, status: value })} onClear={() => setFilters({ ...filters, status: "" })} />
+                        <Select options={TrainingRequestStatus} placeholder="Filter By Status" className=' w-40' allowClear onSelect={(value) => setFilters({ ...filters, status: value })} onClear={() => setFilters({ ...filters, status: "" })} size='small' />
 
-                        <Button type='primary' icon={<SearchOutlined />} onClick={() => fetchRequestedTraining(filters)} />
+                        <Button type='primary' icon={<SearchOutlined />} onClick={() => fetchRequestedTraining(filters)} size='small'/>
                     </div>
                 )}
             />

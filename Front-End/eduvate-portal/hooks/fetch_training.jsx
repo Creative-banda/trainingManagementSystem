@@ -120,7 +120,7 @@ export const useTrainings = () => {
                 'Authorization': 'Bearer ' + access_token
             }
         }).then(response => {
-            if (response.data) {
+            if (response.status === 201) {
                 setLoading(false);
                 message.success("Training added successfully");
                 setTrainingModal(false);

@@ -11,6 +11,12 @@ export const TrainingStatus = [
     { value: "CANCELLED", label: "CANCELLED" },
 ]
 
+export const RequestedTrainingStatus = [
+    { value: "PENDING", label: "PENDING" },
+    { value: "APPROVED", label: "APPROVED" },
+    { value: "REJECTED", label: "REJECTED" },
+]
+
 export const TrainingType = [
     { value: "COMPUTER SCIENCE", label: "COMPUTER SCIENCE" },
     { value: "ROBOTICS", label: "ROBOTICS" },

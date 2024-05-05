@@ -34,7 +34,7 @@ const Sidebar = () => {
 
             {/* Logout Section */}
             <div className='w-full h-full flex justify-center items-end p-4'>
-                <Button type='primary' danger icon={<PoweroffOutlined />} onClick={() => handleLogout()} loading={loading} />
+                <Button className='bg-red-400 text-white' icon={<PoweroffOutlined />} onClick={() => handleLogout()} loading={loading} />
             </div>
 
         </div>

@@ -36,12 +36,11 @@ class TrainingGetPost(APIView, LimitOffsetPagination):
         subject = request.data.get('trainingType')
         print(request.data)
         try:
-            serializer.is_valid(raise_exception=True)
-            with transaction.atomic():
-                obj = TrainingRequestsModel.objects.filter(school_id__in = schools, subject=subject)
-                if obj.exists(): obj.update(status=TrainingRequestEnum.APPROVED.value)
-
-            serializer.save()
+            if serializer.is_valid():
+                serializer.save()
+                with transaction.atomic():
+                    obj = TrainingRequestsModel.objects.filter(school_id__in = schools, subject=subject)
+                    if obj.exists(): obj.update(status=TrainingRequestEnum.APPROVED.value)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except Exception as e:
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)

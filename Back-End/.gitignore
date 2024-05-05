@@ -11,3 +11,4 @@ migrations/
 scripts
 *.pyc
 .env
+.dockerignore

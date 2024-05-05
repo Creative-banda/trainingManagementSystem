@@ -88,6 +88,7 @@ export const useTrainingWithPagination = () => {
 export const useTraining = () => {
     const [trainingsData, setTrainingsData] = useState([{}]);
     const [loadingTraining, setLoading] = useState(false);
+    const [requestedTrainings, setRequestedTrainings] = useState([{}])
 
     const [trainingBySubject, setTrainingBySubject] = useState({
         cs: [{}],
@@ -174,9 +175,30 @@ export const useTraining = () => {
         })
     }
 
+
+    const fetchRequestedTraining = async (filters) => {
+        await api({
+            method: 'GET',
+            url: `/training/request/`,
+            params: { ...filters },
+            headers: {
+                "Content-Type":"application/json",
+                "Authorization": "Bearer "+ access_token
+            }
+        }).then(response => {
+            if(response.status === 200){
+                setRequestedTrainings(response.data);
+            }else{
+                message.error(response.response.data);
+            }
+        }).catch(err => {
+            console.log(err);
+        })
+    }
+
     useEffect(() => {
         fetchTraining();
     }, [userInfo?.id])
 
-    return { trainingsData, loadingTraining, trainingBySubject, updateTraining, fetchTraining, requestTraining }
+    return { trainingsData, loadingTraining, trainingBySubject, updateTraining, fetchTraining, requestTraining, fetchRequestedTraining, requestedTrainings }
 }

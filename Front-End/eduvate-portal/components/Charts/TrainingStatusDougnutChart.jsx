@@ -13,7 +13,7 @@ export function DoughnutChart() {
     datasets: [
       {
         label: 'Training Status',
-        data: [robotics.length, cs.length, aeromodelling.length, dc.length],
+        data: [robotics?.length, cs?.length, aeromodelling?.length, dc?.length],
         backgroundColor: [
           'rgba(255, 99, 132, 0.5)',
           'rgba(200, 162, 235, 0.5)',

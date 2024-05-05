@@ -1,0 +1,35 @@
+version: '3.9'
+services:
+  crm_backend:
+    build: ./Back-End
+    container_name: crm_backend
+    ports:
+      - 8000:8000
+    volumes:
+      - ./Back-End:/app
+    env_file:
+      - ./Back-End/.env
+    depends_on:
+      - postgresql
+      - redis_cache
+
+  postgresql:
+    image: postgres
+    container_name: crmdb
+    ports:
+      - 5432:5432
+    restart: always
+    volumes:
+      - crm_pg_data:/var/lib/postgresql/data
+    env_file:
+      - ./Back-End/.env
+  
+  redis_cache:
+    image: redis
+    container_name: redis_cache
+    restart: always
+    ports:
+      - 6379:6379
+
+volumes:
+  crm_pg_data:

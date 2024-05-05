@@ -24,7 +24,7 @@ const RootComponent = () => {
             </div>
 
             {/* Right Content */}
-            <div className='sm:ml-40 ml-20 flex flex-col w-full gap-2 p-2 border'>
+            <div className='sm:ml-40 ml-20 flex flex-col w-full gap-2 p-2'>
 
                 {/* Header Section */}
                 <div className='flex justify-start items-center gap-4 h-32 w-full'>
@@ -32,7 +32,7 @@ const RootComponent = () => {
                 </div>
 
                 {/* Body Section */}
-                <div className='w-full p-2'>
+                <div className='w-full'>
                     <Outlet />
 
                 </div>
