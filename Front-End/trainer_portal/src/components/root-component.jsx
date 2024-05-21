@@ -21,7 +21,7 @@ function RootComponent() {
         // Main Division
         <div className='relative w-full h-full flex gap-2'>
             {/* Menu Section */}
-            <div className='fixed top-0 w-40 left-0 h-screen px-2 py-2 bg-sky-600'>
+            <div className='fixed top-0 left-0 h-screen px-2 py-2 bg-sky-600'>
                 <Sidebar />
             </div>
 

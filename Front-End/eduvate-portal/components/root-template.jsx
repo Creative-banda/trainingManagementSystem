@@ -19,7 +19,7 @@ const RootComponent = () => {
     return (
         <div className='flex gap-2'>
             {/* Menu Section */}
-            <div className='h-screen fixed top-0 left-0 bottom-0 w-20 sm:w-40 bg-sky-600'>
+            <div className='h-screen fixed top-0 left-0 bottom-0 bg-white border'>
                 <Sidebar />
             </div>
 

@@ -94,17 +94,17 @@ function Schools() {
     return (
         <div>
             <SchoolModal data={schoolData} resetData={setSchoolData} />
-            <Table columns={columns} dataSource={filteredData} loading={fetchingSchool}
+            <Table columns={columns} dataSource={filteredData} loading={fetchingSchool} bordered size='small'
                 title={() => (
                     <div className='w-full flex justify-start gap-2'>
-                        <Select options={schoolOptions} placeholder="Filter By School" allowClear onSelect={(value) => setFilters({ ...filters, id: value })} onClear={() => setFilters({ ...filters, id: "" })} showSearch optionFilterProp='label' />
+                        <Select options={schoolOptions} placeholder="Filter By School" allowClear onChange={(value) => setFilters({ ...filters, id: value })} showSearch optionFilterProp='label' size='small' />
 
                         <Select options={[
                             { value: "AM", label: "Academic Manager" },
                             { value: "OM", label: "Operational Manager" },
-                        ]} onSelect={(value) => handleRole(value)} placeholder="Choose your role" defaultValue="Academic Manager" />
+                        ]} onChange={(value) => handleRole(value)} placeholder="Choose your role" defaultValue="Academic Manager" size='small' />
 
-                        <Button className='bg-blue-400 text-white' onClick={() => setSchoolModal(true)}> Add School </Button>
+                        <Button className='bg-blue-400 text-white' size='small' onClick={() => setSchoolModal(true)}> Add School </Button>
                     </div>
                 )}
             />

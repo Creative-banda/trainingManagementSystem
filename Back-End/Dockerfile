@@ -1,7 +1,15 @@
 FROM python:3.11-slim
 WORKDIR /app
 COPY requirement.txt .
-RUN pip install -r requirement.txt --no-cache-dir
+RUN python -m pip install --upgrade pip && pip install -r requirement.txt --no-cache-dir
 COPY . .
+
+# Collect static files
+# RUN python manage.py collectstatic --no-input
+# Run the Guinocorn server
+# CMD [ "gunicorn", "--bind", "0.0.0.0:8000","--workers", "3", "training.wsgi"]
+
 EXPOSE 8000
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+# Run the entrypoint.sh file
+CMD ["./entrypoint.sh"]

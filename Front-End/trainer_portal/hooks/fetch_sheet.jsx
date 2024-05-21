@@ -1,15 +1,16 @@
 import { message } from "antd";
 import { useToken } from "./token_hooks";
 import api from "../utilities/axios_interceptor";
-import {useEffect, useState } from "react";
+import {useState } from "react";
 
-export const useSheet = ({ id = 0, subject="" }) => {
+export const useSheet = ({ id, subject }) => {
     const [loading, setLoading] = useState(false);
     const [sheetData, setSheetData] = useState([]);
     const { access_token } = useToken();
     // console.log(sheetData);
 
     const fetchSchoolSheet = async () => {
+        console.log("Fetching School Sheet")
         setLoading(true);
         await api({
             method: 'GET',
@@ -115,10 +116,6 @@ export const useSheet = ({ id = 0, subject="" }) => {
             message.error("Something went wrong");
         })
     }
-
-    useEffect(() => {
-        id && id !== 0 && fetchSchoolSheet();
-    }, [id, subject]);
 
     return { sheetData, loading, fetchSchoolSheet, postSchoolSheet, patchSheetData, deleteSheetData }
 

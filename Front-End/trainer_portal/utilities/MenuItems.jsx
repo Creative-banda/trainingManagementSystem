@@ -35,15 +35,15 @@ export const SchoolCatagory = [
 export const Links = () => {
     let link = [
         {
-            id: 1,
+            key: 1,
             label: "Dashboard",
-            link: "/",
+            path: "/",
             icon: <DashboardOutlined />
         },
         {
-            id: 2,
+            key: 2,
             label: "Trainings",
-            link: "/trainings",
+            path: "/trainings",
             icon: <GiTeacher />
         },
     ]

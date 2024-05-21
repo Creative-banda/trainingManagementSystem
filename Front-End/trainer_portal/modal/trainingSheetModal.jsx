@@ -9,8 +9,7 @@ export default function TrainingModifyModal({ sheetData, setSchool, subject }) {
     const { id } = useParams();
     const { trainingSheetModifyState, setTrainingSheetModifyState } = useContext(ModalContext);
     const [trainingData, setTrainingData] = useState();
-    const { patchSheetData, postSchoolSheet } = useSheet({ id: id });
-    // console.log(sheetData);
+    const { patchSheetData, postSchoolSheet, fetchSchoolSheet } = useSheet( { id, subject } );
 
     const handleUpdate = async (val) => {
         if (sheetData.id) {
@@ -30,6 +29,7 @@ export default function TrainingModifyModal({ sheetData, setSchool, subject }) {
 
     useEffect(() => {
         setTrainingData(sheetData);
+        fetchSchoolSheet( );
     }, [trainingSheetModifyState]);
 
     return (

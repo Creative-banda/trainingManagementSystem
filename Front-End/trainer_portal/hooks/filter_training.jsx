@@ -3,7 +3,7 @@ import { useToken, useUserInfo } from "./token_hooks";
 import api from "../utilities/axios_interceptor";
 import { message } from "antd";
 
-const useFilterTraining = (trainingType = null, grade = null, school = null) => {
+const useFilterTraining = () => {
     const [training, setTraining] = useState([]);
     const [loadingTrainings, setLoadingTrainings] = useState(false);
     const [runningSubjectTrainings, setRunningSubjectTrainings] = useState({
@@ -15,20 +15,14 @@ const useFilterTraining = (trainingType = null, grade = null, school = null) => 
     const { access_token } = useToken();
     const {userInfo} = useUserInfo();
 
-    const fetchTraining = async () => {
+    const fetchTraining = async (filter) => {
+        console.log({...filter})
         try {
             setLoadingTrainings(true);
             const response = await api({
                 method: "GET",
                 url: "/training/filter/",
-                params: {
-                    "trainers": userInfo.id,
-                    "trainingStatus": "ONGOING",
-                    "trainingType": trainingType,
-                    "schools": school,
-                    "grades": grade,
-                    "active":true
-                },
+                params: { ...filter },
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": "Bearer " + access_token
@@ -57,10 +51,6 @@ const useFilterTraining = (trainingType = null, grade = null, school = null) => 
             console.log(err);
         }
     }
-
-    useEffect(() => {
-        fetchTraining();
-    }, [userInfo?.id, trainingType, school, grade])
 
     return { training, loadingTrainings, runningSubjectTrainings, fetchTraining }
 }

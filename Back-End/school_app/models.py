@@ -1,7 +1,7 @@
 from django.db import models
 from account_app.models import User
 from .BaseModel import BaseModel
-from .enums import CatagoryEnum, GradeEnum
+from .enums import CatagoryEnum, GradeEnum, TrainingStatusEnum
 from account_app.models import UserType
 from uuid import uuid4
 
@@ -26,6 +26,7 @@ class School(BaseModel):
     contact = models.CharField(max_length=12, blank=True, null=True)
     erp_code = models.CharField(max_length=12, blank=True, null=True, unique=True)
     active = models.BooleanField(default=True, null=True, blank=True)
+    # training_status = models.CharField(max_length=12, choices = TrainingStatusEnum.choices(), blank=True, null=True, default=TrainingStatusEnum.PENDING.value)
 
     def save(self, *args, **kwargs):
         # Check if AM or OM are having AM or OM role or not

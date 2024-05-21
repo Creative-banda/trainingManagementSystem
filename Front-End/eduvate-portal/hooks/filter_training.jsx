@@ -19,7 +19,9 @@ const useFilterTraining = (filters) => {
             const response = await api({
                 method: "GET",
                 url: `/training/filter/`,
-                params: {...filters},
+                params: {
+                    ...filters
+                },
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": "Bearer " + access_token
@@ -46,13 +48,13 @@ const useFilterTraining = (filters) => {
     }, [])
 
     useEffect(() => {
-        const csTrainings = training?.filter((training) => training.trainingType === "COMPUTER SCIENCE");
+        const csTrainings = training?.filter(({trainingDetail}) => trainingDetail[0].subject === "COMPUTER SCIENCE");
         setCS(csTrainings);
-        const roboTrainings = training?.filter((training) => training.trainingType === "ROBOTICS");
+        const roboTrainings = training?.filter(({trainingDetail}) => trainingDetail[0].subject === "ROBOTICS");
         setRobotics(roboTrainings);
-        const aeroTrainings = training?.filter((training) => training.trainingType === "AEROMODELLING");
+        const aeroTrainings = training?.filter(({trainingDetail}) => trainingDetail[0].subject === "AEROMODELLING");
         setAeromodelling(aeroTrainings);
-        const dcSession = training?.filter((training) => training.trainingType === "DOUBT SESSION");
+        const dcSession = training?.filter(({trainingDetail}) => trainingDetail[0].subject === "DOUBT SESSION");
         setDC(dcSession);
     }, [training]);
 

@@ -56,8 +56,10 @@ function Login() {
             } else{
                 message.error("Invalid Credentials")
             }
+            setLoading(false);
         }).catch((error) => {
             console.log(error);
+            setLoading(false);
         })
     }
 

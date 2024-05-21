@@ -16,13 +16,13 @@ const disabledMinutes = Array.from({ length: 61 }, (_, i) => i).filter(num => nu
 
 const disabledHours = [0, 1, 2, 3, 4, 5, 6, 7, 9, 11, 13, 14, 16, 18, 19, 20, 21, 22, 23];
 
-function RequestTraining() {
+function RequestTraining({ data }) {
     const { requestTrainingModal, setRequestTrainingModal } = useContext(ModalContext);
     const { schoolOptions } = useSchools();
     const { requestTraining, } = useTraining();
     const { userInfo } = useUserInfo();
     const [form] = Form.useForm()
-    const {fetchGrades, loading, grades} = useGrades()
+    const { fetchGrades, loading, grades } = useGrades()
 
     const handleCancle = () => {
         setRequestTrainingModal(false);
@@ -31,6 +31,9 @@ function RequestTraining() {
 
     const handleSubmit = (value) => {
         value["startDate"] = dayjs(value["startDate"]).format("YYYY-MM-DD");
+
+        // Add 1.5 hr to the startTime and store into endTime
+        value["endTime"] = dayjs(value["startTime"]).add(1.5, 'hour').format("HH:mm")
         value["startTime"] = dayjs(value["startTime"]).format("HH:mm");
         value["requestor"] = userInfo?.id
         console.log(value)
@@ -44,9 +47,36 @@ function RequestTraining() {
     }, [])
 
     return (
-        <Modal open={requestTrainingModal} title="Request Training" onCancel={handleCancle} centered footer={null}>
+        <Modal open={requestTrainingModal} title="Request Training" onCancel={handleCancle} centered footer={null}
+        >
 
-            <Form form={form} layout='vertical' onFinish={handleSubmit}>
+            <Form form={form} layout='vertical' onFinish={handleSubmit}
+                fields={[
+                    {
+                        name: ["school"],
+                        value: {
+                            label: data?.school?.name,
+                            value: data?.school?.id
+                        }
+                    },
+                    {
+                        name: ["subject"],
+                        value: data?.subject
+                    },
+                    {
+                        name: ["grades"],
+                        value: data?.grades?.map(grade => ({ label: grade.grades, value: grade.id }))
+                    },
+                    {
+                        name: ["startDate"],
+                        value: data && data?.startDate ? dayjs(data?.startDate).format("YYYY-MM-DD") : null
+                    },
+                    {
+                        name: ["startTime"],
+                        value: data && dayjs(data?.startTime).format("HH:mm")
+                    }
+                ]}
+            >
                 <Form.Item tooltip="Please Select School Name" name="school" label="School Name" rules={[{ required: true, message: "Please Select School Name" }]}>
                     <Select placeholder="Select School Name" options={schoolOptions} allowClear showSearch optionFilterProp='label' />
                 </Form.Item>
@@ -57,7 +87,7 @@ function RequestTraining() {
                     </Form.Item>
 
                     <Form.Item label="Grade" name="grades" tooltip="Please Select Grade" className='w-full' rules={[{ required: true, message: "Please Select Grade" }]}>
-                        <Select placeholder="Select Grade" mode="multiple" allowClear options={grades?.map(grade => ({label: grade.grades, value: grade.id}))} loading={loading} />
+                        <Select placeholder="Select Grade" mode="multiple" allowClear options={grades?.map(grade => ({ label: grade.grades, value: grade.id }))} loading={loading} />
                     </Form.Item>
                 </div>
 
@@ -67,7 +97,7 @@ function RequestTraining() {
                     </Form.Item>
 
                     <Form.Item label="Start Time" name="startTime" tooltip="Please select the start Time" className='w-full' rules={[{ required: true, message: "Please select the start Time" }]}>
-                        <TimePicker placeholder='Start Time' className='w-full' onChange={(value) => console.log(dayjs(value).format("HH:mm"))} format={"HH:mm"} allowClear
+                        <TimePicker placeholder='Start Time' className='w-full' format={"HH:mm"} allowClear
                             disabledTime={() => ({
                                 disabledHours: () => disabledHours,
                                 disabledMinutes: () => disabledMinutes
@@ -79,7 +109,13 @@ function RequestTraining() {
 
                 <div className='w-full flex justify-end gap-2'>
                     <Button>Cancle</Button>
-                    <Button htmlType='submit' type='primary'>Submit</Button>
+
+                    {
+                        data ?
+                            <Button htmlType='submit' type='primary'>Update</Button>
+                            :
+                            <Button htmlType='submit' type='primary'>Submit</Button>
+                    }
                 </div>
             </Form>
         </Modal>

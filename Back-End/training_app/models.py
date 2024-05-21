@@ -7,30 +7,50 @@ from school_app.models import School, Grades
 from .enums import TrainingStatusEnum, TrainingTypeEnum, TrainingRequestEnum
 
 
-class Training(BaseModel):
+class TrainingRequestsModel(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid4)
-    trainers = models.ManyToManyField(User,blank=True)
-    schools = models.ManyToManyField(School,blank=True)
-    startDate = models.DateField(blank=True)
-    startTime = models.TimeField(blank=True)
-    endTime = models.TimeField(blank=True)
+    school = models.ForeignKey(School, on_delete=models.CASCADE, related_name="training_request", blank=True, null=True)
+    subject = models.CharField(max_length=255, choices=TrainingTypeEnum.choices(), default=TrainingTypeEnum.ROBOTICS.value)
+    requestor = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="training_request", blank=True, null=True)
     grades = models.ManyToManyField(Grades, blank=True)
-    trainingStatus = models.CharField(max_length=50, choices=TrainingStatusEnum.choices(),blank=True, default="ONGOING")
-    trainingType = models.CharField(max_length=50, choices=TrainingTypeEnum.choices())
-    currentGrade = models.ForeignKey(Grades, on_delete=models.SET_NULL, null=True, blank=True, related_name="current_grade", db_index=True)
-    active = models.BooleanField(default=True)
+    startDate = models.DateField( blank=True )
+    endTime = models.TimeField( blank=True, null=True )
+    startTime = models.TimeField( blank=True )
+    status = models.CharField(max_length=50, choices=TrainingStatusEnum.choices(), default=TrainingStatusEnum.PENDING.value)
+
+    class Meta:
+        ordering = ["-startDate", "startTime"]
+        indexes = [models.Index(fields=['subject', 'status'])]
     
     def save(self, *args, **kwargs) -> User:
         if self.endTime < self.startTime:
             raise ValidationError("End time must be greater than start time")
         return super().save(*args, **kwargs)
-    
-    class Meta:
-        ordering = ["-startDate", "startTime"]
-        indexes = [models.Index(fields=['trainingStatus', 'trainingType', 'active'])]
 
     def __str__(self):
-        return f"{str(self.trainers.first())} - {str(self.trainingType)}"
+        return f"{str(self.school.name)} - {str(self.requestor)}"
+
+
+
+class Training(BaseModel):
+    id = models.UUIDField(primary_key=True, default=uuid4)
+    trainer = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    trainingStatus = models.CharField(max_length=50, choices=TrainingStatusEnum.choices(),blank=True, default=TrainingStatusEnum.ONGOING.value)
+    currentGrade = models.ForeignKey(Grades, on_delete=models.SET_NULL, null=True, blank=True, related_name="current_grade")
+    trainings = models.ManyToManyField(TrainingRequestsModel, blank=True)
+    active = models.BooleanField(default=True)
+    
+    class Meta:
+        indexes = [models.Index(fields=['trainingStatus', 'active'])]
+
+    def __str__(self):
+        return f"{str(self.trainer)} - {str(self.trainings.first())}"
+
+
+class MasterTraining(BaseModel):
+    trainings = models.ManyToManyField(Training, blank=True)
+    status = models.CharField(max_length=50, choices=TrainingRequestEnum.choices(), default="ONGING")
+
 
 
 class TrainingDataModel(BaseModel):
@@ -51,20 +71,3 @@ class TrainingSheetModel(BaseModel):
         return f"{str(self.school.name)} - {str(self.subject)}"
 
 
-class TrainingRequestsModel(BaseModel):
-
-    id = models.UUIDField(primary_key=True, default=uuid4)
-    school = models.ForeignKey(School, on_delete=models.CASCADE, related_name="training_request")
-    subject = models.CharField(max_length=255, choices=TrainingTypeEnum.choices(), default=TrainingTypeEnum.ROBOTICS.value)
-    requestor = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="training_request")
-    grades = models.ManyToManyField(Grades, blank=True)
-    startDate = models.DateField( blank=True)
-    startTime = models.TimeField( blank=True)
-    status = models.CharField(max_length=50, choices=TrainingRequestEnum.choices(), default=TrainingRequestEnum.PENDING.value)
-
-    class Meta:
-        ordering = ["-startDate", "startTime"]
-        indexes = [models.Index(fields=['school', 'subject', 'requestor', 'status'])]
-
-    def __str__(self):
-        return f"{str(self.school.name)} - {str(self.requestor)}"

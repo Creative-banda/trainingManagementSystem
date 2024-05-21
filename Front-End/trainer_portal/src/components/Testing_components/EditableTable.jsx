@@ -1,158 +1,146 @@
 import React, { useState } from 'react';
-import { Form, Input, InputNumber, Popconfirm, Table, Typography } from 'antd';
-import { originData } from '../../../utilities/mock_data';
+import {
+  AppstoreOutlined,
+  ContainerOutlined,
+  DesktopOutlined,
+  MailOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  PieChartOutlined,
+} from '@ant-design/icons';
+import { Button, Menu } from 'antd';
+import { Link } from 'react-router-dom';
+import SubMenu from 'antd/es/menu/SubMenu';
+import { icons } from 'antd/es/image/PreviewGroup';
 
-const EditableCell = ({
-  editing,
-  dataIndex,
-  title,
-  inputType,
-  record,
-  index,
-  children,
-  ...restProps
-}) => {
-  const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
-  return (
-    <td {...restProps}>
-      {editing ? (
-        <Form.Item
-          name={dataIndex}
-          style={{
-            margin: 0,
-          }}
-          rules={[
-            {
-              required: true,
-              message: `Please Input ${title}!`,
-            },
-          ]}
-        >
-          {inputNode}
-        </Form.Item>
-      ) : (
-        children
-      )}
-    </td>
-  );
-};
-const EditTable = () => {
-  const [form] = Form.useForm();
-  const [data, setData] = useState(originData);
-  const [editingKey, setEditingKey] = useState('');
-  const isEditing = (record) => record.key === editingKey;
-  const edit = (record) => {
-    form.setFieldsValue({
-      name: '',
-      age: '',
-      address: '',
-      ...record,
-    });
-    setEditingKey(record.key);
-  };
-  const cancel = () => {
-    setEditingKey('');
-  };
-  const save = async (key) => {
-    try {
-      const row = await form.validateFields();
-      const newData = [...data];
-      const index = newData.findIndex((item) => key === item.key);
-      if (index > -1) {
-        const item = newData[index];
-        newData.splice(index, 1, {
-          ...item,
-          ...row,
-        });
-        setData(newData);
-        setEditingKey('');
-      } else {
-        newData.push(row);
-        setData(newData);
-        setEditingKey('');
-      }
-    } catch (errInfo) {
-      console.log('Validate Failed:', errInfo);
-    }
-  };
-  const columns = [
-    {
-      title: 'name',
-      dataIndex: 'name',
-      width: '25%',
-      editable: true,
-    },
-    {
-      title: 'age',
-      dataIndex: 'age',
-      width: '15%',
-      editable: true,
-    },
-    {
-      title: 'address',
-      dataIndex: 'address',
-      width: '40%',
-      editable: true,
-    },
-    {
-      title: 'operation',
-      dataIndex: 'operation',
-      render: (_, record) => {
-        const editable = isEditing(record);
-        return editable ? (
-          <span>
-            <Typography.Link
-              onClick={() => save(record.key)}
-              style={{
-                marginRight: 8,
-              }}
-            >
-              Save
-            </Typography.Link>
-            <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-              <a>Cancel</a>
-            </Popconfirm>
-          </span>
-        ) : (
-          <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
-            Edit
-          </Typography.Link>
-        );
+const items = [
+  {
+    key: '1',
+    icon: <PieChartOutlined />,
+    label: 'Option 1',
+    path: "/option1"
+  },
+  {
+    key: '2',
+    icon: <DesktopOutlined />,
+    label: 'Option 2',
+    path: "/option2"
+  },
+  {
+    key: '3',
+    icon: <ContainerOutlined />,
+    label: 'Option 3',
+    path: "/option3"
+  },
+  {
+    key: 'sub1',
+    label: 'Navigation One',
+    icon: <MailOutlined />,
+    children: [
+      {
+        key: '5',
+        label: 'Option 5',
+        path: "/option5",
+        icon: <MailOutlined />,
       },
-    },
-  ];
-  const mergedColumns = columns.map((col) => {
-    if (!col.editable) {
-      return col;
-    }
-    return {
-      ...col,
-      onCell: (record) => ({
-        record,
-        inputType: col.dataIndex === 'age' ? 'number' : 'text',
-        dataIndex: col.dataIndex,
-        title: col.title,
-        editing: isEditing(record),
-      }),
-    };
-  });
-  return (
-    <Form form={form} component={false}>
-      <Table
-        components={{
-          body: {
-            cell: EditableCell,
+      {
+        key: '6',
+        label: 'Option 6',
+        path: "/option6"
+      },
+      {
+        key: '7',
+        label: 'Option 7',
+        path: "/option7"
+      },
+      {
+        key: '8',
+        label: 'Option 8',
+        path: "/option8"
+      },
+    ],
+  },
+  {
+    key: 'sub2',
+    label: 'Navigation Two',
+    icon: <AppstoreOutlined />,
+    children: [
+      {
+        key: '9',
+        label: 'Option 9',
+        path: "/option9"
+      },
+      {
+        key: '10',
+        label: 'Option 10',
+        path: "/option10"
+      },
+      {
+        key: 'sub3',
+        label: 'Submenu',
+        children: [
+          {
+            key: '11',
+            label: 'Option 11',
+            path: "/option11"
           },
+          {
+            key: '12',
+            label: 'Option 12',
+            path: "/option12"
+          },
+        ],
+      },
+    ],
+  },
+];
+const Testing_Sidebar = () => {
+  const [collapsed, setCollapsed] = useState(false);
+  const toggleCollapsed = () => {
+    setCollapsed(!collapsed);
+  };
+  return (
+    <div
+      style={{
+        width: 256,
+      }}
+    >
+      <Button
+        type="primary"
+        onClick={toggleCollapsed}
+        style={{
+          marginBottom: 16,
         }}
-        bordered
-        dataSource={data}
-        columns={mergedColumns}
-        rowClassName="editable-row"
-        pagination={{
-          onChange: cancel,
-        }}
-      />
-    </Form>
+      >
+        {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+      </Button>
+        <Menu
+          defaultSelectedKeys={['1']}
+          defaultOpenKeys={['sub1']}
+          mode="inline"
+          theme="dark"
+          inlineCollapsed={collapsed}
+        >
+          {items.map(item => {
+            if (item.children) {
+              return (
+                <SubMenu key={item.key} icon={item.icon} title={item.label}>
+                  {item.children.map(child => (
+                    <Menu.Item key={child.key} icon={child.icon}>
+                      <Link to={child.path}>{child.label}</Link>
+                    </Menu.Item>
+                  ))}
+                </SubMenu>
+              );
+            }
+            return (
+              <Menu.Item key={item.key} icon={item.icon}>
+                <Link to={item.path}>{item.label}</Link>
+              </Menu.Item>
+            );
+          })}
+        </Menu>
+    </div>
   );
 };
-export default EditTable;
+export default Testing_Sidebar;

@@ -1,16 +1,17 @@
 import { Button, Select, Table, Tag } from 'antd'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import useRequestTraining from '../hooks/request_training_hook'
 import useSchools from '../hooks/fetch_schools';
-import { TrainingRequestStatus, TrainingType } from '../utils/MenuItems';
+import { TrainingRequestStatus, TrainingStatus, TrainingType } from '../utils/MenuItems';
 import useUserOptions from '../hooks/fetch_user';
-import { CheckOutlined, CloseOutlined, EyeOutlined, SearchOutlined } from '@ant-design/icons';
-import AddTrainingModal from '../modals/add_training';
-import { ModalContext } from '../context/modal_context';
+import { SearchOutlined } from '@ant-design/icons';
+import { TiPointOfInterest } from "react-icons/ti";
+// import AddTrainingModal from '../modals/add_training';
+// import { ModalContext } from '../context/modal_context';
 
 function RequestTraining() {
     const { fetchRequestedTraining, requestedTraining, loading } = useRequestTraining();
-    const { setTrainingModal} = useContext(ModalContext);
+    // const { setTrainingModal} = useContext(ModalContext);
 
     const { allSchoolOptions } = useSchools();
     const { userName } = useUserOptions();
@@ -68,18 +69,18 @@ function RequestTraining() {
                 </div>
             )
         },
-        {
-            title: "Assign",
-            key: 7,
-            render: (data) => (
-                <div className='flex gap-2'>
-                    <Button className='bg-green-400 text-white' size='small' icon={<EyeOutlined/>} onClick={() => {
-                        setTrainingData(data);
-                        setTrainingModal(true);
-                    }} />
-                </div>
-            )
-        }
+        // {
+        //     title: "Assign",
+        //     key: 7,
+        //     render: (data) => (
+        //         <div className='flex gap-2'>
+        //             <Button className='bg-green-400 text-white' size='small' icon={<EyeOutlined/>} onClick={() => {
+        //                 setTrainingData(data);
+        //                 setTrainingModal(true);
+        //             }} />
+        //         </div>
+        //     )
+        // }
     ]
 
     useEffect(() => {
@@ -88,8 +89,8 @@ function RequestTraining() {
 
     return (
         <div className=''>
-            <AddTrainingModal data={trainingData} />
-            {/* <h1 className=' text-center font-medium text-teal-400'> Training Requests </h1> */}
+            {/* <AddTrainingModal data={trainingData} /> */}
+            <h1 className='flex gap-2 items-center font-medium'> <TiPointOfInterest/> Training Request </h1>
             <Table columns={columns} loading={loading} dataSource={requestedTraining} bordered size='small'
                 title={() => (
                     <div className='flex gap-2'>
@@ -99,7 +100,7 @@ function RequestTraining() {
 
                         <Select options={userName} placeholder="Filter By Users" className=' w-40' allowClear onSelect={(value) => setFilters({ ...filters, requestor: value })} showSearch optionFilterProp='label' onClear={() => setFilters({ ...filters, requestor: "" })} size='small' />
 
-                        <Select options={TrainingRequestStatus} placeholder="Filter By Status" className=' w-40' allowClear onSelect={(value) => setFilters({ ...filters, status: value })} onClear={() => setFilters({ ...filters, status: "" })} size='small' />
+                        <Select options={TrainingStatus} placeholder="Filter By Status" className=' w-40' allowClear onSelect={(value) => setFilters({ ...filters, status: value })} onClear={() => setFilters({ ...filters, status: "" })} size='small' />
 
                         <Button type='primary' icon={<SearchOutlined />} onClick={() => fetchRequestedTraining(filters)} size='small'/>
                     </div>

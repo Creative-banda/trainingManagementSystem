@@ -104,7 +104,11 @@ export const useTraining = () => {
         setLoading(true);
         await api({
             method: 'GET',
-            url: `/training/trainer/all/${userInfo?.id}`,
+            url: `/training/filter/`,
+            params: {
+                trainer: userInfo.id,
+                active:true
+            },
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": "Bearer " + access_token

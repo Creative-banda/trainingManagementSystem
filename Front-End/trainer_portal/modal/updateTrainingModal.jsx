@@ -4,26 +4,19 @@ import { ModalContext } from '../context/modal_context';
 import dayjs from 'dayjs';
 import { TrainingStatus, TrainingType } from '../utilities/MenuItems';
 import useGrades from '../hooks/fetch_grades';
-import { useTraining} from '../hooks/training_hook'
+import { useTraining } from '../hooks/training_hook'
 
 
 export const UpdateTrainingModal = ({ data }) => {
     const [loading, setLoading] = useState(true);
-    const {updateTraining} = useTraining()
-    // console.log(data);
+    const { updateTraining } = useTraining()
     const { updateTrainingModal, setUpdateTrainingModal } = useContext(ModalContext);
     const [form] = Form.useForm();
-    const {grades, gradeLoading} = useGrades();
-    
+    const { grades, gradeLoading } = useGrades();
+
 
     const handleOk = (values) => {
-        values.schools = values.schools.map(school => school.value);
-        values.grades = values.grades.map(grade => grade.value);
         values.currentGrade = typeof values.currentGrade === 'object' ? values.currentGrade.value : values.currentGrade;
-        values["startDate"] = data.startDate
-        values["startTime"] = data.startTime
-        values["endTime"] = data.endTime
-        values["trainers"] = data.trainers.map(trainer => trainer.id);
         updateTraining(values, data?.id);
         // console.log(values);
         setUpdateTrainingModal(false);
@@ -33,9 +26,9 @@ export const UpdateTrainingModal = ({ data }) => {
         setUpdateTrainingModal(false);
     };
 
-    useEffect(() => {
-        setLoading(false);
-    }, [])
+    // useEffect(() => {
+    //     setLoading(false);
+    // }, [])
 
     return (
         <>
@@ -48,9 +41,9 @@ export const UpdateTrainingModal = ({ data }) => {
                         fields={[
                             {
                                 name: ["schools"],
-                                value: data?.schools?.map(school => ({
-                                    label: school.name,
-                                    value: school.id
+                                value: data?.trainingDetail?.map(training => ({
+                                    label: training?.school?.name,
+                                    value: training?.school?.id
                                 }))
                             },
                             {
@@ -58,22 +51,22 @@ export const UpdateTrainingModal = ({ data }) => {
                                 value: data?.trainingStatus
                             },
                             {
-                                name: ["trainers"],
-                                value: data?.trainers.map(trainer => ({
-                                    label: trainer.username,
-                                    value: trainer.id
-                                }))
+                                name: ["trainer"],
+                                value: {
+                                    label: data?.trainer?.username,
+                                    value: data?.trainer?.id
+                                }
                             },
                             {
                                 name: ["grades"],
-                                value: data?.grades.map(grade => ({
-                                    label: grade.grades,
-                                    value: grade.id
+                                value: data?.trainingDetail[0]?.grades?.map(grade => ({
+                                    label: grade?.grades,
+                                    value: grade?.id
                                 }))
                             },
                             {
-                                name: ["trainingType"],
-                                value: data?.trainingType
+                                name: ["subject"],
+                                value: data?.trainingDetail[0]?.subject
                             },
                             {
                                 name: ["currentGrade"],
@@ -98,60 +91,54 @@ export const UpdateTrainingModal = ({ data }) => {
 
                     >
 
+                        <Form.Item label="School" name="schools" rules={[{ required: true, message: "Please select the school" }]}>
+                            <Select placeholder="Select school"
+                                mode='multiple'
+                                disabled />
+                        </Form.Item>
 
-                        <Skeleton loading={loading}>
-
-                            <Form.Item label="School" name="schools" rules={[{ required: true, message: "Please select the school" }]}>
-                                <Select placeholder="Select school"
-                                    mode='multiple'
-                                    disabled />
-                            </Form.Item>
-
-                            <div className='flex gap-2 w-full'>
-                                <Form.Item label="Training Status" name="trainingStatus" rules={[{ required: true, message: "Please select the training type" }]} className='flex-1'>
-                                    <Select
-                                        placeholder="Select a training status"
-                                        // defaultValue={data?.trainingStatus}
-                                        options={TrainingStatus}
-                                    />
-                                </Form.Item>
-
-                                <Form.Item label="Running Grade" name="currentGrade" rules={[{ required: true, message: "Please select the running grade" }]}>
-                                    <Select
-                                        placeholder="Update Grade"
-                                        options={grades}
-                                        loading={gradeLoading}
-                                        allowClear
-                                    />
-                                </Form.Item>
-                            </div>
-
-                            <Form.Item label="Grades" name="grades" rules={[{ required: true, message: "Please select the grade/s" }]}>
+                        <div className='flex gap-2 w-full'>
+                            <Form.Item label="Training Status" name="trainingStatus" rules={[{ required: true, message: "Please select the training type" }]} className='flex-1'>
                                 <Select
-                                    mode='multiple'
-                                    placeholder="Select Grades"
-                                    disabled
+                                    placeholder="Select a training status"
+                                    options={TrainingStatus}
                                 />
                             </Form.Item>
 
-                            <Form.Item label="Training Type" name="trainingType" rules={[{ required: true, message: "Please select the Training Type" }]}>
+                            <Form.Item label="Running Grade" name="currentGrade" rules={[{ required: true, message: "Please select the running grade" }]}>
                                 <Select
-                                    placeholder="Select training type"
-                                    disabled
+                                    placeholder="Update Grade"
+                                    options={grades}
+                                    loading={gradeLoading}
+                                    allowClear
                                 />
                             </Form.Item>
+                        </div>
 
-                            <div className='flex gap-2 justify-end items-center'>
-                                <Form.Item>
-                                    <Button onClick={handleCancel}>Go Back</Button>
-                                </Form.Item>
+                        <Form.Item label="Grades" name="grades" rules={[{ required: true, message: "Please select the grade/s" }]}>
+                            <Select
+                                mode='multiple'
+                                placeholder="Select Grades"
+                                disabled
+                            />
+                        </Form.Item>
 
-                                <Form.Item>
-                                    <Button danger htmlType='submit' loading={false}>Save Edited</Button>
-                                </Form.Item>
-                            </div>
-                        </Skeleton>
+                        <Form.Item label="Subject" name="subject" rules={[{ required: true, message: "Please select the Training Type" }]}>
+                            <Select
+                                placeholder="Subject"
+                                disabled
+                            />
+                        </Form.Item>
 
+                        <div className='flex gap-2 justify-end items-center'>
+                            <Form.Item>
+                                <Button onClick={handleCancel}>Go Back</Button>
+                            </Form.Item>
+
+                            <Form.Item>
+                                <Button danger htmlType='submit' loading={false}>Save Edited</Button>
+                            </Form.Item>
+                        </div>
                     </Form>
 
                 </div>

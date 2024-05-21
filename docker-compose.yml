@@ -10,10 +10,22 @@ services:
     env_file:
       - ./Back-End/.env
     depends_on:
-      - postgresql
+      - crmdb
       - redis_cache
+  
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    # restart: always
+    ports:
+      - 80:80
+    volumes:
+      - ./Back-End/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./Back-End:/app
+    depends_on:
+      - crm_backend
 
-  postgresql:
+  crmdb:
     image: postgres
     container_name: crmdb
     ports:
@@ -30,6 +42,17 @@ services:
     restart: always
     ports:
       - 6379:6379
+  
+  celery_worker:
+    build: ./Back-End
+    container_name: celery_worker
+    command: celery -A training worker -l INFO --concurrency=4 -E
+    volumes:
+      - ./Back-End:/app
+    env_file:
+      - ./Back-End/.env
+    depends_on:
+      - crm_backend
 
 volumes:
   crm_pg_data:

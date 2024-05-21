@@ -14,17 +14,17 @@ export const useTrainingStatistics = () => {
         try {
             const response = await api({
                 method: "GET",
-                url: "http://localhost:8000/training/statistics/?year=2024&start_month=1&end_month=12",
+                url: "/training/statistics/?year=2024&start_month=1&end_month=12",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": "Bearer " + access_token
                 }
             })
             // console.log(response.data);
-            const uniqueLabels = Array.from(new Set(response.data.map(item => item.month)));
+            const uniqueLabels = Array.from(new Set(response?.data?.map(item => item.month)));
             const formattedData = {
                 labels: uniqueLabels,
-                datasets: response.data.reduce((datasets, data) => {
+                datasets: response?.data?.reduce((datasets, data) => {
                     const existingDataset = datasets.find(dataset => dataset.label === data.trainingType);
 
                     if (existingDataset) {
@@ -37,10 +37,10 @@ export const useTrainingStatistics = () => {
                         newData[index] = data.total_trainings;
 
                         datasets.push({
-                            label: data.trainingType,
+                            label: data.subject,
                             data: newData,
-                            backgroundColor: `${data?.trainingType === "ROBOTICS" ? "rgba(255, 99, 132, 0.5)" : data.trainingType === "COMPUTER SCIENCE"? "rgba(54, 162, 235, 0.5)" : data.trainingType === "AEROMODELLING" ? "rgba(255, 0, 200, 0.5)": "rgba(0, 255, 255, 1)"}`,
-                            borderColor: `${data?.trainingType === "ROBOTICS" ? "rgba(255, 99, 132, 0.5)" : data.trainingType === "COMPUTER SCIENCE"? "rgba(54, 162, 235, 0.5)" : data.trainingType === "AEROMODELLING" ? "rgba(255, 0, 200, 0.5)": "rgba(0, 255, 255, 1)"}`,
+                            backgroundColor: `${data?.trainingType === "ROBOTICS" ? "rgba(255, 99, 132, 0.5)" : data.subject === "COMPUTER SCIENCE"? "rgba(54, 162, 235, 0.5)" : data.subject === "AEROMODELLING" ? "rgba(255, 0, 200, 0.5)": "rgba(0, 255, 255, 1)"}`,
+                            borderColor: `${data?.subject === "ROBOTICS" ? "rgba(255, 99, 132, 0.5)" : data.subject === "COMPUTER SCIENCE"? "rgba(54, 162, 235, 0.5)" : data.subject === "AEROMODELLING" ? "rgba(255, 0, 200, 0.5)": "rgba(0, 255, 255, 1)"}`,
                         });
                     }
 

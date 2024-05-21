@@ -19,7 +19,7 @@ const EditModal = ({ trainingData }) => {
 
     const { userName } = useUserOptions();
     const { allSchoolOptions } = useSchools();
-    const {updateTraining} = useTrainings();
+    const { updateTraining } = useTrainings();
     const { grades } = useGrades();
     const [form] = Form.useForm();
 
@@ -66,23 +66,29 @@ const EditModal = ({ trainingData }) => {
                         fields={[
                             {
                                 name: ["schools"],
-                                value: trainingData?.schools?.map(school => ({ label: school.name, value: school.id }))
+                                value: trainingData?.trainingDetail?.map(school => (
+                                    { label: school?.school?.name, value: school?.school?.id }
+                                ))
                             },
                             {
                                 name: ["trainingStatus"],
                                 value: trainingData?.trainingStatus
                             },
                             {
-                                name: ["trainers"],
-                                value: trainingData?.trainers?.map(trainer => ({ label: trainer.username, value: trainer.id }))
+                                name: ["trainer"],
+                                value: {
+                                    label: trainingData?.trainer?.username,
+                                    value: trainingData?.trainer?.id
+                                }
                             },
                             {
                                 name: ["grades"],
-                                value: trainingData?.grades?.map(grade => ({ label: grade.name, value: grade.id }))
+                                value: trainingData?.trainingDetail && trainingData?.trainingDetail[0].grades?.map(grade => (
+                                    { label: grade.grades, value: grade.id }))
                             },
                             {
-                                name: ["trainingType"],
-                                value: trainingData?.trainingType
+                                name: ["subject"],
+                                value: trainingData?.trainingDetail && trainingData?.trainingDetail[0].subject
                             },
                             {
                                 name: ["currentGrade"],
@@ -95,15 +101,15 @@ const EditModal = ({ trainingData }) => {
                             },
                             {
                                 name: ["startDate"],
-                                value: dayjs(trainingData?.startDate, "YYYY-MM-DD")
+                                value: trainingData?.trainingDetail && dayjs(trainingData?.trainingDetail[0].startDate, "YYYY-MM-DD")
                             },
                             {
                                 name: ["startTime"],
-                                value: dayjs(trainingData?.startTime, "HH:mm")
+                                value: trainingData?.trainingDetail && dayjs(trainingData?.trainingDetail[0].startTime, "HH:mm")
                             },
                             {
                                 name: ["endTime"],
-                                value: dayjs(trainingData?.endTime, "HH:mm")
+                                value: trainingData?.trainingDetail && dayjs(trainingData?.trainingDetail[0].endTime, "HH:mm")
                             }
                         ]}
 
@@ -113,7 +119,6 @@ const EditModal = ({ trainingData }) => {
                                 name="schools"
                                 mode='multiple'
                                 placeholder="Select Schools"
-                                options={allSchoolOptions}
 
                             />
                         </Form.Item>
@@ -136,9 +141,8 @@ const EditModal = ({ trainingData }) => {
                             </Form.Item>
                         </div>
 
-                        <Form.Item label="Trainer/s" name="trainers" rules={[{ required: true, message: "Please select the trainer/s" }]}>
+                        <Form.Item label="Trainer/s" name="trainer" rules={[{ required: true, message: "Please select the trainer/s" }]}>
                             <Select
-                                mode="multiple"
                                 placeholder="Please select"
                                 options={userName}
                                 optionRender={(user) => (
@@ -159,16 +163,19 @@ const EditModal = ({ trainingData }) => {
                             />
                         </Form.Item>
 
-                        <Form.Item label="Training Type" name="trainingType" rules={[{ required: true, message: "Please select the Training Type" }]}>
-                            <Select
-                                placeholder="Select training type"
-                                options={TrainingType}
-                            />
-                        </Form.Item>
+                        <div className='flex gap-2'>
 
-                        <Form.Item label="Training Start Date" name="startDate" rules={[{ required: true, message: "Please select Start Date" }]}>
-                            <DatePicker format="YYYY-MM-DD" className='w-full' />
-                        </Form.Item>
+                            <Form.Item label="Training Type" name="subject" rules={[{ required: true, message: "Please select the Training Type" }]} className='w-full'>
+                                <Select
+                                    placeholder="Select training type"
+                                    options={TrainingType}
+                                />
+                            </Form.Item>
+
+                            <Form.Item label="Training Start Date" name="startDate" rules={[{ required: true, message: "Please select Start Date" }]} className='w-full'>
+                                <DatePicker format="YYYY-MM-DD" className='w-full' />
+                            </Form.Item>
+                        </div>
 
                         <div className='flex gap-2'>
                             <Form.Item label="Start Time" name="startTime" rules={[{ required: true, message: "Please select the start time" }]} className='flex-1'>

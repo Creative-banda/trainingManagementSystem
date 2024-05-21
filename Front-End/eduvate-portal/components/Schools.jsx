@@ -45,7 +45,7 @@ function Schools() {
       render: (_, { grades }) => (
         <div className='flex gap-1 flex-wrap'>
           {/* {console.log(grades)} */}
-          <p className='p-2 bg-emerald-400 rounded-xl text-white'>{grades[0]?.grades} - {grades[grades.length - 1]?.grades}</p>
+          <p className='px-1 bg-emerald-400 rounded-md text-white'>{grades[0]?.grades} - {grades[grades.length - 1]?.grades}</p>
         </div>
       )
     },
@@ -71,7 +71,7 @@ function Schools() {
             <Button icon={<EyeOutlined />} onClick={() => {
               setSchoolData(school)
               setEditSchoolModal(true);
-            }} />
+            }} size='small' />
           </Tooltip>
 
           <Popconfirm
@@ -80,7 +80,7 @@ function Schools() {
             onConfirm={() => deleteSchool(school.id)}
             onButtonProps={{ loading: loading }}
           >
-            <Button icon={<DeleteOutlined />} danger />
+            <Button icon={<DeleteOutlined />} danger size='small' />
           </Popconfirm>
 
         </div>
@@ -102,17 +102,18 @@ function Schools() {
       <EditSchoolModel schoolData={schoolData} />
 
       <Table columns={columns} dataSource={school} loading={fetchingSchool} size='small' className='border rounded-lg' title={() => (
-        <div className='flex justify-end gap-4'>
+        <div className='flex gap-2'>
 
-          <Select placeholder="Search by School Name" options={allSchoolOptions} loading={fetchingAllSchools} optionFilterProp='label' allowClear suffixIcon={<SearchOutlined />} showSearch onSelect={value => filterSchool(value)} onClear={onClear}/>
+          <Select placeholder="Search by School Name" options={allSchoolOptions} loading={fetchingAllSchools} optionFilterProp='label' allowClear suffixIcon={<SearchOutlined />} showSearch onSelect={value => filterSchool(value)} onClear={onClear} size='small'/>
 
           <Tooltip title="Add New School">
-            <Button shape='round' icon={<PlusCircleOutlined />} onClick={() => setSchoolModal(true)}> ADD </Button>
+            <Button icon={<PlusCircleOutlined />} onClick={() => setSchoolModal(true)} size='small' />
           </Tooltip>
 
           <Tooltip title="Refresh Data">
-            <Button shape='round' icon={<ReloadOutlined />} onClick={() => fetchSchools({ limit: pagination.pageSize, offset: (pagination.current - 1) * pagination.pageSize })} />
+            <Button icon={<ReloadOutlined />} onClick={() => fetchSchools({ limit: pagination.pageSize, offset: (pagination.current - 1) * pagination.pageSize })} size='small' />
           </Tooltip>
+
         </div>
       )} pagination={pagination} onChange={handleTableChange} rowKey={record => record.id} />
       <SchoolModal />

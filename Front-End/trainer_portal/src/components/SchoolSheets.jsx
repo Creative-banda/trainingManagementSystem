@@ -11,7 +11,7 @@ import { useUserInfo } from '../../hooks/token_hooks'
 
 function SchoolSheets() {
     const { schoolOptions, fetchingSchool } = useSchools();
-    const [schoolId, setSchoolId] = useState();
+    const [schoolId, setSchoolId] = useState(null);
     const [subject, setSubject] = useState("COMPUTER SCIENCE");
     const { is_am_om } = useUserInfo();
     const redirect = useNavigate();
@@ -29,7 +29,7 @@ function SchoolSheets() {
         <div className='flex w-full flex-col gap-2'>
             
             <div className='w-full flex gap-4'>
-                <Select options={schoolOptions} placeholder="Select School" showSearch optionFilterProp='label' allowClear className='w-56' onSelect={filterSchoolById} suffixIcon={<CiSearch />} onClear={() => setSchoolId(null)} loading={fetchingSchool} />
+                <Select options={schoolOptions} placeholder="Select School" showSearch optionFilterProp='label' allowClear className='w-56' onChange={filterSchoolById} suffixIcon={<CiSearch />} loading={fetchingSchool} />
                 <Select options={TrainingType} placeholder="Search the Subject" showSearch optionFilterProp='label' allowClear className='w-56' onSelect={(value) => setSubject(value)} suffixIcon={<CiSearch />} loading={fetchingSchool} defaultValue="COMPUTER SCIENCE" />
             </div>
 
@@ -46,8 +46,11 @@ export default SchoolSheets
 
 export const SheetBody = ({ schoolId, subject }) => {
     const { sheetData, fetchSchoolSheet, loading } = useSheet({ id: schoolId, subject: subject });
+    console.log(schoolId)
 
-
+    useEffect(() => {
+        schoolId && fetchSchoolSheet();
+    }, [schoolId, subject])
 
     return (
         <div className='w-full flex flex-col gap-2'>

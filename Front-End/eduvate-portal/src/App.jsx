@@ -4,10 +4,11 @@ import './App.css'
 import RootComponent from '../components/root-template'
 import Dashboard from '../components/Dashboard'
 import Schools, { ShowSchools } from '../components/Schools'
-import Training from '../components/Trainings'
+import Trainings from '../components/Trainings'
 import SchoolRegistration from '../components/SchoolRegistration'
 import Login from '../components/Login'
 import Scheduler from '../components/Scheduler'
+import AssignTraining from '../components/AssignTraining'
 
 function App() {
 
@@ -18,10 +19,11 @@ function App() {
           <RootComponent />
         }>
           <Route index element={< Dashboard />} />
-          <Route path='/training' element={<Training />} />
+          <Route path='/training' element={<Trainings />} />
           <Route path='/schools' element={<Schools />} />
           <Route path='/schools/:id' element={<ShowSchools />} />
           <Route path="/scheduller" element={<Scheduler />} />
+          <Route path='/assign' element={<AssignTraining/>}/>
         </Route>
         <Route path='/login' element={<Login />} />
         <Route path='/school-register' element={<SchoolRegistration />} />

@@ -114,7 +114,7 @@ export const useTrainings = () => {
         await api({
             method: 'POST',
             url: "/training/",
-            data: JSON.stringify(values),
+            data: values,
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + access_token
@@ -208,10 +208,10 @@ export const useAllTrainings = () => {
             .then((response) => {
                 setLoading(false);
                 setTrainingsData(response.data);
-                setRobotics(response.data?.filter((training) => training.trainingType === "ROBOTICS"))
-                setCS(response.data?.filter((training) => training.trainingType === "COMPUTER SCIENCE"))
-                setDC(response.data?.filter((training) => training.trainingType === "DOUBT SESSION"))
-                setAeromodelling(response.data?.filter((training) => training.trainingType === "AEROMODELLING"))
+                setRobotics(response.data?.filter(({trainingDetail}) => trainingDetail[0].subject === "ROBOTICS"))
+                setCS(response.data?.filter(({trainingDetail}) => trainingDetail[0].subject === "COMPUTER SCIENCE"))
+                setDC(response.data?.filter(({trainingDetail}) => trainingDetail[0].subject === "DOUBT SESSION"))
+                setAeromodelling(response.data?.filter(({trainingDetail}) => trainingDetail[0].subject === "AEROMODELLING"))
             })
             .catch((error) => {
                 console.log(error);

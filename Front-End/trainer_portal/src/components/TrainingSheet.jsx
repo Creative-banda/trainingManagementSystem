@@ -5,34 +5,41 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useContext, useState } from 'react';
 import { ModalContext } from '../../context/modal_context';
 import TrainingModifyModal from '../../modal/trainingSheetModal';
+import { useEffect } from 'react';
 
 function TrainingSheet() {
     const { id } = useParams();
 
     const navigate = useLocation()
-    const stateDate = navigate.state;
-    // console.log(stateDate);
-    const { sheetData, loading, fetchSchoolSheet } = useSheet({ id: id, subject: stateDate?.subject });
+    const {school, subject} = navigate.state;
+    const { sheetData, loading, fetchSchoolSheet } = useSheet({ id: id, subject: subject });
     const { setTrainingSheetModifyState } = useContext(ModalContext);
+
+    // console.log(school);
 
     const openAddSheetData = () => {
         setTrainingSheetModifyState(true);
     }
+    
+    useEffect(() => {
+        fetchSchoolSheet();
+    }, [])
 
     return (
         <div>
 
             <div className='w-full px-4 py-2 border rounded-lg mb-4 flex gap-2 items-center bg-teal-400 text-white'>
-                <h1 className='font-bold text-lg'>{stateDate?.school?.name}</h1>
-                <h1>{stateDate?.school?.erp_code}</h1>
-                <h1 className='font-bold text-lg'>{stateDate?.subject}</h1>
-                <h1>{stateDate?.school?.catagory}</h1>
-                <h1> {stateDate?.school?.grades[0].grades} - {stateDate?.school?.grades[stateDate?.school?.grades.length - 1].grades} </h1>
+                <h1 className='font-bold text-lg'>{school?.name}</h1>
+                <h1>{school?.erp_code}</h1>
+                <h1 className='font-bold text-lg'>{subject}</h1>
+                <h1>{school?.catagory}</h1>
+                <h1> Grade {school.grades[0]} - Grade {school.grades[school.grades.length - 1]} </h1>
 
             </div>
+
             <SchoolSheet dataSource={sheetData}
                 loading={loading}
-                subject={stateDate?.subject}
+                subject={subject}
                 title={() => (
                     <div className='flex gap-2 items-center'>
                         <Tooltip title="Refresh">
@@ -61,7 +68,7 @@ export const SchoolSheet = ({ dataSource, loading, title, subject }) => {
             title: "Grade",
             dataIndex: "data",
             key: 1,
-            render: data => data.grade,
+            render: data => data?.grade,
         },
         {
             title: "Topic",

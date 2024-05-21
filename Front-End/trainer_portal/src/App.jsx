@@ -8,6 +8,7 @@ import TrainingSheet from "./components/TrainingSheet";
 import SchoolSheets from "./components/SchoolSheets";
 import PageNotFound from "./components/PageNotFound";
 import Schools from "./components/Schools";
+import Testing_Sidebar from "./components/Testing_components/EditableTable";
 
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
           <Route exact path="/sheets" element={<SchoolSheets />} />
         </Route>
         <Route exact path="/login" element={<Login />} />
+        <Route path="/testing" element={<Testing_Sidebar/>} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </div>

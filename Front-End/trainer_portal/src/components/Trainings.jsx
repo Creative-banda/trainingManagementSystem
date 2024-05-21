@@ -3,31 +3,33 @@ import { EyeOutlined, ReloadOutlined, PlusOutlined, SearchOutlined } from '@ant-
 import { useTraining } from '../../hooks/training_hook';
 import { useNavigate } from 'react-router-dom';
 import { UpdateTrainingModal } from '../../modal/updateTrainingModal';
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ModalContext } from '../../context/modal_context';
 import RequestTraining from '../../modal/request_training';
 import { useUserInfo } from '../../hooks/token_hooks';
-import { RequestedTrainingStatus, TrainingType } from '../../utilities/MenuItems';
+import { TrainingStatus, TrainingType } from '../../utilities/MenuItems';
 
 
 function Training() {
   const [data, setData] = useState()
   const { setUpdateTrainingModal, setRequestTrainingModal } = useContext(ModalContext)
-  const redirect = useNavigate();
   const { pagination, setPagination, trainingsData, loadingTraining, fetchTraining } = useTraining();
   const { is_am_om } = useUserInfo();
+  const redirect = useNavigate();
+
+  console.log(trainingsData);
 
   const columns = [
     {
-      title: "Schools",
-      dataIndex: "schools",
       key: 1,
-      render: (_, rest) => (
+      title: "Schools",
+      dataIndex: "trainingDetail",
+      render: (_, { trainingDetail }) => (
         <div className='flex flex-wrap gap-1 text-white'>
           {
-            rest.schools?.map((school) => (
+            trainingDetail?.map(({ school, subject }) => (
               <p key={school.id} role='button' className='p-1 bg-green-400 mb-1 rounded-lg cursor-pointer hover:bg-green-500 transition'
-                onClick={() => redirect(`/school/${school.id}`, { state: { school, subject: rest.trainingType } })}
+                onClick={() => redirect(`/school/${school.id}`, { state: { school, subject: subject } })}
               >
                 {school.name}
               </p>
@@ -37,12 +39,10 @@ function Training() {
       )
     },
     {
+      key: 2,
       title: "Status",
       dataIndex: "trainingStatus",
-      key: 2,
       render: (_, { trainingStatus }) => (
-        // <p className={`${trainingStatus === "COMPLETED" ? "bg-green-300" : trainingStatus === "ONGOING" ? "bg-yellow-200" : trainingStatus === "CANCELLED" ? "bg-red-300" : "bg-orange-300"} text-center rounded-lg inline px-2`}>{trainingStatus}</p>
-
         <Tag color={trainingStatus === "COMPLETED" ? "green" : trainingStatus === "ONGOING" ? "yellow" : trainingStatus === "CANCELLED" ? "red" : "orange"}>{trainingStatus}</Tag>
       ),
       filters: [
@@ -54,11 +54,11 @@ function Training() {
       onFilter: (value, record) => record?.trainingStatus.indexOf(value) === 0,
     },
     {
-      title: "Training Type",
-      dataIndex: "trainingType",
       key: 3,
-      render: (_, { trainingType }) => (
-        <p className=''>{trainingType}</p>
+      title: "Subject",
+      dataIndex: "trainingDetail",
+      render: (_, { trainingDetail }) => (
+        <p className=''>{trainingDetail ? trainingDetail[0].subject : "Error"}</p>
       ),
       filters: [
         { text: "CS", value: "COMPUTER SCIENCE" },
@@ -68,9 +68,12 @@ function Training() {
       onFilter: (value, record) => record?.trainingType.indexOf(value) === 0,
     },
     {
+      key: 4,
       title: "Start Time",
-      dataIndex: "startTime",
-      key: 4
+      dataIndex: "trainingDetail",
+      render:(_, {trainingDetail}) => (
+        <p>{trainingDetail ? trainingDetail[0].startTime : "Error"}</p>
+      )
     },
     {
       title: "Action",
@@ -131,19 +134,22 @@ function Training() {
 export default Training
 
 
-export const TrainingRequestSheet = () => {
+const TrainingRequest = () => {
   const { is_am_om, userInfo } = useUserInfo();
+  const { setRequestTrainingModal } = useContext(ModalContext)
+  const [trainingData, setTrainingData] = useState(null);
 
   const [filters, setFilters] = useState({
-    status: "PENDING",
+    status: "ONGOING",
     requestor: userInfo?.id,
     school: null,
     subject: null,
+    active:true
   });
 
   const { fetchRequestedTraining, requestedTrainings } = useTraining();
 
-  console.log(requestedTrainings);
+  // console.log(requestedTrainings);
 
   useEffect(() => {
     is_am_om && fetchRequestedTraining(filters);
@@ -182,7 +188,22 @@ export const TrainingRequestSheet = () => {
       title: "Status",
       dataIndex: "status",
       render: (status) => (
-        <Tag color={status === "PENDING" ? "orange" : status === "APPROVED" ? "green" : "red"}>{status}</Tag>
+        <Tag color={status === "PENDING" ? "orange" : status === "COMPLETED" ? "green" : status === "ONGOING" ? "yellow" : "red"}>{status}</Tag>
+      )
+    },
+    {
+      key: 7,
+      title: "Action",
+      render: (data) => (
+        <div className='flex gap-2'>
+          <Tooltip title="View Or Edit">
+            <Button icon={<EyeOutlined />} size='small' onClick={() => {
+              console.log(data);
+              setTrainingData(data);
+              setRequestTrainingModal(true);
+            }} />
+          </Tooltip>
+        </div>
       )
     }
   ]
@@ -190,6 +211,7 @@ export const TrainingRequestSheet = () => {
 
   return (
     <div>
+      <RequestTraining data={trainingData} />
       <Table
         columns={columns}
         dataSource={requestedTrainings}
@@ -198,7 +220,7 @@ export const TrainingRequestSheet = () => {
         title={
           () => (
             <div className='flex gap-2'>
-              <Select options={RequestedTrainingStatus} placeholder="Select Status" onChange={(value) => setFilters({ ...filters, status: value })} size='small' allowClear />
+              <Select options={TrainingStatus} placeholder="Select Status" onChange={(value) => setFilters({ ...filters, status: value })} size='small' allowClear />
 
               <Select options={TrainingType} placeholder="Select Subject" onChange={(value) => setFilters({ ...filters, subject: value })} size='small' allowClear />
 
@@ -210,3 +232,5 @@ export const TrainingRequestSheet = () => {
     </div>
   )
 }
+
+export const TrainingRequestSheet = React.memo(TrainingRequest)

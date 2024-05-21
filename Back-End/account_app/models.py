@@ -69,7 +69,7 @@ class User(BaseModel, AbstractUser):
 
 
     def __str__(self) -> str:
-        return self.email
+        return self.username
 
 
 class Profile(BaseModel):

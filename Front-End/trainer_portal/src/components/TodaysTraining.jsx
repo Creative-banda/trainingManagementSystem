@@ -5,26 +5,30 @@ import { UpdateTrainingModal } from '../../modal/updateTrainingModal';
 import { useContext, useState } from 'react';
 import { ModalContext } from '../../context/modal_context';
 import { useNavigate } from 'react-router-dom';
+import { useUserInfo } from '../../hooks/token_hooks';
+import { useEffect } from 'react';
 
 function TodaysTraining() {
     const [data, setData] = useState();
+    const { userInfo } = useUserInfo();
+    const [filter, setFilter] = useState({trainer: userInfo?.id, trainingStatus: "ONGOING", active: true});
     const { setUpdateTrainingModal } = useContext(ModalContext);
     const redirect = useNavigate();
     const { training, loadingTrainings, fetchTraining } = useFilterTraining();
     // console.log(training)
     const columns = [
         {
-            title: "School",
-            dataIndex: "schools",
             key: 1,
-            render: (_, rest) => (
-                <div key={rest.id} className='flex flex-wrap gap-1 text-white'>
+            title: "School",
+            dataIndex: "trainingDetail",
+            render: trainingDetail => (
+                <div key={trainingDetail?.id} className='flex flex-wrap gap-1 text-white'>
                     {
-                        rest.schools.map(school => (
-                            <p key={school.id} className='p-1 bg-green-400 mb-1 rounded-lg cursor-pointer hover:bg-green-500 transition'
-                                onClick={() => redirect(`/school/${school.id}`, { state: { school, subject: rest.trainingType } })}
+                        trainingDetail?.map(training => (
+                            <p key={training?.id} className='px-1 bg-green-400 mb-1 rounded-lg cursor-pointer hover:bg-green-500 transition'
+                                onClick={() => redirect(`/school/${training?.school?.id}`, { state: { school: training?.school, subject:training?.subject } })}
                             >
-                                {school.name}
+                                {training?.school?.name}
                             </p>
                         ))
                     }
@@ -32,32 +36,40 @@ function TodaysTraining() {
             )
         },
         {
-            title: "Subject",
-            dataIndex: "trainingType",
             key: 2,
-            render: (_, { trainingType }) => (
-                <p>{trainingType}</p>
+            title: "Subject",
+            dataIndex: "trainingDetail",
+            render: (_, { trainingDetail }) => (
+                <p>{trainingDetail[0]?.subject}</p>
             )
         },
         {
+            key: 3,
             title: "Start Time",
-            dataIndex: "startTime",
-            key: 3
+            dataIndex: "trainingDetail",
+            render: (_, { trainingDetail }) => (
+                <p>{trainingDetail[0]?.startTime}</p>
+            )
         },
         {
-            title: "Action",
             key: 4,
+            title: "Action",
             render: (data) => (
                 <div>
-                    <Button icon={<EyeOutlined />} onClick={() => {
-                        // console.log(data);
-                        setData(data);
-                        setUpdateTrainingModal(true);
-                    }} />
+                    <Button icon={<EyeOutlined />}
+                        size='small'
+                        onClick={() => {
+                            setData(data);
+                            setUpdateTrainingModal(true);
+                        }} />
                 </div>
             )
         },
     ]
+
+    useEffect(() => {
+        fetchTraining( filter );
+    }, [])
 
     return (
         <div className='w-full'>
@@ -67,7 +79,7 @@ function TodaysTraining() {
                 title={() => (
                     <div>
                         <Tooltip title="Reload">
-                            <Button icon={<ReloadOutlined />} onClick={() => fetchTraining()} />
+                            <Button icon={<ReloadOutlined />} onClick={() => fetchTraining( filter )} />
                         </Tooltip>
                     </div>
                 )}

@@ -9,9 +9,50 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Training, TrainingSheetModel, TrainingDataModel, TrainingRequestsModel
-from .serializers import TrainingSerializer, TrainingSheetSerializer, TrainingDataSerializer, TrainingRequestSerializer
+from .serializers import TrainingSerializer, TrainingSheetSerializer, TrainingDataSerializer, TrainingRequestSerializer, MasterTrainingSerializer
 from .filters import TrainingFilter, TrainingSheetModelFilter, TrainingRequestFilter
 from .enums import TrainingRequestEnum
+from .tasks import sending_mail
+
+
+################################# Training Request API #########################################
+
+class TrainingRequestView(APIView):
+    queryset = TrainingRequestsModel.objects.all()
+    
+    def get(self, request):
+        # apply filter using filterset class
+        try:
+            filterset = TrainingRequestFilter(request.query_params, queryset=self.queryset)
+            queryset = filterset.qs
+            serializer = TrainingRequestSerializer(queryset, many=True, context={"request": request})
+            
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+        
+    
+    def post(self, request):
+        serializer = TrainingRequestSerializer(data=request.data, context={"request": request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TrainingRequestByIdView(APIView):
+    def patch(self, request, id):
+        try:
+            training_request = TrainingRequestsModel.objects.get(id = id, active = True)
+            serializer = TrainingRequestSerializer(training_request, partial=True, context={"request": request}, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+
+
 
 
 ################################### To get all the training and Post a new training ###################################
@@ -21,27 +62,25 @@ class TrainingGetPost(APIView, LimitOffsetPagination):
     
     def get(self, request):
         try:
-            trainings = Training.objects.filter(active=True).prefetch_related('trainers', 'schools', 'grades')
+            trainings = Training.objects.filter(active=True).prefetch_related('trainings')
             filter = TrainingFilter(request.query_params, queryset=trainings)
             result = self.paginate_queryset(filter.qs, request, view=self)
             # print(result)
-            serializer = TrainingSerializer(result, many = True, context = {"request": request})
+            serializer = TrainingSerializer(result, many=True, context = {"request": request})
+            # print(serializer.data)
             return self.get_paginated_response(serializer.data)
         except Exception as e:
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
     
+
     def post(self, request):
         serializer = TrainingSerializer(data=request.data, context={"request": request})
-        schools = request.data.get('schools')
-        subject = request.data.get('trainingType')
-        print(request.data)
         try:
             if serializer.is_valid():
                 serializer.save()
-                with transaction.atomic():
-                    obj = TrainingRequestsModel.objects.filter(school_id__in = schools, subject=subject)
-                    if obj.exists(): obj.update(status=TrainingRequestEnum.APPROVED.value)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+                
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
 
@@ -51,7 +90,7 @@ class AllActiveTraining(APIView):
     
     def get(self, request):
         try:
-            trainings = Training.objects.filter(active=True).prefetch_related('trainers', 'schools', 'grades')
+            trainings = Training.objects.filter(active=True).prefetch_related('trainings')
             serializer = TrainingSerializer(trainings, many = True, context = {"request": request})
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
@@ -62,9 +101,9 @@ class AllActiveTraining(APIView):
 class TrainingById(APIView):
     permission_classes = [IsAuthenticated]
         
-    def get(self, request, pk: str):
+    def get(self, request, pk: str) -> Response:
         try:
-            training = Training.objects.filter(id=pk, active=True).prefetch_related('trainers', 'schools', 'grades').first()
+            training = Training.objects.filter(id=pk, active=True).prefetch_related('trainings').first()
         except Exception as e:
             return Response(str(e), status=status.HTTP_204_NO_CONTENT)
         
@@ -74,23 +113,30 @@ class TrainingById(APIView):
     def put(self, request, pk):
         # print(request.data) 
         try:
-            training = Training.objects.filter(id=pk, active=True).prefetch_related('trainers', 'schools', 'grades').first()
+            training = Training.objects.filter(id=pk, active=True).prefetch_related('trainings').first()
             # training = get_object_or_404(Training, id=pk, active=True)
         except Exception as e:
+            print(pk)
             return Response(str(e), status=status.HTTP_204_NO_CONTENT)
         
-        serializer = TrainingSerializer(training, data=request.data, context = {"request": request})
         try:
+            serializer = TrainingSerializer(training, data=request.data, context = {"request": request}, partial=True)
             serializer.is_valid(raise_exception=True)
-            # print(serializer)
+            print(serializer)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
         except Exception as e:
+            print(e)
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
     
     def delete(self, request, pk):
         try:
             training = Training.objects.filter(id=pk).first()
+            trainingRequests = training.trainings.all()
+            with transaction.atomic():
+                for trainingRequest in trainingRequests:
+                    trainingRequest.status = "PENDING"
+                    trainingRequest.save()
             training.active = False
             training.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -120,7 +166,7 @@ class TrainingByTrainerId(APIView):
     
     def get(self, request, id):
         try:
-            training = Training.objects.filter(trainers__id = id, active=True).prefetch_related('trainers', 'schools', 'grades')
+            training = Training.objects.filter(trainers__id = id, active=True).prefetch_related('trainings')
             serializer = TrainingSerializer(training, many = True, context = {"request": request})
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
@@ -132,7 +178,7 @@ class TrainingFilterView(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request, *args, **kwargs):
-        queryset = Training.objects.all().prefetch_related('trainers', 'schools', 'grades')
+        queryset = Training.objects.all().prefetch_related('trainings')
 
         # Apply filters using the filterset class
         try:
@@ -163,19 +209,19 @@ class TrainingStatisticsView(APIView):
         start_date = datetime(year, start_month, 1)
         end_date = datetime(year, end_month, 1)  # Increment end_month by 1 and wrap around if needed
 
-        # Query the database to get training counts per month and trainingType
-        training_counts_by_month_type = Training.objects.filter(
+        # Query the database to get training counts per month and subject
+        training_counts_by_month_type = TrainingRequestsModel.objects.filter(
             startDate__month__gte=start_date.month, startDate__month__lte=end_date.month,
-            startDate__year=year, active=True
+            startDate__year=year
         ).annotate(
             month=ExtractMonth('startDate')
-        ).values('month', 'trainingType').annotate(total_trainings=Count('id')).order_by('month', 'trainingType')
+        ).values('month', 'subject').annotate(total_trainings=Count('id')).order_by('month', 'subject')
 
         # Resulting QuerySet
         result_list = [
             {
                 'month': month_name[entry['month']],
-                'trainingType': entry['trainingType'],
+                'subject': entry['subject'],
                 'total_trainings': entry['total_trainings']
             } for entry in training_counts_by_month_type
         ]
@@ -240,36 +286,14 @@ class TrainingDataView(APIView):
             return Response(str(e), status=status.HTTP_204_NO_CONTENT)
         
 
-class TrainingRequestView(APIView):
-    queryset = TrainingRequestsModel.objects.all()
-    
-    def get(self, request):
-        # apply filter using filterset class
-        try:
-            filterset = TrainingRequestFilter(request.query_params, queryset=self.queryset)
-            queryset = filterset.qs
-            serializer = TrainingRequestSerializer(queryset, many=True, context={"request": request})
-            
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
-        
-    
-    def post(self, request):
-        serializer = TrainingRequestSerializer(data=request.data, context={"request": request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class TrainingRequestByIdView(APIView):
-    def put(self, request, id):
+class SendMailView(APIView):
+    def post(self, request):
         try:
-            training_request = TrainingRequestsModel.objects.get(id = id)
-            serializer = TrainingRequestSerializer(training_request, context={"request": request}, data=request.data)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            to = request.data.get('to')
+            subject = request.data.get('subject')
+            html_content = request.data.get('html_content')
+            sending_mail.delay(to, subject, html_content)
+            return Response({"message": "Email sent successfully"}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
