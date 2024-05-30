@@ -5,6 +5,7 @@ import api from "../interceptor/axios_interceptor";
 export const useTrainingStatistics = () => {
     const {access_token} = useToken()
     const [loading, setLoading] = useState(false);
+    const [statisticsData, setStatisticsData] = useState([]);
     const [dataset, setDataSet] = useState({
         labels: [],
         datasets: []
@@ -25,7 +26,7 @@ export const useTrainingStatistics = () => {
             const formattedData = {
                 labels: uniqueLabels,
                 datasets: response?.data?.reduce((datasets, data) => {
-                    const existingDataset = datasets.find(dataset => dataset.label === data.trainingType);
+                    const existingDataset = datasets.find(dataset => dataset.label === data.subject);
 
                     if (existingDataset) {
                         // Find the index of the label in uniqueLabels and add data at the same index
@@ -39,8 +40,8 @@ export const useTrainingStatistics = () => {
                         datasets.push({
                             label: data.subject,
                             data: newData,
-                            backgroundColor: `${data?.trainingType === "ROBOTICS" ? "rgba(255, 99, 132, 0.5)" : data.subject === "COMPUTER SCIENCE"? "rgba(54, 162, 235, 0.5)" : data.subject === "AEROMODELLING" ? "rgba(255, 0, 200, 0.5)": "rgba(0, 255, 255, 1)"}`,
-                            borderColor: `${data?.subject === "ROBOTICS" ? "rgba(255, 99, 132, 0.5)" : data.subject === "COMPUTER SCIENCE"? "rgba(54, 162, 235, 0.5)" : data.subject === "AEROMODELLING" ? "rgba(255, 0, 200, 0.5)": "rgba(0, 255, 255, 1)"}`,
+                            backgroundColor: `${data?.trainingType === "ROBOTICS" ? "rgba(255, 99, 132, 0.5)" : data.subject === "COMPUTER SCIENCE"? "rgba(50, 58, 168, 0.5)" : data.subject === "AEROMODELLING" ? "rgba(255, 0, 200, 0.5)": "rgba(0, 255, 255, 1)"}`,
+                            borderColor: `${data?.subject === "ROBOTICS" ? "rgba(255, 99, 132, 0.5)" : data.subject === "COMPUTER SCIENCE"? "rgba(50, 58, 168, 0.5)" : data.subject === "AEROMODELLING" ? "rgba(255, 0, 200, 0.5)": "rgba(0, 255, 255, 1)"}`,
                         });
                     }
 
@@ -56,11 +57,27 @@ export const useTrainingStatistics = () => {
         }
     }
 
-    // console.log(dataset);
+    // const fetch_statistics = async () => {
+    //     await api({
+    //         method: "GET",
+    //         url: "/training/statistics/?year=2024&start_month=1&end_month=12",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //             "Authorization": "Bearer " + access_token
+    //         }
+    //     }).then(response => {
+    //         if(response.status === 200) {
+    //             console.log(response.data);
+    //             setStatisticsData(response.data);
+    //         }else{
+    //             console.log(response.data)
+    //         }
+    //         setLoading(false);
+    //     }).catch(err => {
+    //         setLoading(false);
+    //         console.log(err)
+    //     })
+    // }
 
-    useEffect(() => {
-        fetch_statistics();
-    }, [])
-
-    return {fetch_statistics, dataset, loading}
+    return {fetch_statistics, dataset, loading, statisticsData}
 }

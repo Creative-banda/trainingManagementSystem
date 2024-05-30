@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 from rest_framework.views import APIView
 from django.db.models import Count
@@ -8,18 +9,23 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
+from account_app.models import User
 from .models import Training, TrainingSheetModel, TrainingDataModel, TrainingRequestsModel
 from .serializers import TrainingSerializer, TrainingSheetSerializer, TrainingDataSerializer, TrainingRequestSerializer, MasterTrainingSerializer
 from .filters import TrainingFilter, TrainingSheetModelFilter, TrainingRequestFilter
 from .enums import TrainingRequestEnum
-from .tasks import sending_mail
+from .tasks import sending_mail, send_training_mail
+from utils.cache import cache_view
 
+
+logger = logging.getLogger("django")
 
 ################################# Training Request API #########################################
 
 class TrainingRequestView(APIView):
     queryset = TrainingRequestsModel.objects.all()
     
+    @cache_view(timeout=60*10)
     def get(self, request):
         # apply filter using filterset class
         try:
@@ -31,7 +37,7 @@ class TrainingRequestView(APIView):
         except Exception as e:
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
         
-    
+    @cache_view(timeout=60*10)
     def post(self, request):
         serializer = TrainingRequestSerializer(data=request.data, context={"request": request})
         if serializer.is_valid():
@@ -53,13 +59,12 @@ class TrainingRequestByIdView(APIView):
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
 ################################### To get all the training and Post a new training ###################################
 
 class TrainingGetPost(APIView, LimitOffsetPagination):
     permission_classes = [IsAuthenticated]
     
+    @cache_view(timeout=60*15)
     def get(self, request):
         try:
             trainings = Training.objects.filter(active=True).prefetch_related('trainings')
@@ -72,13 +77,13 @@ class TrainingGetPost(APIView, LimitOffsetPagination):
         except Exception as e:
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
     
-
+    @cache_view(timeout=60*1)
     def post(self, request):
         serializer = TrainingSerializer(data=request.data, context={"request": request})
         try:
             if serializer.is_valid():
                 serializer.save()
-                
+                send_training_mail.delay(serializer.data)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
@@ -177,6 +182,7 @@ class TrainingByTrainerId(APIView):
 class TrainingFilterView(APIView):
     permission_classes = [IsAuthenticated]
     
+    @cache_view(timeout=60*15)
     def get(self, request, *args, **kwargs):
         queryset = Training.objects.all().prefetch_related('trainings')
 
@@ -259,6 +265,7 @@ class TrainingSheetView(APIView):
 
 ##################################### Training Data View #####################################
 class TrainingDataView(APIView):
+    @cache_view(timeout=60*10)
     def get(self, request, id):
         try:
             training_data = TrainingDataModel.objects.filter(id = id, active=True).first()
@@ -284,16 +291,5 @@ class TrainingDataView(APIView):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response(str(e), status=status.HTTP_204_NO_CONTENT)
-        
+    
 
-
-class SendMailView(APIView):
-    def post(self, request):
-        try:
-            to = request.data.get('to')
-            subject = request.data.get('subject')
-            html_content = request.data.get('html_content')
-            sending_mail.delay(to, subject, html_content)
-            return Response({"message": "Email sent successfully"}, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)

@@ -14,7 +14,7 @@ export const HeaderStatistics = () => {
 
     // console.log(crobotics);
     return (
-        <div className="flex gap-4 overflow-x-auto">
+        <div className="sm:flex gap-4 overflow-x-auto hidden">
 
             <div className="px-6 py-2 border-b-4 w-44 border-amber-400 rounded-lg border cursor-pointer">
                 <Statistic title="TOTAL TRAININGS" value={ongoingTrainings?.length} prefix={<TableOutlined />} suffix={`/ ${trainingsData?.length ? trainingsData?.length : 0}`} loading={loading} />

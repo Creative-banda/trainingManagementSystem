@@ -29,13 +29,14 @@ class TrainingRequestSerializer(serializers.ModelSerializer):
 
 class TrainingSerializer(serializers.ModelSerializer):
     trainer = serializers.PrimaryKeyRelatedField(queryset = User.objects.all())
-    currentGrade = serializers.PrimaryKeyRelatedField(queryset = Grades.objects.all(), write_only=True)
+    # currentGrade = serializers.PrimaryKeyRelatedField(queryset = Grades.objects.all(), write_only=True)
     currentGradeDetails = GradeSerializer(read_only=True, source='currentGrade')
     trainings = serializers.PrimaryKeyRelatedField(queryset = TrainingRequestsModel.objects.all(), many=True, write_only=True)
     trainingDetail = TrainingRequestSerializer(read_only=True, source='trainings', many=True)
 
     # Validate that in the trainings all trainings are having same subject and their start time is same
     def validate(self, data):
+        print(data)
         if 'trainings' in data and len(data['trainings']) > 1:
             subject = data['trainings'][0].subject
             start_time = data['trainings'][0].start_time
@@ -43,7 +44,7 @@ class TrainingSerializer(serializers.ModelSerializer):
             for training in data['trainings']:
                 if training.subject != subject and training.start_time != start_time:
                     raise serializers.ValidationError("All trainings must be same subject and same start time")
-
+            return data
         return data
 
     class Meta:

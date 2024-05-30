@@ -36,7 +36,7 @@ const AddTrainingModal = () => {
 
     return (
         <>
-            <Modal title="Request Training" open={addTrainingModal} onOk={handleOk} onCancel={handleCancel}
+            <Modal title="Assign Training" open={addTrainingModal} onOk={handleOk} onCancel={handleCancel}
                 footer={[]} centered
             >
                 <div>
@@ -78,7 +78,7 @@ const AddTrainingModal = () => {
                                 optionRender={({ data }) => (
                                     <div className='flex justify-between'>
                                         <p>{data?.label}</p>
-                                        <p>{data?.desc}</p>
+                                        <p className={`${data?.desc < 4 ? "text-green-400" : "text-red-400"}`}>{data?.desc}</p>
                                     </div>
                                 )}
                             />

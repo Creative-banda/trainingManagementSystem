@@ -1,7 +1,7 @@
 import React from 'react'
 import TodaysTraining from './TodaysTraining'
 import LineChart from './Charts/TrainingChart'
-import { DoughnutChart } from './Charts/TrainingStatusDougnutChart'
+import DoughnutChart from './Charts/TrainingStatusDougnutChart'
 import RequestTraining from './RequestTraining'
 
 function Dashboard() {

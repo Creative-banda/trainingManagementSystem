@@ -3,8 +3,8 @@ services:
   crm_backend:
     build: ./Back-End
     container_name: crm_backend
-    ports:
-      - 8000:8000
+    # ports:
+    #   - 8000:8000
     volumes:
       - ./Back-End:/app
     env_file:
@@ -42,17 +42,35 @@ services:
     restart: always
     ports:
       - 6379:6379
+    volumes:
+      - redis_vol:/var/lib/redis
   
   celery_worker:
     build: ./Back-End
     container_name: celery_worker
-    command: celery -A training worker -l INFO --concurrency=4 -E
+    # command: celery -A training worker -l INFO --concurrency=4 -E
+    command: celery -A training worker --concurrency=4 -l INFO --without-gossip --without-mingle --without-heartbeat -Ofair --pool=solo -E
     volumes:
       - ./Back-End:/app
     env_file:
       - ./Back-End/.env
     depends_on:
       - crm_backend
+      - redis_cache
+  
+  celery_flower:
+    image: mher/flower
+    container_name: celery_flower
+    restart: always
+    command: celery flower --persistent=True --port=5555 --basic_auth=shoib@gmail.com:1234
+    env_file:
+      - ./Back-End/.env
+    ports:
+      - 5555:5555
+    depends_on:
+      - celery_worker
+      - redis_cache
 
 volumes:
+  redis_vol:
   crm_pg_data:

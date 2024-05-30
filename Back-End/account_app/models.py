@@ -16,6 +16,7 @@ class Role(BaseModel):
     def __str__(self):
         return self.role
 
+
 ################################ User Manager #################################
 
 class userManager(BaseUserManager):
@@ -42,6 +43,12 @@ class userManager(BaseUserManager):
         return self.create_user(email, password, **kwargs)
     
 
+########### Function to handle profilePic location ###########
+
+def profilePic_location(instance, filename):
+    return f'profilePic/{instance.username}/{filename}'
+
+
 ################################ User Model #################################
 
 class User(BaseModel, AbstractUser):
@@ -50,6 +57,7 @@ class User(BaseModel, AbstractUser):
     email = models.CharField(max_length=255, unique=True)
     # schools = models.ManyToManyField("school_app.School" , blank=True, related_name = "user_schools")
     role = models.ManyToManyField(Role, blank=True, related_name = "user_roles")
+    profilePic = models.ImageField(upload_to=profilePic_location, null=True, blank=True)
 
     objects = userManager()
 
@@ -69,7 +77,7 @@ class User(BaseModel, AbstractUser):
 
 
     def __str__(self) -> str:
-        return self.username
+        return self.email
 
 
 class Profile(BaseModel):
@@ -77,3 +85,5 @@ class Profile(BaseModel):
 
     def __str__(self):
         return str(self.user)
+
+

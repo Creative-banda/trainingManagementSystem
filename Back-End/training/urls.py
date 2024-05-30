@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt import views as jwt_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 
 urlpatterns = [
@@ -13,3 +15,6 @@ urlpatterns = [
     path('gsheet/', include('google_sheet_app.urls')),
     path("__debug__/", include("debug_toolbar.urls")),
 ]
+
+# Add statics file to url to access the profile pics
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

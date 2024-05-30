@@ -37,6 +37,18 @@ function TodaysTraining() {
         },
         {
             key: 2,
+            title: "Subject",
+            dataIndex: "trainingDetail",
+            render: (_, { trainingDetail }) => (
+                <div>
+                    {
+                        <h1> {trainingDetail?.[0]?.subject} </h1>
+                    }
+                </div>
+            )
+        },
+        {
+            key: 3,
             title: "Trainer",
             dataIndex: "trainer",
             render: (trainer) => (
@@ -48,7 +60,7 @@ function TodaysTraining() {
             )
         },
         {
-            key: 3,
+            key: 4,
             title: "Action",
             render: (training) => (
 

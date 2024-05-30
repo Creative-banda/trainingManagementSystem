@@ -116,10 +116,10 @@ export const useTraining = () => {
         }).then((response) => {
             if (response.status === 200) {
                 setTrainingsData(response.data);
-                const csTraining = response.data.filter((training) => training.trainingType === "COMPUTER SCIENCE");
-                const roboticsTraining = response.data.filter((training) => training.trainingType === "ROBOTICS");
-                const aeromodellingTraining = response.data.filter((training) => training.trainingType === "AEROMODELLING");
-                const dcTraining = response.data.filter((training) => training.trainingType === "DOUBT SESSION");
+                const csTraining = response.data.filter(({trainingDetail}) => trainingDetail[0].subject === "COMPUTER SCIENCE");
+                const roboticsTraining = response.data.filter(({trainingDetail}) => trainingDetail[0].subject === "ROBOTICS");
+                const aeromodellingTraining = response.data.filter(({trainingDetail}) => trainingDetail[0].subject === "AEROMODELLING");
+                const dcTraining = response.data.filter(({trainingDetail}) => trainingDetail[0].subject === "DOUBT SESSION");
 
                 setTrainingBySubject({
                     cs: csTraining,

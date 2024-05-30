@@ -14,6 +14,8 @@ const disabledMinutes = Array.from({ length: 61 }, (_, i) => i).filter(num => nu
     return num
 })
 
+// Get the todays date in YYYY-MM-DD format
+
 const disabledHours = [0, 1, 2, 3, 4, 5, 6, 7, 9, 11, 13, 14, 16, 18, 19, 20, 21, 22, 23];
 
 function RequestTraining({ data }) {
@@ -25,8 +27,8 @@ function RequestTraining({ data }) {
     const { fetchGrades, loading, grades } = useGrades()
 
     const handleCancle = () => {
-        setRequestTrainingModal(false);
         form.resetFields();
+        setRequestTrainingModal(false);
     }
 
     const handleSubmit = (value) => {
@@ -69,11 +71,11 @@ function RequestTraining({ data }) {
                     },
                     {
                         name: ["startDate"],
-                        value: data && data?.startDate ? dayjs(data?.startDate).format("YYYY-MM-DD") : null
+                        value: data && dayjs(data?.startDate, "YYYY-MM-DD")
                     },
                     {
                         name: ["startTime"],
-                        value: data && dayjs(data?.startTime).format("HH:mm")
+                        value: data && dayjs(data?.startTime, "HH:mm")
                     }
                 ]}
             >

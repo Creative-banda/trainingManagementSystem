@@ -47,6 +47,7 @@ class Training(BaseModel):
         return f"{str(self.trainer)} - {str(self.trainings.first())}"
 
 
+# Not in use anymore
 class MasterTraining(BaseModel):
     trainings = models.ManyToManyField(Training, blank=True)
     status = models.CharField(max_length=50, choices=TrainingRequestEnum.choices(), default="ONGING")

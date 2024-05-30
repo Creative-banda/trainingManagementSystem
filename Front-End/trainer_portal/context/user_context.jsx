@@ -5,7 +5,7 @@ export const Context = createContext(null);
 
 const ContextProvider = ({children}) => {
     const [isLoading, setIsLoading] = useState(false);
-    const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("access_token") ? true : false);
+    const [isAuthenticated, setIsAuthenticated] = useState(localStorage.getItem("access_token") && localStorage.getItem("userInfo") ? true : false);
     const [error, setError] = useState();
 
     return (

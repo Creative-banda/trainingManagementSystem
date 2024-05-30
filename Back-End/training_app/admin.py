@@ -9,14 +9,15 @@ class TrainingFilter(admin.ModelAdmin):
 
     list_display = ['trainer', 'schools', 'active', ]
     list_filter = ('trainer', 'active', 'trainingStatus')
-    search_fields = ('trainer', 'active','trainingStatus', 'currentGrade')
+    # search_fields = ('trainer', 'active','trainingStatus', 'currentGrade')
     # add table view of Training model in admin side
 
 
 
 class TrainingRequestFilter(admin.ModelAdmin):
     list_filter = ('school', 'subject', 'requestor', 'status', 'subject')
-    search_fields = ('school', 'subject', 'requestor', 'status', 'subject')
+    # search_fields = ('school', 'subject', 'requestor', 'status', 'subject')
+    list_display = ['school', 'subject', 'requestor', 'status', 'subject']
 
 admin.site.register(Training, TrainingFilter)
 admin.site.register(TrainingRequestsModel, TrainingRequestFilter)

@@ -77,15 +77,15 @@ export const UpdateTrainingModal = ({ data }) => {
                             },
                             {
                                 name: ["startDate"],
-                                value: dayjs(data?.startDate, "YYYY-MM-DD")
+                                value: data?.startDate && dayjs(data?.startDate, "YYYY-MM-DD")
                             },
                             {
                                 name: ["startTime"],
-                                value: dayjs(data?.startTime, "HH:mm")
+                                value: data?.startTime && dayjs(data?.startTime, "HH:mm")
                             },
                             {
                                 name: ["endTime"],
-                                value: dayjs(data?.endTime, "HH:mm")
+                                value: data?.endTime && dayjs(data?.endTime, "HH:mm")
                             }
                         ]}
 

@@ -12,9 +12,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False if os.environ.get("DEBUG") == "False" else True
  
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -87,8 +87,7 @@ DATABASES = {
         'NAME': os.environ.get('POSTGRES_DB'),
         'USER': os.environ.get("POSTGRES_USER"),
         'PASSWORD': os.environ.get("POSTGRES_PASSWORD"),
-        # 'HOST': 'crmdb',
-        'HOST': os.environ.get("DB_HOST"),
+        'HOST': os.environ.get("DB_HOST") if DEBUG else 'crmdb',
         'PORT': os.environ.get("DB_PORT"),
     }
 }
@@ -96,8 +95,7 @@ DATABASES = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        # "LOCATION": 'redis://redis_cache:6379',
-        "LOCATION": os.environ.get("CACHE_LOC"),
+        "LOCATION": os.environ.get("CACHE_LOC") if DEBUG else 'redis://redis_cache:6379',
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
@@ -143,6 +141,38 @@ SIMPLE_JWT = {
 }
 
 
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'myapp': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
+
+
+
+
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
@@ -169,12 +199,22 @@ USE_I18N = False
 
 USE_TZ = True
 
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_USE_TLS = True
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "skhantanda@gmail.com"
+EMAIL_HOST_PASSWORD = "pucx rhet pdvq vulh"
+DEFAULT_FROM_EMAIL = 'skhantanda@gmail.com'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+MEDIA_URL = 'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -183,6 +223,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "account_app.User"
 # GSPREAD_CLIENT = initialize_gspread()  # Starting the gspread client when our server starts speeds things up; it avoids re-authenticating on each request
 
-CELERY_RESULT_BACKEND = 'django-db'
+
+
+# CELERY_BROKER_URL = os.environ.get("CACHE_LOC")
+CELERY_BROKER_URL = os.environ.get("CACHE_LOC") if DEBUG else os.environ.get("CELERY_BROKER")
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_BACKEND', 'django-db')
 CELERY_CACHE_BACKEND = 'default'
-CELERY_BROKER_URL = os.environ.get("CELERY_BROKER")

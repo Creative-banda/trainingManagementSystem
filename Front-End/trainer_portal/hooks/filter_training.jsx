@@ -6,17 +6,11 @@ import { message } from "antd";
 const useFilterTraining = () => {
     const [training, setTraining] = useState([]);
     const [loadingTrainings, setLoadingTrainings] = useState(false);
-    const [runningSubjectTrainings, setRunningSubjectTrainings] = useState({
-        computerScience: [{}],
-        robotics: [{}],
-        aeromodelling: [{}],
-        doubtSession: [{}],
-    });
-    const { access_token } = useToken();
-    const {userInfo} = useUserInfo();
+    const {access_token} = useToken();
+    // const {userInfo} = useUserInfo();
 
     const fetchTraining = async (filter) => {
-        console.log({...filter})
+        // console.log({...filter})
         try {
             setLoadingTrainings(true);
             const response = await api({
@@ -29,18 +23,8 @@ const useFilterTraining = () => {
                 }
             })
             if(response.status === 200){
+                // console.log(response.data);
                 setTraining(response.data);
-
-                const csTraining = response.data.filter((training) => training.trainingType === "COMPUTER SCIENCE");
-                const roboticsTraining = response.data.filter((training) => training.trainingType === "ROBOTICS");
-                const aeromodellingTraining = response.data.filter((training) => training.trainingType === "AEROMODELLING");
-                const doubtSessionTraining = response.data.filter((training) => training.trainingType === "DOUBT SESSION");
-                setRunningSubjectTrainings({
-                    computerScience: csTraining,
-                    robotics: roboticsTraining,
-                    aeromodelling: aeromodellingTraining,
-                    doubtSession: doubtSessionTraining
-                })
 
                 setLoadingTrainings(false);
             }
@@ -52,7 +36,7 @@ const useFilterTraining = () => {
         }
     }
 
-    return { training, loadingTrainings, runningSubjectTrainings, fetchTraining }
+    return { training, loadingTrainings, fetchTraining }
 }
 
 export default useFilterTraining;

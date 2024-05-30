@@ -2,6 +2,7 @@ import React from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import { useAllTrainings } from '../../hooks/fetch_training';
+import { Spin } from 'antd';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -39,24 +40,10 @@ const options = {
   },
 }
 
-// const plugin = {
-//   beforeInit(chart) {
-//     // reference of original fit function
-//     const originalFit = chart.legend.fit;
-
-//     // override the fit function
-//     chart.legend.fit = function fit() {
-//       // call original function and bind scope in order to use `this` correctly inside it
-//       originalFit.bind(chart.legend)();
-//       // increase the width to add more space
-//       this.width += 20;
-//     };
-//   }
-// };
 
 
-export function DoughnutChart() {
-  const { robotics, cs, aeromodelling, dc } = useAllTrainings();
+const DoughnutChart = () => {
+  const { robotics, cs, aeromodelling, dc, loading } = useAllTrainings();
 
   const data = {
     labels: labels,
@@ -71,9 +58,15 @@ export function DoughnutChart() {
     ],
   };
   return (
-    <div className='flex justify-center items-center w-full h-full'>
-      <Doughnut data={data} options={options} />
+    <div className='flex justify-center items-center w-full h-full shadow-md'>
+      {
+        loading ? <Spin spinning={loading} tip="Loading..." /> :
+          <Doughnut data={data} options={options} />
+      }
     </div>
   )
 
 }
+
+
+export default React.memo(DoughnutChart);

@@ -9,6 +9,7 @@ import SchoolRegistration from '../components/SchoolRegistration'
 import Login from '../components/Login'
 import Scheduler from '../components/Scheduler'
 import AssignTraining from '../components/AssignTraining'
+import Profile from '../components/Charts/Profile'
 
 function App() {
 
@@ -24,6 +25,7 @@ function App() {
           <Route path='/schools/:id' element={<ShowSchools />} />
           <Route path="/scheduller" element={<Scheduler />} />
           <Route path='/assign' element={<AssignTraining/>}/>
+          <Route path="/profile" element={<Profile/>} />
         </Route>
         <Route path='/login' element={<Login />} />
         <Route path='/school-register' element={<SchoolRegistration />} />
