@@ -14,7 +14,7 @@ def generate_cache_key(request):
     url = request.build_absolute_uri()
     query_params = request.GET.urlencode()
     key = f"{url}?{query_params}"
-    return hashlib.md5(key.encode('utf-8')).hexdigest()
+    return key
 
 def cache_view(timeout):
     def decorator(func):

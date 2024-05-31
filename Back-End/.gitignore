@@ -14,3 +14,10 @@ scripts
 .dockerignore
 google_api_key.json
 heroic-gamma-405217-c066e59e513.json
+
+# Static files
+static/
+staticfiles/
+
+# Media files
+media/

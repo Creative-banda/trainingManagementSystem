@@ -12,6 +12,6 @@ urlpatterns = [
     path("sheet/data/<str:id>/", TrainingDataView.as_view()),
     path("statistics/", cache_page(60*5)(TrainingStatisticsView.as_view())),
     path("<str:pk>/", TrainingById.as_view()),
-    path("trainer/<str:id>/", TrainingsByTrainer.as_view()),
+    # path("trainer/<str:id>/", TrainingsByTrainer.as_view()),
     path("trainer/all/<str:id>/", TrainingByTrainerId.as_view()),
 ]
