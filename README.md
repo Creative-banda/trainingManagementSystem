@@ -1,6 +1,6 @@
 # CRM (Customer Relationship Management) Software
 
-#Installation
+### Installation
 
  1. Install Docker and Docker Compose [Document](https://docs.docker.com/engine/install/)
  2. Make .env file and make use of **domoenv**  from Back-End folder and fill the credentials
