@@ -1,0 +1,25 @@
+# Postgress env
+DB_NAME=
+DB_HOST=
+DB_PASS=
+DB_PORT=
+DB_USER=
+
+
+# stage=development
+stage=production
+
+# Redis location for cache and CELERY development stage
+CACHE_LOC=redis://127.0.0.1:6379/0
+
+# Celery Location for Production
+CELERY_BROKER='redis://redis_cache:6379/0'
+CELERY_BACKEND='django-db'
+
+# Django Secret Key
+SECRET_KEY=
+
+# Docker Postgress env
+POSTGRES_DB=trainingdb
+POSTGRES_USER=
+POSTGRES_PASSWORD=

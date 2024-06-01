@@ -1,10 +1,10 @@
 import { Button, Form, Image, Input, Tooltip, Upload, message } from 'antd'
 import React, { useState } from 'react'
-import { useToken, useUserInfo } from '../../hooks/token_hooks'
+import { useToken, useUserInfo } from '../hooks/token_hooks'
 import { UploadOutlined } from '@ant-design/icons'
-import api from '../../interceptor/axios_interceptor'
+import api from '../interceptor/axios_interceptor'
 import { useNavigate } from 'react-router-dom'
-import useLogout from '../../hooks/logout_user'
+import useLogout from '../hooks/logout_user'
 
 const BASE_URL = import.meta.env.VITE_BASE_URL
 
@@ -41,8 +41,12 @@ function Profile() {
                 localStorage.setItem('userInfo', JSON.stringify(updatedUserInfo));
                 message.success('Profile Updated Successfully')
             }
-            console.log(res.data);
+            if (res.status === 400) {
+                message.error('File size should be less than 2MB');
+            }
+            // console.log(res.data);
         }).catch(err => {
+            console.log(err);
             message.error(err?.response?.data ? err?.response?.data : "Something went wrong");
         }).finally(() => {
             setLoading(false);
@@ -128,7 +132,7 @@ function Profile() {
                         </Tooltip>
                     </Upload>
 
-                    <Button type='primary' onClick={handleUpload} loading={loading} disabled={fileList.length === 0 || fileList.length > 1 || uploading} >Update Profile</Button>
+                    <Button type='primary' onClick={handleUpload} loading={loading} disabled={fileList.length === 0 || fileList.length > 1 || loading} >Update Profile</Button>
                 </div>
             </div>
 

@@ -9,7 +9,7 @@ import SchoolRegistration from '../components/SchoolRegistration'
 import Login from '../components/Login'
 import Scheduler from '../components/Scheduler'
 import AssignTraining from '../components/AssignTraining'
-import Profile from '../components/Charts/Profile'
+import Profile from '../components/Profile'
 
 function App() {
 

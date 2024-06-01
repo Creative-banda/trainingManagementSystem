@@ -15,7 +15,7 @@ from .serializers import TrainingSerializer, TrainingSheetSerializer, TrainingDa
 from .filters import TrainingFilter, TrainingSheetModelFilter, TrainingRequestFilter
 from .enums import TrainingRequestEnum
 from .tasks import sending_mail, send_training_mail
-from utils.cache import cache_view
+# from utils.cache import cache_view
 
 
 logger = logging.getLogger("django")
@@ -25,7 +25,7 @@ logger = logging.getLogger("django")
 class TrainingRequestView(APIView):
     queryset = TrainingRequestsModel.objects.all()
     
-    @cache_view(timeout=60*10)
+    # @cache_view(timeout=60*10)
     def get(self, request):
         # apply filter using filterset class
         try:
@@ -37,7 +37,7 @@ class TrainingRequestView(APIView):
         except Exception as e:
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
         
-    @cache_view(timeout=60*10)
+    # @cache_view(timeout=60*10)
     def post(self, request):
         serializer = TrainingRequestSerializer(data=request.data, context={"request": request})
         if serializer.is_valid():
@@ -64,7 +64,7 @@ class TrainingRequestByIdView(APIView):
 class TrainingGetPost(APIView, LimitOffsetPagination):
     permission_classes = [IsAuthenticated]
     
-    @cache_view(timeout=60*15)
+    # @cache_view(timeout=60*15)
     def get(self, request):
         try:
             trainings = Training.objects.filter(active=True).prefetch_related('trainings')
@@ -77,7 +77,7 @@ class TrainingGetPost(APIView, LimitOffsetPagination):
         except Exception as e:
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
     
-    @cache_view(timeout=60*1)
+    # @cache_view(timeout=60*1)
     def post(self, request):
         serializer = TrainingSerializer(data=request.data, context={"request": request})
         try:

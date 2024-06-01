@@ -7,8 +7,11 @@ from django.contrib.auth import get_user_model
 from .models import Profile
 from .serializers import userSerializer, ProfileSerializer, PasswordChangeSerializer
 from .tasks import testing
+import logging
 
 User = get_user_model()
+
+logger = logging.getLogger("django")
 
 # Create your views here.
 def AccountHome(request):
@@ -50,6 +53,7 @@ class UserLoginLogout(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
+        logger.error(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     

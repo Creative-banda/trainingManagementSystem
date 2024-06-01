@@ -36,7 +36,6 @@ class TrainingSerializer(serializers.ModelSerializer):
 
     # Validate that in the trainings all trainings are having same subject and their start time is same
     def validate(self, data):
-        print(data)
         if 'trainings' in data and len(data['trainings']) > 1:
             subject = data['trainings'][0].subject
             start_time = data['trainings'][0].start_time

@@ -6,15 +6,11 @@ import os
 
 load_dotenv()
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False if os.environ.get("DEBUG") == "False" else True
- 
-ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -78,29 +74,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'training.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB'),
-        'USER': os.environ.get("POSTGRES_USER"),
-        'PASSWORD': os.environ.get("POSTGRES_PASSWORD"),
-        'HOST': os.environ.get("DB_HOST") if DEBUG else 'crmdb',
-        'PORT': os.environ.get("DB_PORT"),
-    }
-}
-
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": os.environ.get("CACHE_LOC") if DEBUG else 'redis://redis_cache:6379',
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
-    }
-}
 
 
 # Password validation
@@ -216,16 +189,12 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "account_app.User"
+
+
+""" Google Spreadsheet features are yet to implement """
 # GSPREAD_CLIENT = initialize_gspread()  # Starting the gspread client when our server starts speeds things up; it avoids re-authenticating on each request
 
-
-
-# CELERY_BROKER_URL = os.environ.get("CACHE_LOC")
-CELERY_BROKER_URL = os.environ.get("CACHE_LOC") if DEBUG else os.environ.get("CELERY_BROKER")
-CELERY_RESULT_BACKEND = os.environ.get('CELERY_BACKEND', 'django-db')
-CELERY_CACHE_BACKEND = 'default'

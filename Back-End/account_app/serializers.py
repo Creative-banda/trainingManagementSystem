@@ -18,6 +18,14 @@ class userSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'total_training', 'role', "profilePic"]
+
+    # validate that profilePic is not greater than 2MB
+    def validate(self, attrs):
+        profilePic = attrs.get('profilePic')
+        limit = 2 * 1024 * 1024
+        if profilePic and len(profilePic) > limit:
+            raise serializers.ValidationError("ProfilePic size should not be greater than 2MB")
+        return attrs
     
     def get_total_training(self, user):
         try:
