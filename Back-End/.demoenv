@@ -6,8 +6,8 @@ DB_PORT=
 DB_USER=
 
 
-# stage=development
-stage=production
+stage=development
+# stage=production
 
 # Redis location for cache and CELERY development stage
 CACHE_LOC=redis://127.0.0.1:6379/0
