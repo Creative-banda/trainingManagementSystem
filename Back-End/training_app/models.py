@@ -17,6 +17,7 @@ class TrainingRequestsModel(BaseModel):
     endTime = models.TimeField( blank=True, null=True )
     startTime = models.TimeField( blank=True )
     status = models.CharField(max_length=50, choices=TrainingStatusEnum.choices(), default=TrainingStatusEnum.PENDING.value)
+    active = models.BooleanField(default=True)
 
     class Meta:
         ordering = ["-startDate", "startTime"]

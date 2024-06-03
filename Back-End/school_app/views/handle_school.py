@@ -5,12 +5,15 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 
+from school_app.models import School
+from school_app.serializers import SchoolSerializer
+from school_app.filter import SchoolFilter
 
-from training_app.models import Training
-from .models import School, Grades
-from .serializers import SchoolSerializer, GradeSerializer
-from .filter import SchoolFilter
+from training_app.models import Training, TrainingRequestsModel
 
+import logging
+
+logger = logging.getLogger("django")
 
 ################################ Get all schools or post a new school #################################
 class SchoolsGetPost(APIView, LimitOffsetPagination):
@@ -26,6 +29,7 @@ class SchoolsGetPost(APIView, LimitOffsetPagination):
             # Fetch the schools with the query parameters
             result = self.paginate_queryset(schools, request, view=self)
             serializer = SchoolSerializer(result, many = True, context = {"request":request})
+            logger.info("Schools fetched successfully")
             return self.get_paginated_response(serializer.data)
         except Exception as e:
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
@@ -34,12 +38,19 @@ class SchoolsGetPost(APIView, LimitOffsetPagination):
         serializer = SchoolSerializer(data = request.data, context = {"request": request})
         if serializer.is_valid():
             serializer.save()
+            logger.info("School created successfully")
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        logger.error(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
-################################ GET, UPDATE or DELETE School by School ID #################################
+
+
+##################### GET, UPDATE or DELETE School by School ID ###########################
 class SchoolById(APIView):
+    """
+     GET, UPDATE or DELETE School by School ID
+    """
     permission_classes = [permissions.IsAuthenticated]
     
     # A Function to fetch the school by its id
@@ -67,36 +78,21 @@ class SchoolById(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
+        logger.error(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def delete(self, request, pk, format=None):
         try:
             school = self.get_school(pk)
         except Exception as e:
+
             return Response(str(e), status=status.HTTP_204_NO_CONTENT)
         with transaction.atomic():
-            training = Training.objects.filter(schools=school)
+            training = TrainingRequestsModel.objects.filter(school=school)
             training.active = False
             school.active = False
             training.save()
             school.save()
+        logger.info("School deleted successfully")
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
-################################ Get all grades #################################
-class GradeGetView(APIView):
-    def get(self, request):
-        try:
-            grades = Grades.objects.all()
-            serializer = GradeSerializer(grades, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response(str(e), status = status.HTTP_400_BAD_REQUEST)
-        
-
-class SchoolFilterView(APIView):
-    query_set = School.objects.filter(active=True)
-    def get(self, request):
-        filter_set = SchoolFilter(request.query_params, queryset=self.query_set)
-        serializer = SchoolSerializer(filter_set.qs, many=True, context={"request": request})
-        return Response(serializer.data, status=status.HTTP_200_OK)

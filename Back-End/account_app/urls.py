@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import AccountHome, ListUsers, UserLoginLogout, PasswordChangeView
+from .views import ListUsers, UserLoginLogout, PasswordChangeView
 from django.views.decorators.cache import cache_page
 
 

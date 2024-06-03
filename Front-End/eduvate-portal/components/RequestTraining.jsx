@@ -60,9 +60,21 @@ function RequestTraining() {
             key: 5,
         },
         {
+            key: 6,
+            title: "Grades",
+            dataIndex: "grades",
+            render: (_, { grades }) => (
+                <div>
+                    {
+                        <p> {grades[0].grades} - {grades[grades.length - 1].grades} </p>
+                    }
+                </div>
+            )
+        },
+        {
+            key: 7,
             title: "Status",
             dataIndex: "status",
-            key: 6,
             render: (_, { status }) => (
                 <div>
                     <Tag color={status === "PENDING" ? "orange" : "green"}>{status}</Tag>

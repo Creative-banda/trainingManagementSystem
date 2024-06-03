@@ -36,7 +36,7 @@ const useFilterTraining = (filters) => {
             }
 
         } catch (err) {
-            message.error("Error in Filter Training");
+            message.error(err?.message ? err?.message : "Something went wrong");
             setLoadingTrainings(false);
             console.log(err);
         }
@@ -48,13 +48,13 @@ const useFilterTraining = (filters) => {
     }, [])
 
     useEffect(() => {
-        const csTrainings = training?.filter(({trainingDetail}) => trainingDetail[0].subject === "COMPUTER SCIENCE");
+        const csTrainings = training?.filter(({ trainingDetail }) => trainingDetail[0]?.subject === "COMPUTER SCIENCE");
         setCS(csTrainings);
-        const roboTrainings = training?.filter(({trainingDetail}) => trainingDetail[0].subject === "ROBOTICS");
+        const roboTrainings = training?.filter(({ trainingDetail }) => trainingDetail[0]?.subject === "ROBOTICS");
         setRobotics(roboTrainings);
-        const aeroTrainings = training?.filter(({trainingDetail}) => trainingDetail[0].subject === "AEROMODELLING");
+        const aeroTrainings = training?.filter(({ trainingDetail }) => trainingDetail[0]?.subject === "AEROMODELLING");
         setAeromodelling(aeroTrainings);
-        const dcSession = training?.filter(({trainingDetail}) => trainingDetail[0].subject === "DOUBT SESSION");
+        const dcSession = training?.filter(({ trainingDetail }) => trainingDetail[0]?.subject === "DOUBT SESSION");
         setDC(dcSession);
     }, [training]);
 

@@ -208,10 +208,10 @@ export const useAllTrainings = () => {
             .then((response) => {
                 setLoading(false);
                 setTrainingsData(response.data);
-                setRobotics(response.data?.filter(({trainingDetail}) => trainingDetail[0].subject === "ROBOTICS"))
-                setCS(response.data?.filter(({trainingDetail}) => trainingDetail[0].subject === "COMPUTER SCIENCE"))
-                setDC(response.data?.filter(({trainingDetail}) => trainingDetail[0].subject === "DOUBT SESSION"))
-                setAeromodelling(response.data?.filter(({trainingDetail}) => trainingDetail[0].subject === "AEROMODELLING"))
+                setRobotics(response.data?.filter(({trainingDetail}) => trainingDetail[0]?.subject === "ROBOTICS"))
+                setCS(response.data?.filter(({trainingDetail}) => trainingDetail[0]?.subject === "COMPUTER SCIENCE"))
+                setDC(response.data?.filter(({trainingDetail}) => trainingDetail[0]?.subject === "DOUBT SESSION"))
+                setAeromodelling(response.data?.filter(({trainingDetail}) => trainingDetail[0]?.subject === "AEROMODELLING"))
             })
             .catch((error) => {
                 console.log(error);
