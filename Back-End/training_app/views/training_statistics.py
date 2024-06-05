@@ -9,7 +9,6 @@ from django.db.models.functions import ExtractMonth
 
 from calendar import month_name
 
-
 import logging
 
 logger = logging.getLogger("django")

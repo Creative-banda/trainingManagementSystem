@@ -10,16 +10,12 @@ import { TiPointOfInterest } from "react-icons/ti";
 // import { ModalContext } from '../context/modal_context';
 
 function RequestTraining() {
-    const { fetchRequestedTraining, requestedTraining, loading } = useRequestTraining();
+    const { requestedTraining, refetchRquestedTraining, loading, filters, setFilters } = useRequestTraining();
     // const { setTrainingModal} = useContext(ModalContext);
 
     const { allSchoolOptions } = useSchools();
     const { userName } = useUserOptions();
-
-    const [filters, setFilters] = useState({
-        school: "", subject: "", requestor: "", status: "PENDING"
-    })
-    const [trainingData, setTrainingData] = useState({});
+    // const [trainingData, setTrainingData] = useState({});
 
     // console.log(filters);
 
@@ -95,10 +91,6 @@ function RequestTraining() {
         // }
     ]
 
-    useEffect(() => {
-        fetchRequestedTraining(filters);
-    }, [])
-
     return (
         <div className=''>
             {/* <AddTrainingModal data={trainingData} /> */}
@@ -114,7 +106,7 @@ function RequestTraining() {
 
                         <Select options={TrainingStatus} placeholder="Filter By Status" className=' w-40' allowClear onSelect={(value) => setFilters({ ...filters, status: value })} onClear={() => setFilters({ ...filters, status: "" })} size='small' />
 
-                        <Button type='primary' icon={<SearchOutlined />} onClick={() => fetchRequestedTraining(filters)} size='small'/>
+                        <Button type='primary' icon={<SearchOutlined />} onClick={() => refetchRquestedTraining()} size='small'/>
                     </div>
                 )}
             />

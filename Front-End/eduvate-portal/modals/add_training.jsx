@@ -13,15 +13,16 @@ const AddTrainingModal = () => {
 
     // console.log(data);
     const { userName } = useUserOptions();
-    const { addTraining, loadingTraining } = useTrainings();
+    const { addTrainingMutate, loadingTraining } = useTrainings();
     const { fetchRequestedTraining, requestedTraining, loading } = useRequestTraining();
     const [form] = Form.useForm();
 
     const handleOk = async (values) => {
         console.log(values);
 
-        addTraining(values)
+        addTrainingMutate(values)
         form.resetFields();
+        setTrainingModal(false);
     };
 
     const handleCancel = () => {

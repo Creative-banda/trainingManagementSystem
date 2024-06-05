@@ -3,10 +3,11 @@ import { message } from "antd";
 import { useToken } from "./token_hooks";
 import api from "../interceptor/axios_interceptor";
 import { ModalContext } from "../context/modal_context";
+import { useQuery } from "@tanstack/react-query";
 
 const useSchools = () => {
-    const [schools, setSchools] = useState([]);
-    const [fetchingSchool, setFetchingSchool] = useState(false);
+    // const [schools, setSchools] = useState([]);
+    // const [fetchingSchool, setFetchingSchool] = useState(false);
     const [fetchingAllSchools, setFetchingAllSchools] = useState(false);
     const [allSchoolOptions, setAllSchoolOptions] = useState([]);
     const [pagination, setPagination] = useState({
@@ -15,31 +16,52 @@ const useSchools = () => {
     });
     const { access_token } = useToken();
 
-    const fetchSchools = async (params = {}) => {
-        setFetchingSchool(true);
-        await api({
-            method: "GET",
-            url: "/school/",
-            params: { ...params },
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + access_token
-            }
-        })
-            .then((response) => {
-                const { results, count } = response.data;
-                setSchools(results);
-                setPagination({
-                    ...pagination,
-                    total: count
-                })
-                setFetchingSchool(false);
+    // const fetchSchools = async (params = {}) => {
+    //     setFetchingSchool(true);
+    //     await api({
+    //         method: "GET",
+    //         url: "/school/",
+    //         params: { ...params },
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //             "Authorization": "Bearer " + access_token
+    //         }
+    //     })
+    //         .then((response) => {
+    //             const { results, count } = response.data;
+    //             setSchools(results);
+    //             setPagination({
+    //                 ...pagination,
+    //                 total: count
+    //             })
+    //             setFetchingSchool(false);
 
+    //         })
+    //         .catch((error) => {
+    //             console.log(error);
+    //             setFetchingSchool(false)
+    //         })
+    // }
+
+    const fetchSchools = async (params = {}) => {
+        try {
+            const response = await api({
+                method: "GET",
+                url: "/school/",
+                params: { ...params },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + access_token
+                }
             })
-            .catch((error) => {
-                console.log(error);
-                setFetchingSchool(false)
+            setPagination({
+                ...pagination,
+                total: response.data.count
             })
+            return response.data.results
+        } catch (error) {
+            throw new Error(error.message ? error.message : "Something went wrong while fetching school");
+        }
     }
 
     const fetchAllSchools = async () => {
@@ -95,14 +117,19 @@ const useSchools = () => {
         })
     }
 
-    
+    const { data: schools, isLoading: fetchingSchool } = useQuery({
+        queryKey: ["schools", { limit: pagination.pageSize, offset: (pagination.current - 1) * pagination.pageSize }],
+        queryFn: () => fetchSchools({ limit: pagination.pageSize, offset: (pagination.current - 1) * pagination.pageSize }),
+        refetchOnWindowFocus: false
+    })
 
-    useEffect(() => {
-        fetchSchools({
-            limit: pagination.pageSize,
-            offset: (pagination.current - 1) * pagination.pageSize
-        });
-    }, [pagination.current, pagination.pageSize])
+
+    // useEffect(() => {
+    //     fetchSchools({
+    //         limit: pagination.pageSize,
+    //         offset: (pagination.current - 1) * pagination.pageSize
+    //     });
+    // }, [pagination.current, pagination.pageSize])
 
     useEffect(() => {
         fetchAllSchools();

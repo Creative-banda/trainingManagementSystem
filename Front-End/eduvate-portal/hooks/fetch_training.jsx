@@ -3,6 +3,7 @@ import api from "../interceptor/axios_interceptor";
 import { useToken } from "./token_hooks";
 import { message } from "antd";
 import { ModalContext } from "../context/modal_context";
+import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const useTrainingById = (id, modal) => {
     const [fetchingTraining, setFetchingTraining] = useState(false);
@@ -74,157 +75,191 @@ export default useTrainingById
 // All the trainings from django server
 
 export const useTrainings = () => {
-    const { setTrainingModal } = useContext(ModalContext);
-    const [trainingsData, setTrainingsData] = useState([]);
-    const [loadingTraining, setLoading] = useState(false); 
+    const queryClient = useQueryClient();
     const [pagination, setPagination] = useState({
         current: 1,
         pageSize: 10,
+        total: 0
     });
+
+    const [filter, setFilter] = useState({
+        trainings__school: null, trainer: null
+    })
 
     const { access_token } = useToken();
 
-    const fetchTraining = async (params = {}) => {
-        setLoading(true);
-        await api({
-            method: 'GET',
-            url: "/training/",
-            params: { ...params },
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + access_token
-            }
-        })
-            .then((response) => {
-                setTrainingsData(response.data?.results);
-                setPagination({
-                    ...pagination,
-                    total: response.data?.count
-                })
-                setLoading(false);
+    const fetchTraining = async (filter, pagination) => {
+        try {
+            const response = await api({
+                method: 'GET',
+                url: "/training/",
+                params: { 
+                    ...filter,
+                    offset: (pagination.current - 1) * pagination.pageSize,
+                    limit: pagination.pageSize
+                 },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + access_token
+                }
             })
-            .catch((error) => {
-                console.log(error);
-                setLoading(false);
+            console.log(response.data)
+            console.log(pagination);
+            setPagination(prev => ({
+                ...prev,
+                total: response.data?.count
             })
+            )
+            return response.data?.results
+
+        } catch (error) {
+            return error.message ? error.message : "Could not fetch the Trainings"
+        }
     }
+
 
     const addTraining = async (values) => {
-        setLoading(true);
-        await api({
-            method: 'POST',
-            url: "/training/",
-            data: values,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + access_token
-            }
-        }).then(response => {
-            if (response.status === 201) {
-                setLoading(false);
-                message.success("Training added successfully");
-                setTrainingModal(false);
-            } else {
-                setLoading(false);
-                message.error(response.message);
+        try {
+            const response = await api({
+                method: 'POST',
+                url: "/training/",
+                data: values,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + access_token
+                }
+            })
 
+            if (response.status !== 201) {
+                throw new Error(response.message ? response.message : "Failed to add Training")
             }
-        }).catch(err => {
-            setLoading(false);
-            message.error("Something went wrong");
-        })
+            return response
+        } catch (error) {
+            throw new Error(error.message ? error.message : "Failed to add Training")
+        }
     }
 
-    const updateTraining = async ( value, id ) => {
-        await api({
-            method: 'PUT',
-            url: `/training/${id}/`,
-            data: value,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + access_token
+    const updateTraining = async (value, id) => {
+        console.log(value, id)
+        try {
+            const response = await api({
+                method: 'PUT',
+                url: `/training/${id}/`,
+                data: { ...value },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + access_token
+                }
+            })
+            if (response.status !== 202) {
+                throw new Error(response.message ? response.message : "Failed to update Training")
             }
-        }).then((response) => {
-            if (response.status === 202) {
-                // console.log(response);
-                message.success("Training Edited Successfully");
-            } else {
-                message.error(response.message);
-            }
-        }).catch((err) => {
-            message.error(err?.response?.data ? err?.response?.data : "Something went wrong");
-        })
+        } catch (error) {
+            throw new Error(error.message ? error.message : "Failed to update Training")
+        }
     }
 
     const deleteTraining = async (id) => {
-        await api({
-            method: 'DELETE',
-            url: `/training/${id}/`,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + access_token
+        try {
+
+            const response = await api({
+                method: 'DELETE',
+                url: `/training/${id}/`,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + access_token
+                }
+            })
+            if (response.status !== 204) {
+                throw new Error(response.message ? response.message : "Failed to delete Training")
             }
-        }).then((response) => {
-            if (response.status === 204) {
-                message.success("Training Deleted Successfully");
-            } else {
-                message.error(response.message);
-            }
-        }).catch((err) => {
-            message.error(err?.response?.data ? err?.response?.data : "Something went wrong");
-        })
+        } catch (error) {
+            throw new Error(error.message ? error.message : "Failed to delete Training")
+        }
     }
 
-    useEffect(() => {
-        fetchTraining({
-            limit: pagination.pageSize,
-            offset: (pagination.current - 1) * pagination.pageSize
-        });
-    }, [pagination.current, pagination.pageSize])
 
-    return { setPagination, pagination, loadingTraining, trainingsData, fetchTraining, addTraining, updateTraining, deleteTraining }
+    // Fetch all trainings with Pagination
+    const { data: trainingsData, isLoading: loadingTraining, refetch: refetchTrainings } = useQuery({
+        queryKey: ['trainings', pagination],
+        queryFn: () => fetchTraining(filter, pagination),
+        onError: (error) => {
+            message.error(error.message ? error.message : "Failed to fetch Trainings")
+        }
+    })
+
+
+    // Add a new training
+    const { mutate: addTrainingMutate, isLoading } = useMutation({
+        mutationFn: (values) => addTraining(values),
+        onSuccess: () => {
+            message.success("Training Added Successfully");
+            queryClient.invalidateQueries({ queryKey: ['trainings', 'requestedTraining'] })
+        },
+        onError: (error) => {
+            message.error(error.message ? error.message : "Failed to add Training")
+        }
+    }
+    )
+
+    // update Trainings
+    const { mutate: updateTrainingMutate } = useMutation({
+        mutationFn: ({ value, id }) => updateTraining(value, id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['trainings'] })
+            message.success("Training Updated Successfully");
+        },
+        onError: (error) => {
+            message.error(error.message ? error.message : "Failed to update Training")
+        }
+    })
+
+    // Delete Trainings
+    const { mutate: deleteTrainingMutate } = useMutation({
+        mutationFn: (id) => deleteTraining(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['trainings', 'requestedTraining'] })
+            message.success("Training Deleted Successfully");
+        },
+        onError: (error) => {
+            message.error(error.message ? error.message : "Failed to delete Training")
+        }
+    })
+
+    return { setPagination, setFilter, filter, pagination, loadingTraining, trainingsData, addTrainingMutate, updateTrainingMutate, deleteTrainingMutate, refetchTrainings }
 }
 
 export const useAllTrainings = () => {
-    const [trainingsData, setTrainingsData] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [robotics, setRobotics] = useState([]);
-    const [cs, setCS] = useState([]);
-    const [dc, setDC] = useState([]);
-    const [aeromodelling, setAeromodelling] = useState([]);
-
     const { access_token } = useToken();
 
     const fetchTrainings = async () => {
-        setLoading(true);
-        await api({
-            method: 'GET',
-            url: "/training/all",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + access_token
+        try {
+
+            const response = await api({
+                method: 'GET',
+                url: "/training/all",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + access_token
+                }
+            })
+            if (response.status !== 200) {
+                throw new Error(response.message ? response.message : "Failed to fetch Trainings")
             }
-        })
-            .then((response) => {
-                setLoading(false);
-                setTrainingsData(response.data);
-                setRobotics(response.data?.filter(({trainingDetail}) => trainingDetail[0]?.subject === "ROBOTICS"))
-                setCS(response.data?.filter(({trainingDetail}) => trainingDetail[0]?.subject === "COMPUTER SCIENCE"))
-                setDC(response.data?.filter(({trainingDetail}) => trainingDetail[0]?.subject === "DOUBT SESSION"))
-                setAeromodelling(response.data?.filter(({trainingDetail}) => trainingDetail[0]?.subject === "AEROMODELLING"))
-            })
-            .catch((error) => {
-                console.log(error);
-                setLoading(false)
-            })
+            return response.data;
+        } catch {
+            throw new Error(error.message ? error.message : "Failed to fetch Trainings")
+        }
     }
 
+    const { data: trainingsData, isLoading: loading } = useQuery({
+        queryKey: ['all_trainings'],
+        queryFn: () => fetchTrainings(),
+        onError: (error) => {
+            message.error(error.message ? error.message : "Failed to fetch Trainings")
+        }
+    })
 
-
-    useEffect(() => {
-        fetchTrainings();
-    }, [])
-
-    return { trainingsData, loading, robotics, cs, dc, aeromodelling }
+    return { trainingsData, loading }
 }
 

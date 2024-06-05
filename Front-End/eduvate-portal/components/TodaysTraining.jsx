@@ -18,7 +18,7 @@ function TodaysTraining() {
     const { userName, loading } = useUserOptions();
     const { training, loadingTrainings, fetchTraining } = useFilterTraining(filters);
     const { grades, gradeLoading } = useGrades();
-    // console.log(training);
+    // console.log(grades);
 
     const columns = [
         {

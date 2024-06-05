@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import { useAllTrainings } from '../../hooks/fetch_training';
@@ -43,14 +43,35 @@ const options = {
 
 
 const DoughnutChart = () => {
-  const { robotics, cs, aeromodelling, dc, loading } = useAllTrainings();
+  const { loading, trainingsData} = useAllTrainings();
+
+  const chartData = useMemo(() => {
+    const data = {
+      cs: 0,
+      robotics: 0,
+      aeromodelling: 0,
+      dc: 0
+    }
+
+    const cs = trainingsData?.filter(({ trainingDetail }) => trainingDetail[0]?.subject === "COMPUTER SCIENCE")
+    const robotics = trainingsData?.filter(({ trainingDetail }) => trainingDetail[0]?.subject === "ROBOTICS")
+    const aeromodelling = trainingsData?.filter(({ trainingDetail }) => trainingDetail[0]?.subject === "AEROMODELLING")
+    const dc = trainingsData?.filter(({ trainingDetail }) => trainingDetail[0]?.subject === "DOUBT SESSION")
+
+    data.cs = cs?.length
+    data.robotics = robotics?.length
+    data.aeromodelling = aeromodelling?.length
+    data.dc = dc?.length
+    return data
+
+  }, [trainingsData])
 
   const data = {
     labels: labels,
     datasets: [
       {
         label: 'Training Status',
-        data: [robotics?.length, cs?.length, aeromodelling?.length, dc?.length],
+        data: [chartData.robotics, chartData.cs, chartData.aeromodelling, chartData.dc],
         backgroundColor: backgroundColor,
         borderColor: borderColor,
         borderWidth: borderWidth,

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Button, Table, Select, Tooltip, Popconfirm } from 'antd';
 import { DeleteOutlined, EyeOutlined, PlusOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import { TiPointOfInterest } from "react-icons/ti";
@@ -16,15 +16,13 @@ export function Training() {
   const { setEditModal, setTrainingModal } = useContext(ModalContext);
   const { allSchoolOptions } = useSchools();
   const { userName } = useUserOptions();
-  const { pagination, setPagination, trainingsData, loadingTraining, fetchTraining, deleteTraining } = useTrainings();
+  const { pagination, setPagination, trainingsData, loadingTraining, refetchTrainings, deleteTrainingMutate, setFilter, filter } = useTrainings();
 
-  const [filter, setFilter] = useState({
-    trainings__school: "", trainer: "", offset: 0, limit: 10
-  })
+  
 
   const handleFilter = () => {
     // console.log(filter);
-    fetchTraining({ ...filter });
+    refetchTrainings();
   }
 
 
@@ -97,7 +95,7 @@ export function Training() {
             }} />
           </Tooltip>
 
-          <Popconfirm title="Are you sure?" onConfirm={() => deleteTraining(training.id)} >
+          <Popconfirm title="Are you sure?" onConfirm={() => deleteTrainingMutate(training.id)} >
             <Button danger icon={<DeleteOutlined />} size='small' />
           </Popconfirm>
         </div>
@@ -109,7 +107,6 @@ export function Training() {
 
   const handleTableChange = (pagination) => {
     setPagination(pagination);
-    setFilter({ ...filter, offset: (pagination?.current - 1) * pagination?.pageSize, limit: pagination?.pageSize });
   }
 
   return (
@@ -118,13 +115,13 @@ export function Training() {
       <EditModal trainingData={trainingData} />
       <AddTrainingModal />
 
-      <Table columns={columns} dataSource={trainingsData} loading={loadingTraining} pagination={pagination} onChange={handleTableChange} size='small' className='border rounded-lg'
+      <Table columns={columns} dataSource={trainingsData} loading={loadingTraining} pagination={pagination} onChange={handleTableChange} size='small' className='border rounded-lg transition'
         // Title for filtering and other information
         title={() => (
           <div className='flex justify-between'>
 
             <div className='flex gap-2'>
-              <Select placeholder="Search by Trainer" options={userName} onChange={(value) => setFilter({ ...filter, trainer: value })} allowClear showSearch optionFilterProp='label' size='small'
+              <Select placeholder="Search by Trainer" options={userName} onChange={(value) => setFilter({ ...filter, trainer: value })} allowClear showSearch optionFilterProp='label' size='small' className=' w-48'
                 optionRender={(user) => (
                   <div className='flex justify-between'>
                     <span>{user.data.label}</span>
@@ -134,7 +131,7 @@ export function Training() {
                 }
               />
 
-              <Select placeholder="Search by School" allowClear showSearch optionFilterProp='label' options={allSchoolOptions} size='small'
+              <Select placeholder="Search by School" allowClear showSearch optionFilterProp='label' options={allSchoolOptions} size='small' className='w-48'
                 onChange={(value) => setFilter({ ...filter, trainings__school: value })}
               />
 

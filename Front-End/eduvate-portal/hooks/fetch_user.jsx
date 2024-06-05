@@ -1,41 +1,39 @@
 import { useEffect, useState } from "react";
 import api from "../interceptor/axios_interceptor"
 import { useToken } from "./token_hooks";
+import { useQuery } from "@tanstack/react-query";
 
 const useUserOptions = () => {
-
-    const [userName, setUserName] = useState([])
-    const [loading, setLoading] = useState(false);
     const { access_token } = useToken();
 
     const fetchUsers = async () => {
-        setLoading(true);
-        await api({
-            method: 'GET',
-            url: "/account/users/",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + access_token
-            }
-        }).then(response => {
-            setLoading(false);
+        try {
+
+            const response = await api({
+                method: 'GET',
+                url: "/account/users/",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + access_token
+                }
+            })
             const data = response.data?.map(user => ({
                 label: user?.user?.username,
                 value: user?.user?.id,
                 desc: user?.user?.total_training,
                 role: user?.users?.role
             }));
-            setUserName(data);
-
-        }).catch(error => {
-            setLoading(false);
-            console.log(error);
-        })
+            return data;
+        } catch (err) {
+            console.log(err);
+            throw new Error(err.message ? err.message : "Can not fetch the users");
+        }
     }
 
-    useEffect(() => {
-        fetchUsers();
-    }, [])
+    const { data: userName, isLoading: loading } = useQuery({
+        queryKey: ["users"],
+        queryFn: fetchUsers,
+    })
 
     return { userName, loading }
 };

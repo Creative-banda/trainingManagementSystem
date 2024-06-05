@@ -15,11 +15,11 @@ import { SchoolCatagory, TrainingStatus, TrainingType } from '../utils/MenuItems
 const EditModal = ({ trainingData }) => {
     const { editModal, setEditModal } = useContext(ModalContext);
     const [isSubmitting, setSubmitting] = useState(false);  // To keep track of submittion loading
-    // console.log(defaultValues.currentGrade);
+    // console.log(trainingData);
 
     const { userName } = useUserOptions();
     const { allSchoolOptions } = useSchools();
-    const { updateTraining } = useTrainings();
+    const { updateTrainingMutate } = useTrainings();
     const { grades } = useGrades();
     const [form] = Form.useForm();
 
@@ -40,11 +40,10 @@ const EditModal = ({ trainingData }) => {
             values['schools'] = values?.schools?.map(({ value }) => value)
         }
 
-        if (typeof values["trainers"][0] != typeof " ") {
-            values['trainers'] = values?.trainers?.map(({ value }) => value)
+        if (typeof values["trainer"] != typeof " ") {
+            values['trainer'] = values?.trainer.value
         }
-        console.log(values);
-        updateTraining(values, trainingData.id);
+        updateTrainingMutate({value: values, id: trainingData?.id});
         setEditModal(false);
     };
 
