@@ -1,23 +1,15 @@
 import { Button, Select, Table, Tag } from 'antd'
-import React, { useEffect, useState } from 'react'
 import useRequestTraining from '../hooks/request_training_hook'
 import useSchools from '../hooks/fetch_schools';
-import { TrainingRequestStatus, TrainingStatus, TrainingType } from '../utils/MenuItems';
+import {  TrainingStatus, TrainingType } from '../utils/MenuItems';
 import useUserOptions from '../hooks/fetch_user';
 import { SearchOutlined } from '@ant-design/icons';
-import { TiPointOfInterest } from "react-icons/ti";
-// import AddTrainingModal from '../modals/add_training';
-// import { ModalContext } from '../context/modal_context';
+import { TbChartBubbleFilled  } from "react-icons/tb";
 
 function RequestTraining() {
     const { requestedTraining, refetchRquestedTraining, loading, filters, setFilters } = useRequestTraining();
-    // const { setTrainingModal} = useContext(ModalContext);
-
-    const { allSchoolOptions } = useSchools();
+    const { allSchoolOptions, fetchingAllSchools } = useSchools();
     const { userName } = useUserOptions();
-    // const [trainingData, setTrainingData] = useState({});
-
-    // console.log(filters);
 
     const columns = [
         {
@@ -94,17 +86,18 @@ function RequestTraining() {
     return (
         <div className=''>
             {/* <AddTrainingModal data={trainingData} /> */}
-            <h1 className='flex gap-2 items-center font-medium'> <TiPointOfInterest/> Training Request </h1>
-            <Table columns={columns} loading={loading} dataSource={requestedTraining} bordered size='small'
+            <h1 className='flex gap-2 items-center font-medium text-red-400'> <TbChartBubbleFilled /> Training Request </h1>
+            <Table columns={columns} loading={loading} dataSource={requestedTraining} size='small'
+                className='border rounded-lg transition'
                 title={() => (
                     <div className='flex gap-2'>
-                        <Select options={allSchoolOptions} placeholder="Filter By School" className=' w-40' allowClear onSelect={(value) => setFilters({ ...filters, school: value })} onClear={() => setFilters({ ...filters, school: "" })} size='small' />
+                        <Select options={allSchoolOptions} loading={fetchingAllSchools} placeholder="Filter By School" className=' w-40' allowClear onChange={(value) => setFilters({ ...filters, school: value })} size='small' />
 
-                        <Select options={TrainingType} placeholder="Filter By Subject" className=' w-40' allowClear onSelect={(value) => setFilters({ ...filters, subject: value })} onClear={() => setFilters({ ...filters, subject: "" })} size='small' />
+                        <Select options={TrainingType} placeholder="Filter By Subject" className=' w-40' allowClear onChange={(value) => setFilters({ ...filters, subject: value })} size='small' />
 
-                        <Select options={userName} placeholder="Filter By Users" className=' w-40' allowClear onSelect={(value) => setFilters({ ...filters, requestor: value })} showSearch optionFilterProp='label' onClear={() => setFilters({ ...filters, requestor: "" })} size='small' />
+                        <Select options={userName} placeholder="Filter By Users" className=' w-40' allowClear onChange={(value) => setFilters({ ...filters, requestor: value })} showSearch optionFilterProp='label' size='small' />
 
-                        <Select options={TrainingStatus} placeholder="Filter By Status" className=' w-40' allowClear onSelect={(value) => setFilters({ ...filters, status: value })} onClear={() => setFilters({ ...filters, status: "" })} size='small' />
+                        <Select options={TrainingStatus} placeholder="Filter By Status" className=' w-40' allowClear onChange={(value) => setFilters({ ...filters, status: value })} size='small' />
 
                         <Button type='primary' icon={<SearchOutlined />} onClick={() => refetchRquestedTraining()} size='small'/>
                     </div>

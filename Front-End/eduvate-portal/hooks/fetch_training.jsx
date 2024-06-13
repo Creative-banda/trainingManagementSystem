@@ -1,74 +1,72 @@
-import { useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import api from "../interceptor/axios_interceptor";
-import { useToken } from "./token_hooks";
 import { message } from "antd";
-import { ModalContext } from "../context/modal_context";
-import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useToken } from "./token_hooks";
 
-const useTrainingById = (id, modal) => {
-    const [fetchingTraining, setFetchingTraining] = useState(false);
-    const [defaultValues, setDefaultValues] = useState({
-        defaultTrainers: [],
-        defaultGrades: [],
-        defaultSchools: [],
-        currentGrade: {}
-    });
-    const { access_token } = useToken();
-    const [trainings, setTrainings] = useState([{}])
+// const useTrainingById = (id, modal) => {
+//     const [fetchingTraining, setFetchingTraining] = useState(false);
+//     const [defaultValues, setDefaultValues] = useState({
+//         defaultTrainers: [],
+//         defaultGrades: [],
+//         defaultSchools: [],
+//         currentGrade: {}
+//     });
+//     const [trainings, setTrainings] = useState([{}])
 
-    const fetchTrainingById = async () => {
-        setFetchingTraining(true);
-        await api({
-            method: 'GET',
-            url: `/training/${id}/`,
-            // headers: {
-            //     'Content-Type': 'application/json',
-            //     'Authorization': 'Bearer ' + access_token
-            // }
-        }).then(response => {
-            const trainers = response?.data?.trainers?.map(trainer => ({
-                label: trainer.username,
-                value: trainer.id
-            }));
+//     const fetchTrainingById = async () => {
+//         setFetchingTraining(true);
+//         await api({
+//             method: 'GET',
+//             url: `/training/${id}/`,
+//             // headers: {
+//             //     'Content-Type': 'application/json',
+//             //     'Authorization': 'Bearer ' + access_token
+//             // }
+//         }).then(response => {
+//             const trainers = response?.data?.trainers?.map(trainer => ({
+//                 label: trainer.username,
+//                 value: trainer.id
+//             }));
 
-            const grades = response?.data?.grades?.map(grade => ({
-                label: grade?.grades,
-                value: grade?.id
-            }))
+//             const grades = response?.data?.grades?.map(grade => ({
+//                 label: grade?.grades,
+//                 value: grade?.id
+//             }))
 
-            const schools = response?.data?.schools?.map(school => ({
-                label: school?.name,
-                value: school?.id
-            }))
+//             const schools = response?.data?.schools?.map(school => ({
+//                 label: school?.name,
+//                 value: school?.id
+//             }))
 
-            const currentGrade = {
-                label: response?.data?.currentGradeDetails?.grades,
-                value: response?.data?.currentGradeDetails?.id
-            }
-            setDefaultValues({
-                defaultGrades: grades,
-                defaultSchools: schools,
-                defaultTrainers: trainers,
-                currentGrade: currentGrade
-            })
-            setTrainings(response.data);
-            setFetchingTraining(false);
-            // console.log(response);
-        }).catch(err => {
-            setFetchingTraining(false);
-            console.log(err);
-        })
-    }
+//             const currentGrade = {
+//                 label: response?.data?.currentGradeDetails?.grades,
+//                 value: response?.data?.currentGradeDetails?.id
+//             }
+//             setDefaultValues({
+//                 defaultGrades: grades,
+//                 defaultSchools: schools,
+//                 defaultTrainers: trainers,
+//                 currentGrade: currentGrade
+//             })
+//             setTrainings(response.data);
+//             setFetchingTraining(false);
+//             // console.log(response);
+//         }).catch(err => {
+//             setFetchingTraining(false);
+//             console.log(err);
+//         })
+//     }
 
-    useEffect(() => {
-        modal &&
-            fetchTrainingById();
-    }, [id, modal])
+//     useEffect(() => {
+//         modal &&
+//             fetchTrainingById();
+//     }, [id, modal])
 
-    return { trainings, defaultValues, fetchingTraining, setDefaultValues }
-}
+//     return { trainings, defaultValues, fetchingTraining, setDefaultValues }
+// }
 
-export default useTrainingById
+// export default useTrainingById
 
 
 
@@ -86,25 +84,20 @@ export const useTrainings = () => {
         trainings__school: null, trainer: null
     })
 
-    const { access_token } = useToken();
-
     const fetchTraining = async (filter, pagination) => {
         try {
             const response = await api({
                 method: 'GET',
                 url: "/training/",
-                params: { 
+                params: {
                     ...filter,
                     offset: (pagination.current - 1) * pagination.pageSize,
                     limit: pagination.pageSize
-                 },
+                },
                 headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + access_token
+                    "Authorization": `Bearer ${useToken().access_token}`
                 }
             })
-            console.log(response.data)
-            console.log(pagination);
             setPagination(prev => ({
                 ...prev,
                 total: response.data?.count
@@ -125,8 +118,7 @@ export const useTrainings = () => {
                 url: "/training/",
                 data: values,
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + access_token
+                    "Authorization": `Bearer ${useToken().access_token}`
                 }
             })
 
@@ -147,8 +139,7 @@ export const useTrainings = () => {
                 url: `/training/${id}/`,
                 data: { ...value },
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + access_token
+                    "Authorization": `Bearer ${useToken().access_token}`
                 }
             })
             if (response.status !== 202) {
@@ -166,8 +157,7 @@ export const useTrainings = () => {
                 method: 'DELETE',
                 url: `/training/${id}/`,
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + access_token
+                    "Authorization": `Bearer ${useToken().access_token}`
                 }
             })
             if (response.status !== 204) {
@@ -190,11 +180,12 @@ export const useTrainings = () => {
 
 
     // Add a new training
-    const { mutate: addTrainingMutate, isLoading } = useMutation({
+    const { mutate: addTrainingMutate } = useMutation({
         mutationFn: (values) => addTraining(values),
         onSuccess: () => {
             message.success("Training Added Successfully");
-            queryClient.invalidateQueries({ queryKey: ['trainings', 'requestedTraining'] })
+            queryClient.invalidateQueries({ queryKey: ['trainings'] })
+            queryClient.invalidateQueries({ queryKey: ['requestedTraining'] })
         },
         onError: (error) => {
             message.error(error.message ? error.message : "Failed to add Training")
@@ -218,7 +209,8 @@ export const useTrainings = () => {
     const { mutate: deleteTrainingMutate } = useMutation({
         mutationFn: (id) => deleteTraining(id),
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['trainings', 'requestedTraining'] })
+            queryClient.invalidateQueries({ queryKey: ['trainings'] })
+            queryClient.invalidateQueries({ queryKey: ['requestedTraining'] })
             message.success("Training Deleted Successfully");
         },
         onError: (error) => {
@@ -230,17 +222,13 @@ export const useTrainings = () => {
 }
 
 export const useAllTrainings = () => {
-    const { access_token } = useToken();
-
     const fetchTrainings = async () => {
         try {
-
             const response = await api({
                 method: 'GET',
                 url: "/training/all",
                 headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + access_token
+                    "Authorization": `Bearer ${useToken().access_token}`
                 }
             })
             if (response.status !== 200) {
@@ -255,9 +243,9 @@ export const useAllTrainings = () => {
     const { data: trainingsData, isLoading: loading } = useQuery({
         queryKey: ['all_trainings'],
         queryFn: () => fetchTrainings(),
-        onError: (error) => {
-            message.error(error.message ? error.message : "Failed to fetch Trainings")
-        }
+        retry: false,
+        refetchOnWindowFocus: false,
+        refetchOnMount: true,
     })
 
     return { trainingsData, loading }

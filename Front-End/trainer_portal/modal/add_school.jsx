@@ -9,22 +9,22 @@ import useUserOptions from "../hooks/fetch_user";
 
 const SchoolModal = ({ data, resetData }) => {
     const { schoolModal, setSchoolModal } = useContext(ModalContext);
-    const { updateSchool } = useSchoolById();
+    const { updateSchoolMutate } = useSchoolById();
     const { grades, gradeLoading } = useGrades();
     const { userName } = useUserOptions();
     const [form] = Form.useForm();
-    const { registerSchool } = useSchools();
+    const { registerSchoolMutate } = useSchools();
 
-    console.log(data);
+    // console.log(data);
     const handleSubmit = (value) => {
         if (data) {
             value["am"] = typeof value["am"] === "object" ? value["am"].value : value["am"];
             value["om"] = typeof value["om"] === "object" ? value["om"].value : value["om"];
             value["grades"] = typeof value["grades"][0] === "object" ? value["grades"].map(grade => grade.value) : value["grades"];
-            console.log(value);
-            updateSchool(data.id, value);
+            // console.log(data.id);
+            updateSchoolMutate({id: data.id, data: value});
         } else {
-            registerSchool(value);
+            registerSchoolMutate(value);
             setSchoolModal(false);
         }
 
@@ -87,24 +87,24 @@ const SchoolModal = ({ data, resetData }) => {
                         }
                     ]}
                 >
-                    <Form.Item label="School Name" name="name" rules={[{ required: true, message: "School Name can not be empty" }]} className="mb-2">
+                    <Form.Item label="School Name" name="name" rules={[{ required: true, message: "School Name can not be empty" }]}>
                         <Input
                             name="name" placeholder="School Name" allowClear
                         />
                     </Form.Item>
 
-                    <Form.Item label="School Address" name="address" rules={[{ required: true, message: "School address is required" }]} className="mb-2">
+                    <Form.Item label="School Address" name="address" rules={[{ required: true, message: "School address is required" }]}>
                         <Input.TextArea rows={3} name="address" allowClear />
                     </Form.Item>
 
-                    <Form.Item label="School Catagory" name="catagory" className="mb-2" rules={[{ required: true, message: "School address is required" }]}>
+                    <Form.Item label="School Catagory" name="catagory" rules={[{ required: true, message: "School address is required" }]}>
                         <Select
                             name="catagory" placeholder="Select School Catagory"
                             options={SchoolCatagory} allowClear
                         />
                     </Form.Item>
 
-                    <Form.Item label="Opted Grades" name="grades" rules={[{ required: true, message: "Choose the Grade/s" }]} className="mb-2">
+                    <Form.Item label="Opted Grades" name="grades" rules={[{ required: true, message: "Choose the Grade/s" }]}>
                         <Select
                             name="grades" placeholder="Select the Grades"
                             options={grades}
@@ -115,7 +115,7 @@ const SchoolModal = ({ data, resetData }) => {
                     </Form.Item>
 
                     <div className="flex gap-2 w-full">
-                        <Form.Item label="Academic Manager" name="am" rules={[{ required: true, message: "Choose the Academic Manager" }]} className="mb-2 w-full">
+                        <Form.Item label="Academic Manager" name="am" rules={[{ required: true, message: "Choose the Academic Manager" }]} className="w-full">
                             <Select
                                 name="am" placeholder="Select the AM"
                                 allowClear showSearch
@@ -124,7 +124,7 @@ const SchoolModal = ({ data, resetData }) => {
                             />
                         </Form.Item>
 
-                        <Form.Item label="Operational Manager" name="om" rules={[{ required: true, message: "Choose the Operational Manager" }]} className="mb-2 w-full">
+                        <Form.Item label="Operational Manager" name="om" rules={[{ required: true, message: "Choose the Operational Manager" }]} className="w-full">
                             <Select
                                 name="om" placeholder="Select the OM"
                                 allowClear showSearch
@@ -146,8 +146,8 @@ const SchoolModal = ({ data, resetData }) => {
                         </Form.Item>
 
                         <Form.Item label="ERP Number" name="erp_code" rules={[
-                            { required: true, message: "Choose a valid phone ERP Code" }]} className="mb-2 w-full">
-                            <Input name="erp_code" placeholder="Phone Number" allowClear />
+                            { required: true, message: "Choose a valid phone ERP Code" }]} className="w-full">
+                            <Input name="erp_code" placeholder="ERP Number" allowClear />
                         </Form.Item>
                     </div>
 

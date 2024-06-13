@@ -25,7 +25,7 @@ const Sidebar = () => {
     return (
         <div className='h-full w-full flex items-center flex-col gap-8 px-2 py-2'>
             {/* Logo Section  */}
-            <img src='/images/logo.jpg' className='rounded-full w-24 h-24' />
+            <img src='/images/logo.png' className='rounded-full w-24 h-24' />
 
             {/* Menu Section */}
             <div className='h-full'>
@@ -33,7 +33,7 @@ const Sidebar = () => {
                     defaultSelectedKeys={['1']}
                     mode="vertical"
                     className=' bg-inherit'
-                    style={{border:"none"}}
+                    style={{ border: "none" }}
                 >
                     {SidebarLinks?.map(item => {
                         if (item?.children) {
@@ -56,10 +56,6 @@ const Sidebar = () => {
                 </Menu>
             </div>
 
-            {/* Logout Section */}
-            <div className='w-full h-full flex justify-center items-end p-4'>
-                <Button className='bg-red-400 text-white' icon={<PoweroffOutlined />} onClick={() => handleLogout()} loading={loading} />
-            </div>
 
         </div>
     );

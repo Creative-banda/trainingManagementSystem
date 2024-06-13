@@ -1,8 +1,8 @@
 import { Button, Form, Input, Modal } from "antd";
 import { useContext, useEffect, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
 import { ModalContext } from "../context/modal_context";
 import { useSheet } from "../hooks/fetch_sheet";
-import { useParams } from "react-router-dom";
 
 export default function TrainingModifyModal({ sheetData, setSchool, subject }) {
     // const location = useLocation();
@@ -10,7 +10,7 @@ export default function TrainingModifyModal({ sheetData, setSchool, subject }) {
     const { trainingSheetModifyState, setTrainingSheetModifyState } = useContext(ModalContext);
     const [trainingData, setTrainingData] = useState();
     const { patchSheetDataMutate, postSchoolSheetMutate } = useSheet( { id: id, subject: subject });
-    console.log(trainingData);
+    // console.log(trainingData);
 
     const handleUpdate = async (val) => {
         if (sheetData.id) {
@@ -113,18 +113,3 @@ export default function TrainingModifyModal({ sheetData, setSchool, subject }) {
     )
 }
 
-
-// export function TrainingAddModal() {
-//     const { trainingSheetAddState, setTrainingSheetAddState } = useContext(ModalContext);
-//     // console.log(school);
-//     return (
-//         <Modal open={trainingSheetAddState} onCancel={() => setTrainingSheetAddState(false)} centered width={"90%"}
-//             footer={[
-//                 <Button key="back" onClick={() => setTrainingSheetAddState(false)}> Cancle </Button>,
-//                 <Button key="submit" type="danger">Submit</Button>
-//             ]}
-//         >
-
-//         </Modal>
-//     )
-// }

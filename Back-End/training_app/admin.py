@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Training, TrainingSheetModel, TrainingDataModel, TrainingRequestsModel, MasterTraining
+from .models import Training, TrainingSheetModel, TrainingDataModel, TrainingRequestsModel
 
 # Create filters for Training
 class TrainingFilter(admin.ModelAdmin):
@@ -22,4 +22,4 @@ class TrainingRequestFilter(admin.ModelAdmin):
 admin.site.register(Training, TrainingFilter)
 admin.site.register(TrainingRequestsModel, TrainingRequestFilter)
 
-admin.site.register([TrainingSheetModel, TrainingDataModel, MasterTraining])
+admin.site.register([TrainingSheetModel, TrainingDataModel])

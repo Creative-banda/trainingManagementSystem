@@ -1,6 +1,6 @@
 import { EyeOutlined, SearchOutlined } from '@ant-design/icons'
-import { TiPointOfInterest } from "react-icons/ti";
-import { Button, Select, Table, Tag } from 'antd'
+import { TbCrosshair  } from "react-icons/tb";
+import { Button, Select, Table } from 'antd'
 import React, { useContext, useState } from 'react'
 import useUserOptions from '../hooks/fetch_user'
 import EditModal from '../modals/edit';
@@ -8,17 +8,16 @@ import { ModalContext } from '../context/modal_context';
 import useFilterTraining from '../hooks/filter_training';
 import useGrades from '../hooks/fetch_grades';
 import { TrainingType } from '../utils/MenuItems';
+import { useNavigate } from 'react-router-dom';
 
 function TodaysTraining() {
-    const [filters, setFilters] = useState({
-        trainer: "", active: true, trainings__subject: "", trainingStatus: "ONGOING", subject: "", currentGrade: ""
-    });
     const [trainingData, setTrainingData] = useState({});
     const { setEditModal } = useContext(ModalContext);
     const { userName, loading } = useUserOptions();
-    const { training, loadingTrainings, fetchTraining } = useFilterTraining(filters);
+    const { training, loadingTrainings, fetchTraining, filters, setFilters } = useFilterTraining();
     const { grades, gradeLoading } = useGrades();
-    // console.log(grades);
+    
+    const redirect = useNavigate();
 
     const columns = [
         {
@@ -26,10 +25,10 @@ function TodaysTraining() {
             title: "School",
             dataIndex: "trainingDetail",
             render: (_, { trainingDetail }) => (
-                <div className='flex flex-wrap' >
+                <div className='flex flex-wrap gap-1' >
                     {
                         trainingDetail?.map(training => (
-                            <p key={training?.school?.id}>{training?.school?.name}</p>
+                            <p key={training?.school?.id} className='hover:bg-emerald-400 rounded-md px-1 cursor-pointer transition' onClick={() => redirect(`/school/${training?.school?.id}`, { state: { school: training?.school, subject: training.subject } })}>{training?.school?.name}</p>
                         ))
                     }
                 </div>
@@ -77,7 +76,7 @@ function TodaysTraining() {
 
     return (
         <div className='w-full'>
-            <h1 className='flex gap-2 items-center font-medium'> <TiPointOfInterest /> Today's Training</h1>
+            <h1 className='flex gap-2 items-center font-medium text-slate-600'> <TbCrosshair  /> Today's Training </h1>
             <EditModal trainingData={trainingData} />
             <Table columns={columns} dataSource={training} loading={loadingTrainings} className='border rounded-lg' size='small' pagination={false}
                 title={() => (

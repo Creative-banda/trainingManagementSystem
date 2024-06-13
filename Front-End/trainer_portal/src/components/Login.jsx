@@ -4,6 +4,9 @@ import { EyeInvisibleOutlined, EyeTwoTone, MailOutlined, SafetyOutlined } from '
 import api from "../../utilities/axios_interceptor"
 import { useNavigate } from 'react-router-dom';
 import { Context } from '../../context/user_context';
+import axios from 'axios';
+
+const BASE_URL = import.meta.env.VITE_BASE_URL
 
 function Login() {
     const [authInfo, setAuthInfo] = useState({ email: "", password: "" })
@@ -40,16 +43,12 @@ function Login() {
     }
 
 
-    /**
-     * Function to handle the login process.
-     *
-     * @return {Promise<void>} This function returns a promise with no specific value.
-     */
+    
     const handleLogin = async () => {
         setLoading(true);
-        await api({
+        await axios({
             method: 'POST',
-            url: "/token/",
+            url: `${BASE_URL}/token/`,
             data: JSON.stringify(authInfo),
             headers: {
                 "Content-Type": "application/json"

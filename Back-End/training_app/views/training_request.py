@@ -45,12 +45,15 @@ class TrainingRequestByIdView(APIView):
     """
     def patch(self, request, id):
         try:
+            print(id)
             training_request = TrainingRequestsModel.objects.get(id = id, active = True)
             serializer = TrainingRequestSerializer(training_request, partial=True, context={"request": request}, data=request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+            logger.error(serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            logger.error(str(e))
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
 

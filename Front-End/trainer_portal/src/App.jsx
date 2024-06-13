@@ -9,21 +9,28 @@ import SchoolSheets from "./components/SchoolSheets";
 import PageNotFound from "./components/PageNotFound";
 import Schools from "./components/Schools";
 import Testing_Sidebar from "./components/Testing_components/EditableTable";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Profile from "./components/Profile";
 
 const App = () => {
   return (
     <div className="">
       <Routes>
-        <Route path="/" element={<RootComponent />}>
+        <Route path="/" element={
+          <ProtectedRoute>
+            <RootComponent />
+          </ProtectedRoute>
+        }>
           <Route index element={<Dashboard />} />
           <Route exact path="/trainings" element={<Training />} />
           <Route exact path="/schools" element={<Schools />} />
           <Route path="/school/:id" element={<TrainingSheet />} />
           <Route path="/test" element={<EditTable />} />
           <Route exact path="/sheets" element={<SchoolSheets />} />
+          <Route path="/profile" element={<Profile/>} />
         </Route>
         <Route exact path="/login" element={<Login />} />
-        <Route path="/testing" element={<Testing_Sidebar/>} />
+        <Route path="/testing" element={<Testing_Sidebar />} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </div>

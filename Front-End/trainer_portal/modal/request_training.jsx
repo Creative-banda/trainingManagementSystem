@@ -21,10 +21,10 @@ const disabledHours = [0, 1, 2, 3, 4, 5, 6, 7, 9, 11, 13, 14, 16, 18, 19, 20, 21
 function RequestTraining({ data }) {
     const { requestTrainingModal, setRequestTrainingModal } = useContext(ModalContext);
     const { schoolOptions } = useSchools();
-    const { requestTraining, } = useTraining();
+    const { requestTrainingMutate, updateRequestedTrainingMutate } = useTraining();
     const { userInfo } = useUserInfo();
     const [form] = Form.useForm()
-    const { fetchGrades, loading, grades } = useGrades()
+    const { loading, grades } = useGrades()
 
     const handleCancle = () => {
         form.resetFields();
@@ -32,21 +32,18 @@ function RequestTraining({ data }) {
     }
 
     const handleSubmit = (value) => {
+        value["school"] = typeof value["school"] === "object" ? value["school"].value : value["school"];
+        value["grades"] = typeof value["grades"][0] === "object" ? value["grades"].map(grade => grade.value) : value["grades"];
         value["startDate"] = dayjs(value["startDate"]).format("YYYY-MM-DD");
-
         // Add 1.5 hr to the startTime and store into endTime
         value["endTime"] = dayjs(value["startTime"]).add(1.5, 'hour').format("HH:mm")
         value["startTime"] = dayjs(value["startTime"]).format("HH:mm");
         value["requestor"] = userInfo?.id
-        console.log(value)
-        requestTraining(value);
+        // console.log(value)
+        data ? updateRequestedTrainingMutate({data: value, id: data.id}) : requestTrainingMutate(value);
         setRequestTrainingModal(false);
         form.resetFields();
     }
-
-    useEffect(() => {
-        fetchGrades();
-    }, [])
 
     return (
         <Modal open={requestTrainingModal} title="Request Training" onCancel={handleCancle} centered footer={null}

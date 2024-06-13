@@ -10,11 +10,9 @@ import { useEffect } from 'react';
 
 function TodaysTraining() {
     const [data, setData] = useState();
-    const { userInfo } = useUserInfo();
-    const [filter, setFilter] = useState({trainer: userInfo?.id, trainingStatus: "ONGOING", active: true});
     const { setUpdateTrainingModal } = useContext(ModalContext);
     const redirect = useNavigate();
-    const { training, loadingTrainings, fetchTraining } = useFilterTraining();
+    const { training, loadingTrainings, refetchTrainings} = useFilterTraining();
     // console.log(training)
     const columns = [
         {
@@ -67,10 +65,6 @@ function TodaysTraining() {
         },
     ]
 
-    useEffect(() => {
-        fetchTraining( filter );
-    }, [])
-
     return (
         <div className='w-full'>
             <UpdateTrainingModal data={data} />
@@ -79,7 +73,7 @@ function TodaysTraining() {
                 title={() => (
                     <div>
                         <Tooltip title="Reload">
-                            <Button icon={<ReloadOutlined />} onClick={() => fetchTraining( filter )} />
+                            <Button icon={<ReloadOutlined />} size='small' onClick={() => refetchTrainings()} />
                         </Tooltip>
                     </div>
                 )}

@@ -11,7 +11,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 export function TodaysTrainings() {
   const { userInfo } = useUserInfo()
-  const { training, loadingTrainings, fetchTraining } = useFilterTraining()   // To fetch all currently running trainings
+  const { training, loadingTrainings } = useFilterTraining()   // To fetch all currently running trainings
 
   const { trainingsData, trainingBySubject } = useTraining();      // To fetch all all trainings
 
@@ -26,13 +26,6 @@ export function TodaysTrainings() {
 
   // console.log(training)
 
-  useEffect(() => {
-    fetchTraining({
-      trainer: userInfo.id,
-      trainingStatus: "ONGOING",
-      active:true
-    })
-  }, [])
 
   return (
     <div className='flex w-full h-full items-center justify-start gap-2'>

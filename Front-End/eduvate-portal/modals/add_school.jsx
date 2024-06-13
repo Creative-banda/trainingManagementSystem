@@ -13,7 +13,7 @@ const SchoolModal = () => {
     const { userName } = useUserOptions();
     const [form] = Form.useForm();
     const { registerSchool, error, submitting, response } = useSchoolSubmit();
-          
+
 
     const handleSubmit = (value) => {
         registerSchool(value);
@@ -62,38 +62,42 @@ const SchoolModal = () => {
                         />
                     </Form.Item>
 
-                    <Form.Item label="Academic Manager" name="am" rules={[{ required: true, message: "Choose the Academic Manager" }]} className="mb-2">
-                        <Select
-                            name="am" placeholder="Select the AM"
-                            allowClear showSearch
-                            options={userName}
-                            optionFilterProp="label"
-                        />
-                    </Form.Item>
+                    <div className="flex gap-2">
+                        <Form.Item label="Academic Manager" name="am" rules={[{ required: true, message: "Choose the Academic Manager" }]} className="mb-2 w-full">
+                            <Select
+                                name="am" placeholder="Select the AM"
+                                allowClear showSearch
+                                options={userName}
+                                optionFilterProp="label"
+                            />
+                        </Form.Item>
 
-                    <Form.Item label="Operational Manager" name="om" rules={[{ required: true, message: "Choose the Operational Manager" }]} className="mb-2">
-                        <Select
-                            name="om" placeholder="Select the OM"
-                            allowClear showSearch
-                            options={userName}
-                            optionFilterProp="label"
-                        />
-                    </Form.Item>
+                        <Form.Item label="Operational Manager" name="om" rules={[{ required: true, message: "Choose the Operational Manager" }]} className="mb-2 w-full">
+                            <Select
+                                name="om" placeholder="Select the OM"
+                                allowClear showSearch
+                                options={userName}
+                                optionFilterProp="label"
+                            />
+                        </Form.Item>
+                    </div>
 
-                    <Form.Item label="Phone Number" name="contact" rules={[
-                        {
-                            required: true,
-                            message: "Choose a valid phone number",
-                            pattern: new RegExp(/^[6-9]\d{9}$/g)
-                        }
-                    ]} className="mb-2">
-                        <Input name="contact" placeholder="Phone Number" allowClear />
-                    </Form.Item>
+                    <div className="flex gap-2">
+                        <Form.Item label="Phone Number" name="contact" rules={[
+                            {
+                                required: true,
+                                message: "Choose a valid phone number",
+                                pattern: new RegExp(/^[6-9]\d{9}$/g)
+                            }
+                        ]} className="mb-2 w-full">
+                            <Input name="contact" placeholder="Phone Number" allowClear />
+                        </Form.Item>
 
-                    <Form.Item label="ERP Number" name="erp_code" rules={[
-                        { required: true, message: "Choose a valid phone ERP Code" }]} className="mb-2">
-                        <Input name="erp_code" placeholder="Phone Number" allowClear />
-                    </Form.Item>
+                        <Form.Item label="ERP Number" name="erp_code" rules={[
+                            { required: true, message: "Choose a valid phone ERP Code" }]} className="mb-2 w-full">
+                            <Input name="erp_code" placeholder="Phone Number" allowClear />
+                        </Form.Item>
+                    </div>
 
                     <div className='flex gap-2 justify-end items-center mb-2'>
                         <Form.Item>

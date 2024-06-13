@@ -30,7 +30,7 @@ function SchoolSheets() {
             
             <div className='w-full flex gap-4'>
                 <Select options={schoolOptions} placeholder="Select School" showSearch optionFilterProp='label' allowClear className='w-56' onChange={filterSchoolById} suffixIcon={<CiSearch />} loading={fetchingSchool} />
-                <Select options={TrainingType} placeholder="Search the Subject" showSearch optionFilterProp='label' allowClear className='w-56' onSelect={(value) => setSubject(value)} suffixIcon={<CiSearch />} loading={fetchingSchool} defaultValue="COMPUTER SCIENCE" />
+                <Select options={TrainingType} placeholder="Search the Subject" showSearch optionFilterProp='label' allowClear className='w-56' onChange={(value) => setSubject(value)} suffixIcon={<CiSearch />} loading={fetchingSchool} defaultValue="COMPUTER SCIENCE" />
             </div>
 
             <div className='w-full'>
@@ -45,19 +45,15 @@ export default SchoolSheets
 
 
 export const SheetBody = ({ schoolId, subject }) => {
-    const { sheetData, fetchSchoolSheet, loading } = useSheet({ id: schoolId, subject: subject });
+    const { sheetData, refetchSchoolSheet, loading } = useSheet({ id: schoolId, subject: subject });
     console.log(schoolId)
-
-    useEffect(() => {
-        schoolId && fetchSchoolSheet();
-    }, [schoolId, subject])
 
     return (
         <div className='w-full flex flex-col gap-2'>
             <SchoolSheet subject={subject} dataSource={sheetData} loading={loading} title={() =>
                 <div className='flex gap-2 items-center'>
                     <Tooltip title="Refresh">
-                        <Button icon={<ReloadOutlined />} onClick={() => fetchSchoolSheet()} disabled={schoolId ? false : true} />
+                        <Button icon={<ReloadOutlined />} onClick={() => refetchSchoolSheet()} disabled={schoolId ? false : true} />
                     </Tooltip>
                 </div>
             } />

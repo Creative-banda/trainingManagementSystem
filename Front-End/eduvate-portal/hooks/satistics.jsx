@@ -1,28 +1,19 @@
-import { useState, useEffect } from "react";
-import { useToken } from "./token_hooks";
 import api from "../interceptor/axios_interceptor";
+import { useQuery } from "@tanstack/react-query";
+import { useToken } from "./token_hooks";
 
 export const useTrainingStatistics = () => {
-    const {access_token} = useToken()
-    const [loading, setLoading] = useState(false);
-    const [statisticsData, setStatisticsData] = useState([]);
-    const [dataset, setDataSet] = useState({
-        labels: [],
-        datasets: []
-    })
     const fetch_statistics = async () => {
-        setLoading(true);
         try {
             const response = await api({
                 method: "GET",
                 url: "/training/statistics/?year=2024&start_month=1&end_month=12",
                 headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + access_token
+                    "Authorization": `Bearer ${useToken().access_token}`
                 }
             })
-            // console.log(response.data);
-            const uniqueLabels = Array.from(new Set(response?.data?.map(item => item.month)));
+            // const uniqueLabels = Array.from(new Set(response?.data?.map(item => item.month)));
+            const uniqueLabels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
             const formattedData = {
                 labels: uniqueLabels,
                 datasets: response?.data?.reduce((datasets, data) => {
@@ -48,36 +39,20 @@ export const useTrainingStatistics = () => {
                     return datasets;
                 }, []),
             };
-            setLoading(false);
-            setDataSet(formattedData);
+
+            return formattedData
         }
         catch (err) {
-            setLoading(false);
-            console.log(err)
+            throw new Error(err.message ? err.message : "Can not fetch the statistics");
         }
     }
 
-    // const fetch_statistics = async () => {
-    //     await api({
-    //         method: "GET",
-    //         url: "/training/statistics/?year=2024&start_month=1&end_month=12",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //             "Authorization": "Bearer " + access_token
-    //         }
-    //     }).then(response => {
-    //         if(response.status === 200) {
-    //             console.log(response.data);
-    //             setStatisticsData(response.data);
-    //         }else{
-    //             console.log(response.data)
-    //         }
-    //         setLoading(false);
-    //     }).catch(err => {
-    //         setLoading(false);
-    //         console.log(err)
-    //     })
-    // }
+    const { data: dataset, isLoading: loading } = useQuery({
+        queryKey: ["statistics"],
+        queryFn: fetch_statistics,
+        retry: false,
+        refetchOnWindowFocus: false
+    })
 
-    return {fetch_statistics, dataset, loading, statisticsData}
+    return {dataset, loading}
 }

@@ -9,10 +9,12 @@ from .models import Training, TrainingSheetModel
 def add_sheet_for_schools(sender, instance, action, **kwargs):
     if action == 'post_add':
         trainings = instance.trainings.all()
-        print(trainings.first())
         instance.currentGrade = trainings.first().grades.first()
         for training in trainings:
             training.status = "ONGOING"
             training.save()
-            TrainingSheetModel.objects.create(school = training.school, subject = training.subject)
+            # Check if the school sheet already exists or not
+            if not TrainingSheetModel.objects.filter(school = training.school, subject = training.subject).exists():
+                TrainingSheetModel.objects.create(school = training.school, subject = training.subject)
             
+

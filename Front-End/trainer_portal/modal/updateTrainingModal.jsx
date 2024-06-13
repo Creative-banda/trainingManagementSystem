@@ -8,16 +8,14 @@ import { useTraining } from '../hooks/training_hook'
 
 
 export const UpdateTrainingModal = ({ data }) => {
-    const [loading, setLoading] = useState(true);
-    const { updateTraining } = useTraining()
+    const { updateTrainingMutate } = useTraining()
     const { updateTrainingModal, setUpdateTrainingModal } = useContext(ModalContext);
     const [form] = Form.useForm();
     const { grades, gradeLoading } = useGrades();
 
-
     const handleOk = (values) => {
         values.currentGrade = typeof values.currentGrade === 'object' ? values.currentGrade.value : values.currentGrade;
-        updateTraining(values, data?.id);
+        updateTrainingMutate({ data: values, id: data?.id });
         // console.log(values);
         setUpdateTrainingModal(false);
     };
@@ -25,10 +23,6 @@ export const UpdateTrainingModal = ({ data }) => {
     const handleCancel = () => {
         setUpdateTrainingModal(false);
     };
-
-    // useEffect(() => {
-    //     setLoading(false);
-    // }, [])
 
     return (
         <>

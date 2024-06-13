@@ -2,41 +2,37 @@ import { useEffect, useState } from "react";
 import { useToken, useUserInfo } from "./token_hooks";
 import api from "../utilities/axios_interceptor";
 import { message } from "antd";
+import { useQuery } from "@tanstack/react-query";
 
 const useFilterTraining = () => {
-    const [training, setTraining] = useState([]);
-    const [loadingTrainings, setLoadingTrainings] = useState(false);
-    const {access_token} = useToken();
-    // const {userInfo} = useUserInfo();
+    const {userInfo} = useUserInfo();
+    const [filter, setFilter] = useState({ trainer: userInfo?.id, trainingStatus: "ONGOING", active: true });
 
-    const fetchTraining = async (filter) => {
+    const fetchTraining = async () => {
         // console.log({...filter})
         try {
-            setLoadingTrainings(true);
             const response = await api({
                 method: "GET",
                 url: "/training/filter/",
                 params: { ...filter },
                 headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + access_token
+                    "Authorization": `Bearer ${useToken().access_token}`
                 }
             })
-            if(response.status === 200){
-                // console.log(response.data);
-                setTraining(response.data);
-
-                setLoadingTrainings(false);
-            }
-
-        } catch (err) {
-            message.error(err?.response?.data?.message ? err?.response?.data?.message : "Something went wrong");
-            setLoadingTrainings(false);
-            console.log(err);
+            return response.data
+        } catch (error) {
+            throw new Error(error.message ? error.message : "Can not fetch trainings")
         }
     }
 
-    return { training, loadingTrainings, fetchTraining }
+    const {data: training, isLoading: loadingTrainings, refetch: refetchTrainings} = useQuery({
+        queryKey: ["filter_trainings", filter],
+        queryFn: fetchTraining,
+        retry: false,
+        refetchOnWindowFocus: false,
+    })
+
+    return { training, refetchTrainings, loadingTrainings, filter, setFilter }
 }
 
 export default useFilterTraining;

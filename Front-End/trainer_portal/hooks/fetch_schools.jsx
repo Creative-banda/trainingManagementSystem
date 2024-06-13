@@ -1,177 +1,169 @@
-import { useEffect, useState } from "react"
+import { useMemo, useState } from "react"
 import { message } from "antd";
-import { useToken } from "./token_hooks";
+import { useToken, useUserInfo } from "./token_hooks";
 import api from "../utilities/axios_interceptor";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const useSchools = () => {
-    const [schoolOptions, setSchoolOptions] = useState([])
-    const [schools, setSchools] = useState([]);
-    const [filteredData, setFilteredData] = useState([]);
-    const [fetchingSchool, setFetchingSchool] = useState(false);
+    const { userInfo } = useUserInfo();
+
+    const [filters, setFilters] = useState({
+        id: "",
+        catagory: "",
+        am: userInfo?.id,
+        om: "",
+    })
     const [pagination, setPagination] = useState({
         current: 1,
         pageSize: 1000,
     });
-    const { access_token } = useToken();
+
+    const queryClient = useQueryClient();
 
 
     const fetchSchools = async (params = {}) => {
-        setFetchingSchool(true);
-        await api({
-            method: "GET",
-            url: "/school/",
-            params: { ...params },
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + access_token
+        try {
+
+            const response = await api({
+                method: "GET",
+                url: "/school/",
+                params: { ...params },
+                headers: {
+                    "Authorization": `Bearer ${useToken().access_token}`
+                }
+            })
+            if (response.status !== 200) {
+                throw new Error("Can not fetch schools")
             }
-        })
-            .then((response) => {
-                const { results, count } = response.data;
-
-                const schools = results?.map(school => ({
-                    value: school?.id,
-                    label: school?.name
-                }))
-
-                setSchoolOptions(schools);
-                setSchools(results);
-                setFetchingSchool(false);
-
-            })
-            .catch((error) => {
-                console.log(error);
-                setFetchingSchool(false)
-            })
+            return response.data.results
+        } catch (error) {
+            message.error(error.message ? error.message : "Can not fetch schools")
+            throw new Error(error.message ? error.message : "Can not fetch schools")
+        }
     }
 
     const registerSchool = async (data) => {
-        console.log(data);
-        await api({
-            method: "POST",
-            data: data,
-            url: "/school/",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + access_token
-            }
-        }).then(res => {
-            if(res.status === 201){
-                message.success("Successfully registered");
-            } else {
-                console.log(res);
-                const error = Object.keys(res.response.data)[0]
-                message.error(res.response.data[error]);
-            }
-        }).catch(err => {
-            message.error("Couldn't register");
-        })
+        try {
+            const response = await api({
+                method: "POST",
+                data: data,
+                url: "/school/",
+            })
+            message.success("Successfully registered");
+            return response.data;
+        } catch (error) {
+            throw new Error(error.message ? error.message : "Can not register school")
+        }
+    }
 
-
+    const filterSchool = async () => {
+        try {
+            const response = await api({
+                method: "GET",
+                url: `/school/filter/`,
+                params: { ...filters },
+                headers: {
+                    "Authorization": `Bearer ${useToken().access_token}`
+                }
+            })
+            return response.data
+        } catch (error) {
+            message.error(error.message ? error.message : "Can not fetch schools")
+            throw new Error(error.message ? error.message : "Can not fetch schools")
+        }
     }
 
 
-    const filterSchool = async (filter) => {
-        // console.log(filter)
-        setFetchingSchool(true);
-        await api({
-            method: "GET",
-            url: `/school/filter/`,
-            params: { ...filter },
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + access_token
-            }
-        }).then(response => {
-            if (response.status === 200) {
-                setFilteredData(response.data);
-            }
-            else {
-                message.error(response.data.message ? response.data.message : "Error while fetching School !");
-            }
-            setFetchingSchool(false);
-        }).catch(error => {
-            setFetchingSchool(false);
-            console.log(error);
-            message.error(error.response.data.message ? error.response.data.message : "Error while fetching School !")
+    // Fetch the schools based on pagination
+    const { data: schools, isLoading: fetchingSchool } = useQuery({
+        queryKey: ["schools", pagination],
+        queryFn: () => fetchSchools({ limit: pagination.pageSize, offset: (pagination.current - 1) * pagination.pageSize }),
+    })
+
+    // Set the school options when the schools are fetched
+    const schoolOptions = useMemo(() => {
+        const school = schools?.map(school => {
+            return { label: school.name, value: school.id }
         })
-    }
+        return school
+    }, [schools])
 
-    useEffect(() => {
-        fetchSchools({
-            limit: pagination.pageSize,
-            offset: (pagination.current - 1) * pagination.pageSize
-        });
-    }, [pagination.current, pagination.pageSize])
+    // Register a new school
+    const { mutate: registerSchoolMutate } = useMutation({
+        mutationFn: (data) => registerSchool(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["schools"] })
+        }
+    })
 
-    return { schools, fetchingSchool, schoolOptions, fetchSchools, setPagination, pagination, filterSchool, filteredData, registerSchool }
+    // Filter schools based on the search query
+    const { data: filteredData } = useQuery({
+        queryKey: ["filteredSchools", filters],
+        queryFn: () => filterSchool({ ...filters }),
+    })
+
+    return { schools, fetchingSchool, schoolOptions, setPagination, pagination, filteredData, setFilters, filters, registerSchoolMutate }
 }
 
 export default useSchools;
 
 
 export const useSchoolById = () => {
-    const [school, setSchool] = useState({});
-    const [updating, setupdating] = useState(false);
     const [defaultGrade, setDefaultGrades] = useState([]);
-    const [loading, setLoading] = useState(false);
 
-    const { access_token } = useToken();
+    const queryClient = useQueryClient();
 
     const fetchSchoolById = async (id) => {
-        setLoading(true);
-        await api({
-            method: 'GET',
-            url: `/school/${id}/`,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + access_token
-            }
-        }).then(response => {
-            if (response.status === 200) {
-                const grades = response?.data?.grades?.map(grade => ({
-                    label: grade?.grades,
-                    value: grade?.id
-                }))
+        try {
+            const response = await api({
+                method: 'GET',
+                url: `/school/${id}/`,
+            })
+            const grades = response?.data?.grades?.map(grade => ({
+                label: grade?.grades,
+                value: grade?.id
+            }))
 
-                setDefaultGrades(grades);
-                setSchool(response.data);
-            } else {
-                message.error("Something went wrong !");
-            }
-            setLoading(false);
-
-        }).catch(err => {
-            setLoading(false);
-            console.log(err);
-        })
+            setDefaultGrades(grades);
+            return response.data
+        } catch (error) {
+            throw new Error(error.message ? error.message : "Can not fetch school")
+        }
     }
 
     const updateSchool = async (id, data) => {
-        setupdating(true);
-        await api({
-            method: "PUT",
-            data: data,
-            url: `/school/${id}/`,
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + access_token
-            }
-        }).then(response => {
-            console.log(response);
-            if (response.status === 200) {
-                message.success("Successfully updated");
-                setupdating(false);
-            } else {
-                message.error("Something went wrong");
-                setupdating(false);
-            }
-        }).catch(err => {
-            const lable = Object.keys(err.response.data)[0]
-            message.error(err?.response?.data[lable])
-            setupdating(false);
-        })
+        try {
+            const response = await api({
+                method: "PUT",
+                data: data,
+                url: `/school/${id}/`,
+                headers: {
+                    "Authorization": `Bearer ${useToken().access_token}`
+                }
+            })
+            return response.data
+        } catch (error) {
+            throw new Error(error.message ? error.message : "Can not update school")
+        }
     }
 
-    return { school, defaultGrade, loading, setSchool, updateSchool, updating, fetchSchoolById }
+    const { data: school, isLoading: loading } = useQuery({
+        queryKey: ["school_by_id"],
+        queryFn: () => fetchSchoolById(),
+        retry: 0,
+        refetchOnWindowFocus: false
+    })
+
+    const { mutate: updateSchoolMutate, isLoading: updating } = useMutation({
+        mutationFn: ({ id, data }) => updateSchool(id, data),
+        onSuccess: () => {
+            message.success("School updated successfully")
+            queryClient.invalidateQueries({ queryKey: ["filteredSchools"] })
+        }, 
+        onError: () => {    
+            message.error("Failed to update the school")
+        }
+    })
+
+    return { school, defaultGrade, loading, updateSchoolMutate, updating, fetchSchoolById }
 }

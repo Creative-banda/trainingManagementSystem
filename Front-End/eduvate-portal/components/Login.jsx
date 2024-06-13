@@ -4,6 +4,10 @@ import { EyeInvisibleOutlined, EyeTwoTone, MailOutlined, SafetyOutlined } from '
 import api from '../interceptor/axios_interceptor';
 import { useNavigate } from 'react-router-dom';
 import { Context } from '../context/user_context';
+import axios from 'axios';
+import { useToken } from '../hooks/token_hooks';
+
+const BASE_URL = import.meta.env.VITE_BASE_URL
 
 function Login() {
     const [authInfo, setAuthInfo] = useState({ email: "", password: "" })
@@ -21,17 +25,20 @@ function Login() {
     const fetchUserInfo = async (access) => {
         await api({
             method: 'GET',
-            url: "/account/auth",
+            url: "/account/auth/",
             headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + access
+                "Authorization": `Bearer ${access}`
             }
         }).then(response => {
-            setIsAuthenticated(true);
+            if (response.data.role.some(role => role === "admin")) {
+                setIsAuthenticated(true);
+                localStorage.setItem("userInfo", JSON.stringify(response.data));
+                redirect("/");
+                console.log(response.data);
+            } else {
+                message.error("You are not authorized to access this page");
+            }
             setLoading(false);
-            localStorage.setItem("userInfo", JSON.stringify(response.data));
-            redirect("/");
-            console.log(response.data);
         }).catch(err => {
             setLoading(false);
             console.log(err);
@@ -41,9 +48,9 @@ function Login() {
 
     const handleLogin = async () => {
         setLoading(true);
-        await api({
+        await axios({
             method: 'POST',
-            url: "/token/",
+            url: `${BASE_URL}/token/`,
             data: JSON.stringify(authInfo),
             headers: {
                 "Content-Type": "application/json"
@@ -53,7 +60,7 @@ function Login() {
                 localStorage.setItem("access_token", response?.data?.access);
                 localStorage.setItem("refresh_token", response?.data?.refresh);
                 fetchUserInfo(response?.data?.access);
-            } else{
+            } else {
                 message.error("Invalid Credentials")
             }
             setLoading(false);
@@ -78,7 +85,7 @@ function Login() {
                     <div className='shadow-md p-8 rounded-lg flex flex-col justify-center items-center'>
 
                         <div className=' w-28 h-28 rounded-full'>
-                            <img src='/images/logo.jpg' className='select-none pointer-events-none border w-28' />
+                            <img src='/images/logo.png' className='select-none pointer-events-none border w-28' />
                         </div>
 
                         <h1 className='text-2xl font-bold text-gray-700 mb-4 select-none'> Hello there 👋 </h1>

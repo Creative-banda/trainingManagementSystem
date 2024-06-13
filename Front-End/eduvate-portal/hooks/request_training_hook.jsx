@@ -5,37 +5,11 @@ import { message } from "antd";
 import { useQuery } from "@tanstack/react-query";
 
 const useRequestTraining = () => {
-    // const [requestedTraining, setRequestedTraining] = useState([]);
-    // const [loading, setLoading] = useState(false);
-
     const [filters, setFilters] = useState({
         school: "", subject: "", requestor: "", status: "PENDING"
     })
 
-    const { access_token } = useToken();
-    // const fetchRequestedTraining = async (params) => {
-    //     setLoading(true);
-    //     await api({
-    //         method: 'GET',
-    //         url: 'training/request/',
-    //         params: { ...params },
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //             'Authorization': 'Bearer ' + access_token
-    //         }
-    //     }).then(response => {
-    //         if(response.status === 200){
-    //             setRequestedTraining(response.data);
-    //         }else{
-    //             message.error(response.data.message);
-    //         }
-    //         setLoading(false);
-    //     }).catch(err => {
-    //         message.error(err?.response?.data ? err?.response?.data : "Something went wrong");
-    //         setLoading(false);
-    //     })
-    // }
-
+    const { access_token } = useToken()
 
     const updateRequestedTraining = async (data) => {
         await api({
@@ -43,7 +17,6 @@ const useRequestTraining = () => {
             url: `training/request/${data?.id}/`,
             data: data,
             headers: {
-                "Content-Type": "application/json",
                 "Authorization": "Bearer " + access_token
             }
         }).then(response => {
@@ -64,7 +37,6 @@ const useRequestTraining = () => {
                 url: 'training/request/',
                 params: { ...filters },
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + access_token
                 }
             })

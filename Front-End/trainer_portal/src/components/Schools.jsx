@@ -8,18 +8,12 @@ import { ModalContext } from '../../context/modal_context';
 import SchoolModal from '../../modal/add_school';
 
 function Schools() {
-    const { filterSchool, filteredData, fetchingSchool, schoolOptions } = useSchools();
+    const { filteredData, fetchingSchool, schoolOptions,filters, setFilters } = useSchools();
     const { setSchoolModal } = useContext(ModalContext);
     const { is_am_om, userInfo } = useUserInfo();
     const redirect = useNavigate();
 
     const [schoolData, setSchoolData] = useState();
-    const [filters, setFilters] = useState({
-        id: "",
-        catagory: "",
-        am: userInfo?.id,
-        om: "",
-    })
 
     const handleRole = (value) => {
         if (value === "AM") {
@@ -88,8 +82,7 @@ function Schools() {
         if (!is_am_om) {
             redirect("/")
         }
-        filterSchool({ ...filters })
-    }, [filters])
+    }, [])
 
     return (
         <div>
@@ -97,12 +90,12 @@ function Schools() {
             <Table columns={columns} dataSource={filteredData} loading={fetchingSchool} bordered size='small'
                 title={() => (
                     <div className='w-full flex justify-start gap-2'>
-                        <Select options={schoolOptions} placeholder="Filter By School" allowClear onChange={(value) => setFilters({ ...filters, id: value })} showSearch optionFilterProp='label' size='small' />
+                        <Select options={schoolOptions} placeholder="Filter By School" allowClear onChange={(value) => setFilters({ ...filters, id: value })} showSearch optionFilterProp='label' size='small' className='w-44' />
 
                         <Select options={[
                             { value: "AM", label: "Academic Manager" },
                             { value: "OM", label: "Operational Manager" },
-                        ]} onChange={(value) => handleRole(value)} placeholder="Choose your role" defaultValue="Academic Manager" size='small' />
+                        ]} onChange={(value) => handleRole(value)} placeholder="Choose your role" defaultValue="Academic Manager" size='small' className='w-44' />
 
                         <Button className='bg-blue-400 text-white' size='small' onClick={() => setSchoolModal(true)}> Add School </Button>
                     </div>

@@ -3,14 +3,13 @@ import api from "../interceptor/axios_interceptor";
 import { useToken } from "./token_hooks";
 import { ModalContext } from "../context/modal_context";
 import { message } from "antd";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const useSchool = () => {
     const [submitting, setSubmittion] = useState(false);
     const { access_token } = useToken();
-    const { setSchoolModal } = useContext(ModalContext);
-
-
+    const queryCient = useQueryClient()
+    
     // const registerSchool = async (data) => {
     //     setSubmittion(true);
     //     await api({
@@ -48,16 +47,21 @@ const useSchool = () => {
                 data: data,
                 url: "/school/",
                 headers: {
-                    "Content-Type": "application/json",
                     "Authorization": "Bearer " + access_token
                 }
             })
+            return response.data
         } catch (err) {
             throw new Error(err.message ? err.message : "Not able to registor school");
         }
     }
 
-    const {} = useMutation
+    const {} = useMutation({
+        mutationFn: registerSchool,
+        onSuccess: () => {
+            queryCient.invalidateQueries({ queryKey: ["schools"] })
+        }
+    })
 
 
     return { submitting, registerSchool }

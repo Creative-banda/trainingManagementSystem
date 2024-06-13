@@ -43,7 +43,7 @@ const options = {
 
 
 const DoughnutChart = () => {
-  const { loading, trainingsData} = useAllTrainings();
+  const { loading, trainingsData } = useAllTrainings();
 
   const chartData = useMemo(() => {
     const data = {
@@ -90,4 +90,4 @@ const DoughnutChart = () => {
 }
 
 
-export default React.memo(DoughnutChart);
+export default DoughnutChart;

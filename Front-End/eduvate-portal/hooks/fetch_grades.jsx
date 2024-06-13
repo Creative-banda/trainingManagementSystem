@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { message } from "antd";
 import api from "../interceptor/axios_interceptor";
 import { useToken } from "./token_hooks";
 import { useQuery } from "@tanstack/react-query";
@@ -36,7 +36,6 @@ const useGrades = () => {
                 method: "GET",
                 url: `/school/grades/`,
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + access_token
                 }
             })
@@ -55,7 +54,10 @@ const useGrades = () => {
     const { data: grades, isLoading: gradeLoading, error } = useQuery({
         queryKey: ["grades"],
         queryFn: fetchGrades,
-        refetchOnWindowFocus: false
+        refetchOnWindowFocus: false,
+        onError: (error) => {
+            message.error(error.message ? error.message : "Can not fetch the grades");
+        },
     })
 
     return { grades, gradeLoading, error }

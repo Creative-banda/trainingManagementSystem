@@ -13,11 +13,11 @@ import { TrainingStatus, TrainingType } from '../../utilities/MenuItems';
 function Training() {
   const [data, setData] = useState()
   const { setUpdateTrainingModal, setRequestTrainingModal } = useContext(ModalContext)
-  const { pagination, setPagination, trainingsData, loadingTraining, fetchTraining } = useTraining();
+  const { pagination, setPagination, trainingsData, loadingTraining, refetchTrainings } = useTraining();
   const { is_am_om } = useUserInfo();
   const redirect = useNavigate();
 
-  console.log(trainingsData);
+  // console.log(trainingsData);
 
   const columns = [
     {
@@ -46,10 +46,10 @@ function Training() {
         <Tag color={trainingStatus === "COMPLETED" ? "green" : trainingStatus === "ONGOING" ? "yellow" : trainingStatus === "CANCELLED" ? "red" : "orange"}>{trainingStatus}</Tag>
       ),
       filters: [
-        { text: "Completed", value: "COMPLETED" },
-        { text: "Pending", value: "PENDING" },
-        { text: "On Going", value: "ONGOING" },
-        { text: "Cancelled", value: "CANCELLED" },
+        { text: "COMPLETED", value: "COMPLETED" },
+        { text: "PENDING", value: "PENDING" },
+        { text: "ONGOING", value: "ONGOING" },
+        { text: "CANCELLED", value: "CANCELLED" },
       ],
       onFilter: (value, record) => record?.trainingStatus.indexOf(value) === 0,
     },
@@ -61,14 +61,22 @@ function Training() {
         <p className=''>{trainingDetail ? trainingDetail[0].subject : "Error"}</p>
       ),
       filters: [
-        { text: "CS", value: "COMPUTER SCIENCE" },
-        { text: "Robotics", value: "ROBOTICS" },
-        { text: "Aero", value: "AEROMODELLING" },
+        { text: "COMPUTER SCIENCE", value: "COMPUTER SCIENCE" },
+        { text: "ROBOTICS", value: "ROBOTICS" },
+        { text: "AEROMODELLING", value: "AEROMODELLING" },
       ],
       onFilter: (value, record) => record?.trainingType.indexOf(value) === 0,
     },
     {
       key: 4,
+      title: "Start Date",
+      dataIndex: "trainingDetail",
+      render:(_, {trainingDetail}) => (
+        <p>{trainingDetail ? trainingDetail[0].startDate : "Error"}</p>
+      )
+    },
+    {
+      key: 5,
       title: "Start Time",
       dataIndex: "trainingDetail",
       render:(_, {trainingDetail}) => (
@@ -77,7 +85,7 @@ function Training() {
     },
     {
       title: "Action",
-      key: 5,
+      key: 6,
       render: (data) => (
         <div className='flex gap-2'>
           <Tooltip title="View Or Edit">
@@ -109,7 +117,7 @@ function Training() {
             <div className='flex gap-2'>
 
               <Tooltip title="Refresh Data">
-                <Button icon={<ReloadOutlined />} onClick={() => fetchTraining()} size='small' />
+                <Button icon={<ReloadOutlined />} onClick={() => refetchTrainings()} size='small' />
               </Tooltip>
 
               {
@@ -139,21 +147,10 @@ const TrainingRequest = () => {
   const { setRequestTrainingModal } = useContext(ModalContext)
   const [trainingData, setTrainingData] = useState(null);
 
-  const [filters, setFilters] = useState({
-    status: "ONGOING",
-    requestor: userInfo?.id,
-    school: null,
-    subject: null,
-    active:true
-  });
+  
 
-  const { fetchRequestedTraining, requestedTrainings } = useTraining();
+  const { requestedTrainings, filters, setFilters } = useTraining();
 
-  // console.log(requestedTrainings);
-
-  useEffect(() => {
-    is_am_om && fetchRequestedTraining(filters);
-  }, [])
 
   const columns = [
     {
@@ -198,7 +195,6 @@ const TrainingRequest = () => {
         <div className='flex gap-2'>
           <Tooltip title="View Or Edit">
             <Button icon={<EyeOutlined />} size='small' onClick={() => {
-              console.log(data);
               setTrainingData(data);
               setRequestTrainingModal(true);
             }} />

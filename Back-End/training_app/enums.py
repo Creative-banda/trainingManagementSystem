@@ -6,6 +6,7 @@ class TrainingStatusEnum(enum.Enum):
     COMPLETED = "COMPLETED"
     CANCELLED = "CANCELLED"
     PENDING = "PENDING"
+    TRANSFERRED = "TRANSFERRED"
 
     @classmethod
     def choices(cls):

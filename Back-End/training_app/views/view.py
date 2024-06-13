@@ -39,8 +39,10 @@ class TrainingGetPost(APIView, LimitOffsetPagination):
                 serializer.save()
                 send_training_mail.delay(serializer.data)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
+            logger.error(serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
+            logger.error(str(e))
             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -67,12 +69,10 @@ class TrainingById(APIView):
         except Exception as e:
             return Response(str(e), status=status.HTTP_204_NO_CONTENT)
         
-        serializer = TrainingSerializer(training, context={'request': request}) 
+        serializer = TrainingSerializer(training, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def put(self, request, pk):
-        print(request.data)
-        print(pk)
         try:
             training = Training.objects.filter(id=pk, active=True).prefetch_related('trainings').first()
             # training = get_object_or_404(Training, id=pk, active=True)
@@ -93,10 +93,11 @@ class TrainingById(APIView):
         try:
             training = Training.objects.filter(id=pk).first()
             trainingRequests = training.trainings.all()
-            with transaction.atomic():
-                for trainingRequest in trainingRequests:
-                    trainingRequest.status = "PENDING"
-                    trainingRequest.save()
+            if training.trainingStatus == "ONGOING":
+                with transaction.atomic():
+                    for trainingRequest in trainingRequests:
+                        trainingRequest.status = "PENDING"
+                        trainingRequest.save()
             training.active = False
             training.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
@@ -104,20 +105,20 @@ class TrainingById(APIView):
             return Response(str(e), status=status.HTTP_204_NO_CONTENT)
 
 
-################################### To get all the active training by Trainer ID ###################################
+# ################################### To get all the active training by Trainer ID ###################################
 
-class TrainingsByTrainer(APIView, LimitOffsetPagination):
-    permission_classes = [IsAuthenticated]
-    def get(self, request, id):
-        try:
-            training = Training.objects.filter(trainers__id = id, active=True).prefetch_related('trainers', 'schools', 'grades')
-            # training = Training.objects.filter(trainers__id = id, active=True)
-            result = self.paginate_queryset(training, request, view=self)
-            serializer = TrainingSerializer(result, context = {"request": request}, many=True)
-            return self.get_paginated_response(serializer.data)
-        except Exception as e:
-            logger.error(str(e))
-            return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
+# class TrainingsByTrainer(APIView, LimitOffsetPagination):
+#     permission_classes = [IsAuthenticated]
+#     def get(self, request, id):
+#         try:
+#             training = Training.objects.filter(trainers__id = id, active=True).prefetch_related('trainers', 'schools', 'grades')
+#             # training = Training.objects.filter(trainers__id = id, active=True)
+#             result = self.paginate_queryset(training, request, view=self)
+#             serializer = TrainingSerializer(result, context = {"request": request}, many=True)
+#             return self.get_paginated_response(serializer.data)
+#         except Exception as e:
+#             logger.error(str(e))
+#             return Response(str(e), status=status.HTTP_400_BAD_REQUEST)
 
 
 ################################## To get all the training by Trainer ID without pagination ###################################
@@ -139,7 +140,6 @@ class TrainingByTrainerId(APIView):
 class TrainingFilterView(APIView):
     permission_classes = [IsAuthenticated]
     
-    # @cache_view(timeout=60*15)
     def get(self, request, *args, **kwargs):
         queryset = Training.objects.all().prefetch_related('trainings')
 

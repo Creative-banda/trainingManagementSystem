@@ -52,3 +52,4 @@ class TrainingStatisticsView(APIView):
         ]
         return Response(result_list, status=status.HTTP_200_OK)
  
+

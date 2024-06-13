@@ -14,13 +14,16 @@ function Schools() {
   const { setSchoolModal, setEditSchoolModal } = useContext(ModalContext);
   const [schoolData, setSchoolData] = useState({});
   const [school, setSchool] = useState(schools);
+  
+  // console.log(school)
+  const redirect = useNavigate();
+
   const { deleteSchool, loading } = useSchoolById();
 
   const filterSchool = (schoolId) => {
     const school = []
     school.push(schools.find((school) => school.id === schoolId))
     setSchool(school);
-    // console.log(school)
   }
 
   const onClear = () => {
@@ -29,9 +32,10 @@ function Schools() {
 
   const columns = [
     {
+      key: 'id',
       title: 'School Name',
       dataIndex: 'name',
-      key: 'id',
+      render: (text) => <p className=''>{text}</p>,
     },
     {
       title: 'ERP Code',

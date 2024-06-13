@@ -1,10 +1,11 @@
 import { Button, Popover, Table, Tooltip } from 'antd'
 import {  EditOutlined, DeleteOutlined, ReloadOutlined, PlusOutlined } from '@ant-design/icons';
-import { useSheet } from '../../hooks/fetch_sheet';
 import { useLocation, useParams } from 'react-router-dom';
 import { useContext, useState } from 'react';
-import { ModalContext } from '../../context/modal_context';
-import TrainingModifyModal from '../../modal/trainingSheetModal';
+import TrainingModifyModal from '../modals/trainingSheetModal';
+import { ModalContext } from '../context/modal_context';
+import { useSheet } from '../hooks/fetch_sheet';
+
 
 function TrainingSheet() {
     const { id } = useParams();
@@ -14,7 +15,7 @@ function TrainingSheet() {
     const { sheetData, loading, refetchSchoolSheet } = useSheet({ id: id, subject: subject });
     const { setTrainingSheetModifyState } = useContext(ModalContext);
 
-    // console.log(school);
+    // console.log(subject);
 
     const openAddSheetData = () => {
         setTrainingSheetModifyState(true);
@@ -55,7 +56,7 @@ export default TrainingSheet
 
 export const SchoolSheet = ({ dataSource, loading, title, subject }) => {
     const { setTrainingSheetModifyState } = useContext(ModalContext);
-    const { deleteSheetData } = useSheet({ id: 0, subject: "" })
+    const { deleteSheetDataMutate } = useSheet({ id: 0, subject: "" })
     const [school, setSchool] = useState({ data: {}, id: "" });
     // console.log(sheetData);
     const columns = [
@@ -111,7 +112,7 @@ export const SchoolSheet = ({ dataSource, loading, title, subject }) => {
                         title="Sure want to Delete"
                         content={
                             <div>
-                                <Button icon={<DeleteOutlined />} danger onClick={() => { deleteSheetData(rest.id) }} className='w-full'>
+                                <Button icon={<DeleteOutlined />} danger onClick={() => { deleteSheetDataMutate(rest.id) }} className='w-full'>
                                     Yes
                                 </Button>
                             </div>

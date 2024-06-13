@@ -1,9 +1,10 @@
 import { Button, Form, Image, Input, Tooltip, Upload, message } from 'antd'
 import React, { useState } from 'react'
-import { useToken, useUserInfo } from '../hooks/token_hooks'
 import { UploadOutlined } from '@ant-design/icons'
-import api from '../interceptor/axios_interceptor'
-import useLogout from '../hooks/logout_user'
+
+import { useToken, useUserInfo } from '../../hooks/token_hooks'
+import useLogout from '../../hooks/logout_user'
+import api from '../../utilities/axios_interceptor'
 
 const BASE_URL = import.meta.env.VITE_BASE_URL
 

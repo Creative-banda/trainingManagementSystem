@@ -7,37 +7,35 @@ import { useTrainings } from '../hooks/fetch_training';
 import useRequestTraining from '../hooks/request_training_hook';
 
 
-const AddTrainingModal = () => {
-    const { addTrainingModal, setTrainingModal } = useContext(ModalContext);
-
+const TransferTrainingModal = () => {
+    const { transferTrainingModal, setTransferTrainingModal } = useContext(ModalContext);
 
     // console.log(data);
     const { userName } = useUserOptions();
     const { addTrainingMutate, loadingTraining } = useTrainings();
-    const { refetchRquestedTraining, requestedTraining, loading } = useRequestTraining();
+    const { refetchRquestedTraining, requestedTraining, loading, setFilters, filters } = useRequestTraining();
     const [form] = Form.useForm();
 
     const handleOk = async (values) => {
+        // addTrainingMutate(values)
+        // form.resetFields();
+        // setTransferTrainingModal(false);
         console.log(values);
-
-        addTrainingMutate(values)
-        form.resetFields();
-        setTrainingModal(false);
     };
 
     const handleCancel = () => {
         form.resetFields();
-        setTrainingModal(false);
+        setTransferTrainingModal(false);
     };
 
 
     useEffect(() => {
-        refetchRquestedTraining({ status: "PENDING" });
-    }, [addTrainingModal])
+        setFilters({...filters, status: "ONGOING"});
+    }, [])
 
     return (
         <>
-            <Modal title="Assign Training" width={'50%'} open={addTrainingModal} onOk={handleOk} onCancel={handleCancel}
+            <Modal title="Transfter Trainings" width={'50%'} open={transferTrainingModal} onOk={handleOk} onCancel={handleCancel}
                 footer={[]} centered
             >
                 <div>
@@ -107,4 +105,4 @@ const AddTrainingModal = () => {
 };
 
 
-export default AddTrainingModal
+export default TransferTrainingModal

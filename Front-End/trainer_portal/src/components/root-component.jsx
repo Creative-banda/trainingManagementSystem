@@ -48,12 +48,13 @@ export default RootComponent
 
 export const UserDropDown = () => {
     const {userInfo} = useUserInfo();
+    const redirect = useNavigate();
     const {handleLogout} = useLogout();
     const items = [
         {
           key: '1',
           label: (
-            <div role='button' className='w-full'> Profile </div>
+            <div role='button' className='w-full' onClick={() => redirect("/profile")}> Profile </div>
           ),
         },
         {

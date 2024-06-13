@@ -4,17 +4,14 @@ import { useToken } from "./token_hooks";
 import { useQuery } from "@tanstack/react-query";
 
 const useUserOptions = () => {
-    const { access_token } = useToken();
 
     const fetchUsers = async () => {
         try {
-
             const response = await api({
                 method: 'GET',
                 url: "/account/users/",
                 headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + access_token
+                    "Authorization": `Bearer ${useToken().access_token}`
                 }
             })
             const data = response.data?.map(user => ({

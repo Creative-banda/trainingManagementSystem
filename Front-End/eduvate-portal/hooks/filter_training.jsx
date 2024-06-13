@@ -1,47 +1,12 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { useToken } from "./token_hooks";
 import api from "../interceptor/axios_interceptor";
-import { message } from "antd";
 import { useQuery } from "@tanstack/react-query";
 
-const useFilterTraining = (filters) => {
-    // const [training, setTraining] = useState([]);
-    // const [loadingTrainings, setLoadingTrainings] = useState(false);
-    const [ccs, setCS] = useState(0);
-    const [crobotics, setRobotics] = useState(0);
-    const [caeromodelling, setAeromodelling] = useState(0);
-    const [cdc, setDC] = useState(0);
-    const { access_token } = useToken();
-
-
-    // const fetchTraining = async () => {
-    //     try {
-    //         setLoadingTrainings(true);
-    //         const response = await api({
-    //             method: "GET",
-    //             url: `/training/filter/`,
-    //             params: {
-    //                 ...filters
-    //             },
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //                 "Authorization": "Bearer " + access_token
-    //             }
-    //         })
-    //         if (response.status === 200) {
-    //             setTraining(response.data);
-    //             setLoadingTrainings(false);
-    //         } else {
-    //             message.error("Error in Filter Training");
-    //             setLoadingTrainings(false);
-    //         }
-
-    //     } catch (err) {
-    //         message.error(err?.message ? err?.message : "Something went wrong");
-    //         setLoadingTrainings(false);
-    //         console.log(err);
-    //     }
-    // }
+const useFilterTraining = () => {
+    const [filters, setFilters] = useState({
+        trainer: "", active: true, trainings__subject: "", trainingStatus: "ONGOING", subject: "", currentGrade: ""
+    });
 
     const fetchTraining = async () => {
         try {
@@ -52,8 +17,7 @@ const useFilterTraining = (filters) => {
                     ...filters
                 },
                 headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + access_token
+                    "Authorization": `Bearer ${useToken().access_token}`
                 }
             })
             return response.data;
@@ -66,23 +30,31 @@ const useFilterTraining = (filters) => {
     const { refetch: refetchTraining, data: training, isLoading: loadingTrainings } = useQuery({
         queryKey: ["trainings", { ...filters }],
         queryFn: () => fetchTraining(),
+        retry:false,
         refetchOnWindowFocus: false
     })
 
 
 
-    useEffect(() => {
+    const currentTrainingsData = useMemo(() => {
+        const data = {
+            cs: 0,
+            robotics: 0,
+            aeromodelling: 0,
+            dc: 0
+        }
         const csTrainings = training?.filter(({ trainingDetail }) => trainingDetail[0]?.subject === "COMPUTER SCIENCE");
-        setCS(csTrainings);
         const roboTrainings = training?.filter(({ trainingDetail }) => trainingDetail[0]?.subject === "ROBOTICS");
-        setRobotics(roboTrainings);
         const aeroTrainings = training?.filter(({ trainingDetail }) => trainingDetail[0]?.subject === "AEROMODELLING");
-        setAeromodelling(aeroTrainings);
         const dcSession = training?.filter(({ trainingDetail }) => trainingDetail[0]?.subject === "DOUBT SESSION");
-        setDC(dcSession);
+        data.cs = csTrainings?.length;
+        data.robotics = roboTrainings?.length;
+        data.aeromodelling = aeroTrainings?.length;
+        data.dc = dcSession?.length;
+        return data;
     }, [training]);
 
-    return { training, loadingTrainings, ccs, crobotics, caeromodelling, cdc, refetchTraining }
+    return { training, loadingTrainings, currentTrainingsData, refetchTraining, filters, setFilters }
 }
 
 export default useFilterTraining;

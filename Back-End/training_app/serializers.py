@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Training, TrainingDataModel, TrainingSheetModel, TrainingRequestsModel, MasterTraining
+from .models import Training, TrainingDataModel, TrainingSheetModel, TrainingRequestsModel
 from account_app.models import User
 from account_app.serializers import userSerializer
 from school_app.models import Grades, School
@@ -38,10 +38,11 @@ class TrainingSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if 'trainings' in data and len(data['trainings']) > 1:
             subject = data['trainings'][0].subject
-            start_time = data['trainings'][0].start_time
+            start_time = data['trainings'][0].startTime
+            startDate = data['trainings'][0].startDate
 
             for training in data['trainings']:
-                if training.subject != subject and training.start_time != start_time:
+                if training.subject != subject and training.startTime != start_time and training.startDate != startDate:
                     raise serializers.ValidationError("All trainings must be same subject and same start time")
             return data
         return data
@@ -58,13 +59,6 @@ class TrainingSerializer(serializers.ModelSerializer):
             representation['currentGradeDetails'] = GradeSerializer(instance.currentGrade).data
         return representation
 
-
-class MasterTrainingSerializer(serializers.ModelSerializer):
-    trainings = serializers.PrimaryKeyRelatedField(queryset=Training.objects.all(), many=True)
-
-    class Meta:
-        model = MasterTraining
-        fields = ['id', 'trainings', 'status']
 
 
 class TrainingDataSerializer(serializers.ModelSerializer):

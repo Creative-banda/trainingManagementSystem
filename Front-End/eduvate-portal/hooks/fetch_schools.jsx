@@ -6,42 +6,11 @@ import { ModalContext } from "../context/modal_context";
 import { useQuery } from "@tanstack/react-query";
 
 const useSchools = () => {
-    // const [schools, setSchools] = useState([]);
-    // const [fetchingSchool, setFetchingSchool] = useState(false);
-    const [fetchingAllSchools, setFetchingAllSchools] = useState(false);
-    const [allSchoolOptions, setAllSchoolOptions] = useState([]);
     const [pagination, setPagination] = useState({
         current: 1,
         pageSize: 10,
     });
     const { access_token } = useToken();
-
-    // const fetchSchools = async (params = {}) => {
-    //     setFetchingSchool(true);
-    //     await api({
-    //         method: "GET",
-    //         url: "/school/",
-    //         params: { ...params },
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //             "Authorization": "Bearer " + access_token
-    //         }
-    //     })
-    //         .then((response) => {
-    //             const { results, count } = response.data;
-    //             setSchools(results);
-    //             setPagination({
-    //                 ...pagination,
-    //                 total: count
-    //             })
-    //             setFetchingSchool(false);
-
-    //         })
-    //         .catch((error) => {
-    //             console.log(error);
-    //             setFetchingSchool(false)
-    //         })
-    // }
 
     const fetchSchools = async (params = {}) => {
         try {
@@ -65,33 +34,23 @@ const useSchools = () => {
     }
 
     const fetchAllSchools = async () => {
-        setFetchingAllSchools(true);
-        await api({
-            method: "GET",
-            url: "/school/",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + access_token
-            }
-        })
-            .then((response) => {
-                if (response.status === 200) {
-                    // console.log(response.data);
-                    const schoolOptions = response.data?.map(school => ({
-                        value: school?.id,
-                        label: school?.name
-                    }))
-                    setAllSchoolOptions(schoolOptions);
-                } else {
-                    message.error("Error while fetching all schools");
-                    console.log(response.data)
+        try {
+            const response = await api({
+                method: "GET",
+                url: "/school/",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + access_token
                 }
-                setFetchingAllSchools(false);
             })
-            .catch((error) => {
-                console.log(error);
-                setFetchingAllSchools(false)
-            })
+            const schoolOptions = response.data?.map(school => ({
+                value: school?.id,
+                label: school?.name
+            }))
+            return schoolOptions
+        } catch (error) {
+            throw new Error(error.message ? error.message : "Something went wrong while fetching school");
+        }
     }
 
     const deleteSchool = async (id) => {
@@ -120,22 +79,19 @@ const useSchools = () => {
     const { data: schools, isLoading: fetchingSchool } = useQuery({
         queryKey: ["schools", { limit: pagination.pageSize, offset: (pagination.current - 1) * pagination.pageSize }],
         queryFn: () => fetchSchools({ limit: pagination.pageSize, offset: (pagination.current - 1) * pagination.pageSize }),
-        refetchOnWindowFocus: false
+        retry: false,
+        refetchOnWindowFocus: false,
+
     })
 
+    const { data: allSchoolOptions, isLoading: fetchingAllSchools } = useQuery({
+        queryKey: ["allSchools"],
+        queryFn: () => fetchAllSchools(),
+        retry: false,
+        refetchOnWindowFocus: false,
+    })
 
-    // useEffect(() => {
-    //     fetchSchools({
-    //         limit: pagination.pageSize,
-    //         offset: (pagination.current - 1) * pagination.pageSize
-    //     });
-    // }, [pagination.current, pagination.pageSize])
-
-    useEffect(() => {
-        fetchAllSchools();
-    }, [])
-
-    return { schools, fetchingSchool, fetchingAllSchools, allSchoolOptions, fetchSchools, setPagination, pagination, deleteSchool }
+    return { schools, fetchingSchool, fetchingAllSchools, allSchoolOptions, setPagination, pagination, deleteSchool }
 }
 
 export default useSchools;
@@ -156,7 +112,6 @@ export const useSchoolById = (id) => {
             method: 'GET',
             url: `/school/${id}/`,
             headers: {
-                'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + access_token
             }
         }).then(response => {
@@ -193,7 +148,6 @@ export const useSchoolById = (id) => {
             data: data,
             url: `/school/${id}/`,
             headers: {
-                "Content-Type": "application/json",
                 "Authorization": "Bearer " + access_token
             }
         }).then(response => {
@@ -219,7 +173,6 @@ export const useSchoolById = (id) => {
             method: "DELETE",
             url: `/school/${id}`,
             headers: {
-                'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + access_token
             }
         }).then(response => {

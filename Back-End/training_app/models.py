@@ -11,7 +11,7 @@ class TrainingRequestsModel(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid4)
     school = models.ForeignKey(School, on_delete=models.CASCADE, related_name="training_request", blank=True, null=True)
     subject = models.CharField(max_length=255, choices=TrainingTypeEnum.choices(), default=TrainingTypeEnum.ROBOTICS.value)
-    requestor = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name="training_request", blank=True, null=True)
+    requestor = models.ForeignKey(User, on_delete=models.PROTECT, related_name="training_request", blank=True, null=True)
     grades = models.ManyToManyField(Grades, blank=True)
     startDate = models.DateField( blank=True )
     endTime = models.TimeField( blank=True, null=True )
@@ -46,12 +46,6 @@ class Training(BaseModel):
 
     def __str__(self):
         return f"{str(self.trainer)} - {str(self.trainings.first())}"
-
-
-# Not in use anymore
-class MasterTraining(BaseModel):
-    trainings = models.ManyToManyField(Training, blank=True)
-    status = models.CharField(max_length=50, choices=TrainingRequestEnum.choices(), default="ONGING")
 
 
 

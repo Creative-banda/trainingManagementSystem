@@ -9,5 +9,6 @@ export const useToken = () => {
 export const useUserInfo = () => {
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
     const is_am_om = userInfo?.role.some(obj => obj.role === "AM" || obj.role === "OM");
-    return {userInfo, is_am_om}
+    const is_admin = userInfo?.role.some(obj => obj.role === "ADMIN");
+    return {userInfo, is_am_om, is_admin}
 }

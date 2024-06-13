@@ -4,6 +4,8 @@ import { useToken } from "../hooks/token_hooks";
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 let isRefreshing = false;
 
+const { access_token } = useToken();
+
 export const isTotkenExpired = (token) => {
     const decodedToken = jwtDecode(token);
     const currentTime = Date.now() / 1000;
@@ -12,7 +14,11 @@ export const isTotkenExpired = (token) => {
 
 
 const api = axios.create({
-    baseURL: BASE_URL
+    baseURL: BASE_URL,
+    headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${useToken().access_token}`
+    }
 })
 
 
@@ -20,7 +26,6 @@ const api = axios.create({
 
 api.interceptors.request.use(
     (config) => {
-        const { access_token } = useToken();
         if (access_token && isTotkenExpired(access_token)) {
             if (!isRefreshing) {
                 isRefreshing = true;

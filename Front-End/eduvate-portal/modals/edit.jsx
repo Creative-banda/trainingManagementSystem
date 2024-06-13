@@ -1,15 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Button, Modal, Input, Select, DatePicker, TimePicker, Form, message, Skeleton } from 'antd';
 import { ModalContext } from '../context/modal_context';
-import api from '../interceptor/axios_interceptor';
-import { useToken } from '../hooks/token_hooks';
-import { LoadingOutlined, ShopOutlined } from '@ant-design/icons';
 import useSchools from '../hooks/fetch_schools';
 import useUserOptions from '../hooks/fetch_user';
 import useGrades from '../hooks/fetch_grades';
 import dayjs from 'dayjs';
-import useTrainingById, { useTrainings } from '../hooks/fetch_training';
-import { SchoolCatagory, TrainingStatus, TrainingType } from '../utils/MenuItems';
+import { useTrainings } from '../hooks/fetch_training';
+import {  TrainingStatus, TrainingType } from '../utils/MenuItems';
 
 
 const EditModal = ({ trainingData }) => {
