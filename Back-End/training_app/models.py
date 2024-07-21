@@ -9,9 +9,9 @@ from .enums import TrainingStatusEnum, TrainingTypeEnum, TrainingRequestEnum
 
 class TrainingRequestsModel(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid4)
-    school = models.ForeignKey(School, on_delete=models.CASCADE, related_name="training_request", blank=True, null=True)
+    school = models.ForeignKey(School, on_delete=models.PROTECT, blank=True, null=True)
     subject = models.CharField(max_length=255, choices=TrainingTypeEnum.choices(), default=TrainingTypeEnum.ROBOTICS.value)
-    requestor = models.ForeignKey(User, on_delete=models.PROTECT, related_name="training_request", blank=True, null=True)
+    requestor = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True)
     grades = models.ManyToManyField(Grades, blank=True)
     startDate = models.DateField( blank=True )
     endTime = models.TimeField( blank=True, null=True )
@@ -32,7 +32,6 @@ class TrainingRequestsModel(BaseModel):
         return f"{str(self.school.name)} - {str(self.requestor)}"
 
 
-
 class Training(BaseModel):
     id = models.UUIDField(primary_key=True, default=uuid4)
     trainer = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
@@ -46,7 +45,6 @@ class Training(BaseModel):
 
     def __str__(self):
         return f"{str(self.trainer)} - {str(self.trainings.first())}"
-
 
 
 class TrainingDataModel(BaseModel):
@@ -63,7 +61,14 @@ class TrainingSheetModel(BaseModel):
     subject = models.CharField(max_length=255, choices=TrainingTypeEnum.choices(), default=TrainingTypeEnum.ROBOTICS.value, db_index=True)
     trainingData = models.ManyToManyField(TrainingDataModel, blank=True)
 
+    
+    class Meta:
+        ordering = ["-created_at"]
+
+    
     def __str__(self):
         return f"{str(self.school.name)} - {str(self.subject)}"
+    
+    
 
 

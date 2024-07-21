@@ -1,5 +1,6 @@
 from django.db import models
 from account_app.models import User
+from teachers_app.models import Teacher
 from .BaseModel import BaseModel
 from .enums import CatagoryEnum, GradeEnum, TrainingStatusEnum
 from account_app.models import UserType
@@ -18,14 +19,16 @@ class Grades(BaseModel):
 class School(BaseModel):
     id = models.UUIDField(unique=True, default = uuid4, primary_key=True, editable=False)
     name = models.CharField(max_length=255, unique=True)
+    email = models.CharField(max_length=255, unique=True, blank=True, null=True)
     address = models.TextField(max_length=500)
-    catagory = models.CharField(choices = CatagoryEnum.choices(), max_length=30);
+    catagory = models.CharField(choices = CatagoryEnum.choices(), max_length=30)
     grades = models.ManyToManyField(Grades)
     am = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="academic_manager", blank = True, null = True)
     om = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="operation_manager", blank = True, null = True)
     contact = models.CharField(max_length=12, blank=True, null=True)
     erp_code = models.CharField(max_length=12, blank=True, null=True, unique=True)
     active = models.BooleanField(default=True, null=True, blank=True)
+    teachers = models.ManyToManyField(Teacher, blank=True)
     # training_status = models.CharField(max_length=12, choices = TrainingStatusEnum.choices(), blank=True, null=True, default=TrainingStatusEnum.PENDING.value)
 
     def save(self, *args, **kwargs):

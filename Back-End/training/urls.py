@@ -12,6 +12,7 @@ urlpatterns = [
     path('account/', include('account_app.urls')),
     path('school/', include('school_app.urls')),
     path('training/', include('training_app.urls')),
+    path('teacher/', include('teachers_app.urls')),
     path('gsheet/', include('google_sheet_app.urls')),
     path("__debug__/", include("debug_toolbar.urls")),
 ]

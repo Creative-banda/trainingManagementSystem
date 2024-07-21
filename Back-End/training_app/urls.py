@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import TrainingGetPost, TrainingById, TrainingFilterView, TrainingStatisticsView, AllActiveTraining, TrainingByTrainerId, TrainingSheetView, TrainingDataView, TrainingRequestView, TrainingRequestByIdView, TrainingTransferView
+from .views import TrainingGetPost, TrainingById, TrainingFilterView, TrainingStatisticsView, AllActiveTraining, TrainingSheetView, TrainingDataView, TrainingRequestView, TrainingRequestByIdView, TrainingTransferView
 from django.views.decorators.cache import cache_page
 
 urlpatterns = [
@@ -13,6 +13,5 @@ urlpatterns = [
     path("statistics/", cache_page(60*5)(TrainingStatisticsView.as_view())),
     path("transfer/", TrainingTransferView.as_view()),
     path("<str:pk>/", TrainingById.as_view()),
-    # path("trainer/<str:id>/", TrainingsByTrainer.as_view()),
-    path("trainer/all/<str:id>/", TrainingByTrainerId.as_view()),
+    # path("trainer/all/<str:id>/", TrainingByTrainerId.as_view()),
 ]

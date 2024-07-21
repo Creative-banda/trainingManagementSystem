@@ -58,6 +58,7 @@ class User(BaseModel, AbstractUser):
     # schools = models.ManyToManyField("school_app.School" , blank=True, related_name = "user_schools")
     role = models.ManyToManyField(Role, blank=True, related_name = "user_roles")
     profilePic = models.ImageField(upload_to=profilePic_location, null=True, blank=True)
+    meeting_url = models.URLField(null=True, blank=True)
 
     objects = userManager()
 

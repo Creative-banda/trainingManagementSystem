@@ -7,7 +7,7 @@ class TrainingFilter(admin.ModelAdmin):
         trainings = obj.trainings.all()
         return '/n'.join([str(training.school) for training in trainings])
 
-    list_display = ['trainer', 'schools', 'active', ]
+    list_display = ['trainer', 'schools', 'trainingStatus', 'active', ]
     list_filter = ('trainer', 'active', 'trainingStatus')
     # search_fields = ('trainer', 'active','trainingStatus', 'currentGrade')
     # add table view of Training model in admin side

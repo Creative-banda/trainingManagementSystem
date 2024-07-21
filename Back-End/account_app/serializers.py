@@ -17,7 +17,7 @@ class userSerializer(serializers.ModelSerializer):
     role = roleSerializer(many=True)
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'total_training', 'role', "profilePic"]
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'total_training', 'role', "profilePic", "is_staff", "meeting_url"]
 
     # validate that profilePic is not greater than 2MB
     def validate(self, attrs):

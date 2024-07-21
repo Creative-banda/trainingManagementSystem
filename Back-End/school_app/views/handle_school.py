@@ -75,10 +75,9 @@ class SchoolById(APIView):
         except Exception as e:
             logger.error(str(e))
             return Response(str(e), status=status.HTTP_204_NO_CONTENT)
-        serializer = SchoolSerializer(school, data=request.data, context= {"request": request})
+        serializer = SchoolSerializer(school, partial=True, data=request.data, context= {"request": request})
         if serializer.is_valid():
             serializer.save()
-            print(serializer.data)
             return Response(serializer.data, status=status.HTTP_200_OK)
         logger.error(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -90,10 +89,8 @@ class SchoolById(APIView):
 
             return Response(str(e), status=status.HTTP_204_NO_CONTENT)
         with transaction.atomic():
-            training = TrainingRequestsModel.objects.filter(school=school)
-            training.active = False
+            trainings = TrainingRequestsModel.objects.filter(school=school, active=True).update(active=False)
             school.active = False
-            training.save()
             school.save()
         logger.info("School deleted successfully")
         return Response(status=status.HTTP_204_NO_CONTENT)

@@ -14,7 +14,7 @@ logger = logging.getLogger("django")
 
 class TrainingSheetView(APIView):
     def getQueryset(self, id):
-        return TrainingSheetModel.objects.filter(school__id = id).prefetch_related('trainingData')
+        return TrainingSheetModel.objects.prefetch_related('trainingData').filter(school__id = id)
 
     def get(self, request, id):
         try:

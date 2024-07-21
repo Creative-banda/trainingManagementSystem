@@ -9,8 +9,9 @@ class TrainingFilter(django_filters.FilterSet):
             'active': ['exact'],
             'trainingStatus': ['exact'],
             'currentGrade': ['exact'],
-            'trainings__school': ['exact'],  # Assuming 'school' is a field in TrainingRequestsModel
-            'trainings__subject':['exact'],
+            'trainings__school': ['exact'],
+            'trainings__subject': ['exact'],
+            'trainings__requestor': ['exact'],
         }
     
 

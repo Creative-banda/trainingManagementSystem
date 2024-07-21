@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'account_app',
     'school_app',
     'training_app',
+    'teachers_app',
 
     # Third party apps
     'rest_framework',
@@ -58,7 +59,7 @@ ROOT_URLCONF = 'training.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [ os.path.join(BASE_DIR, 'templates') ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -110,6 +111,7 @@ SIMPLE_JWT = {
      'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
      'REFRESH_TOKEN_LIFETIME': timedelta(days=5),
      'ROTATE_REFRESH_TOKENS': True,
+     'UPDATE_LAST_LOGIN': True,
      'BLACKLIST_AFTER_ROTATION': True
 }
 

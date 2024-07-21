@@ -6,6 +6,7 @@ class CatagoryEnum(enum.Enum):
     CATAGORYB = 'CATAGORY B'
     CATAGORYC = 'CATAGORY C'
     CATAGORYD = 'CATAGORY D'
+    CATAGORYE = 'CATAGORY E'
     
     @classmethod
     def choices(cls):
