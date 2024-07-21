@@ -64,7 +64,7 @@ function TodaysTraining() {
             render: (training) => (
 
                 <div>
-                    <Button icon={<EyeOutlined />} onClick={() => {
+                    <Button icon={<EyeOutlined />} size='small' onClick={() => {
                         console.log(training);
                         setTrainingData(training);
                         setEditModal(true);

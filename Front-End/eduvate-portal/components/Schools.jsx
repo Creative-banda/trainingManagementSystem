@@ -18,7 +18,7 @@ function Schools() {
   // console.log(school)
   const redirect = useNavigate();
 
-  const { deleteSchool, loading } = useSchoolById();
+  const { deleteSchoolMutate, loading } = useSchoolById();
 
   const filterSchool = (schoolId) => {
     const school = []
@@ -35,7 +35,7 @@ function Schools() {
       key: 'id',
       title: 'School Name',
       dataIndex: 'name',
-      render: (text) => <p className=''>{text}</p>,
+      render: (name, schoolData) => <p className=' cursor-pointer hover:bg-teal-500 hover:text-white px-1 rounded-md' onClick={() => redirect(`/info/school/${schoolData.id}`, {state: {data: schoolData}}) }>{name}</p>,
     },
     {
       title: 'ERP Code',
@@ -81,7 +81,7 @@ function Schools() {
           <Popconfirm
             title={`Delete ${school.name}`}
             description="It will detelte the school permanently"
-            onConfirm={() => deleteSchool(school.id)}
+            onConfirm={() => deleteSchoolMutate(school.id)}
             onButtonProps={{ loading: loading }}
           >
             <Button icon={<DeleteOutlined />} danger size='small' />

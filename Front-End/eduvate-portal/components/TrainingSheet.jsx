@@ -15,7 +15,7 @@ function TrainingSheet() {
     const { sheetData, loading, refetchSchoolSheet } = useSheet({ id: id, subject: subject });
     const { setTrainingSheetModifyState } = useContext(ModalContext);
 
-    // console.log(subject);
+    console.log(school);
 
     const openAddSheetData = () => {
         setTrainingSheetModifyState(true);
@@ -29,7 +29,7 @@ function TrainingSheet() {
                 <h1>{school?.erp_code}</h1>
                 <h1 className='font-bold text-lg'>{subject}</h1>
                 <h1>{school?.catagory}</h1>
-                <h1> Grade {school.grades[0]} - Grade {school.grades[school.grades.length - 1]} </h1>
+                {/* <h1> Grade {school.grades[0]} - Grade {school.grades[school.grades.length - 1]} </h1> */}
 
             </div>
 

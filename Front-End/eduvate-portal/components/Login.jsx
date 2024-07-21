@@ -30,7 +30,8 @@ function Login() {
                 "Authorization": `Bearer ${access}`
             }
         }).then(response => {
-            if (response.data.role.some(role => role === "admin")) {
+            console.log(response.data);
+            if (response.data.role.some(data => data.role === "ADMIN")) {
                 setIsAuthenticated(true);
                 localStorage.setItem("userInfo", JSON.stringify(response.data));
                 redirect("/");

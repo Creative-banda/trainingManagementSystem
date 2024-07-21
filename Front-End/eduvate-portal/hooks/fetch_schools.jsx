@@ -3,13 +3,16 @@ import { message } from "antd";
 import { useToken } from "./token_hooks";
 import api from "../interceptor/axios_interceptor";
 import { ModalContext } from "../context/modal_context";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
 
 const useSchools = () => {
+    const queryClient = useQueryClient();
     const [pagination, setPagination] = useState({
         current: 1,
         pageSize: 10,
     });
+
     const { access_token } = useToken();
 
     const fetchSchools = async (params = {}) => {
@@ -30,6 +33,23 @@ const useSchools = () => {
             return response.data.results
         } catch (error) {
             throw new Error(error.message ? error.message : "Something went wrong while fetching school");
+        }
+    }
+
+    const registerSchool = async (data) => {
+        try {
+            const response = await api({
+                method: "POST",
+                data: data,
+                url: "/school/",
+                headers: {
+                    "Authorization": "Bearer " + access_token
+                }
+            })
+            console.log(response)
+            return response.data
+        } catch (err) {
+            throw new Error(err.message ? err.message : "Not able to registor school");
         }
     }
 
@@ -81,7 +101,6 @@ const useSchools = () => {
         queryFn: () => fetchSchools({ limit: pagination.pageSize, offset: (pagination.current - 1) * pagination.pageSize }),
         retry: false,
         refetchOnWindowFocus: false,
-
     })
 
     const { data: allSchoolOptions, isLoading: fetchingAllSchools } = useQuery({
@@ -91,104 +110,109 @@ const useSchools = () => {
         refetchOnWindowFocus: false,
     })
 
-    return { schools, fetchingSchool, fetchingAllSchools, allSchoolOptions, setPagination, pagination, deleteSchool }
+    const { mutate: registerSchoolMutate, isLoading: submitting } = useMutation({
+        mutationFn: (data) => registerSchool(data),
+        onSuccess: () => {
+            message.success("Successfully Registered")
+            queryClient.invalidateQueries({ queryKey: ["schools"] })
+        },
+        onError: (error) => {
+            message.error(error.message)
+        }
+
+    })
+
+    return { schools, fetchingSchool, fetchingAllSchools, allSchoolOptions, setPagination, pagination, deleteSchool, registerSchoolMutate, submitting }
 }
 
 export default useSchools;
 
 
 export const useSchoolById = (id) => {
-    const [school, setSchool] = useState({});
-    const [schoolOptions, setSchoolOptions] = useState([])
-    const [updating, setupdating] = useState(false);
-    const [defaultGrade, setDefaultGrades] = useState([]);
-    const [loading, setLoading] = useState(false);
     const { setEditSchoolModal } = useContext(ModalContext);
     const { access_token } = useToken();
 
+    const queryClient = useQueryClient();
+
     const fetchSchoolById = async () => {
-        setLoading(true);
-        await api({
-            method: 'GET',
-            url: `/school/${id}/`,
-            headers: {
-                'Authorization': 'Bearer ' + access_token
-            }
-        }).then(response => {
-            if (response.status === 200) {
-                const grades = response?.data?.grades?.map(grade => ({
-                    label: grade?.grades,
-                    value: grade?.id
-                }))
-
-                const schools = results?.map(school => ({
-                    value: school?.id,
-                    label: school?.name
-                }))
-
-                setSchoolOptions(schools);
-
-                setDefaultGrades(grades);
-                setSchool(response.data);
-            } else {
-                message.error("Something went wrong !");
-            }
-            setLoading(false);
-
-        }).catch(err => {
-            setLoading(false);
-            console.log(err);
-        })
+        try {
+            const response = await api({
+                method: 'GET',
+                url: `/school/${id}/`,
+                headers: {
+                    'Authorization': 'Bearer ' + access_token
+                }
+            })
+            return response.data
+        } catch (err) {
+            throw new Error("Failed to Fetch the Data")
+        }
     }
 
-    const updateSchool = async (id, data) => {
-        setupdating(true);
-        await api({
-            method: "PUT",
-            data: data,
-            url: `/school/${id}/`,
-            headers: {
-                "Authorization": "Bearer " + access_token
-            }
-        }).then(response => {
-            console.log(response);
-            if (response.status === 200) {
-                message.success("Successfully updated");
-                setupdating(false);
-                setEditSchoolModal(false);
-            } else {
-                message.error("Something went wrong");
-                setupdating(false);
-            }
-        }).catch(err => {
-            const lable = Object.keys(err.response.data)[0]
-            message.error(err?.response?.data[lable])
-            setupdating(false);
-        })
+
+
+    const updateSchool = async (data) => {
+        try {
+            const response = await api({
+                method: "PUT",
+                data: data,
+                url: `/school/${id}/`,
+                headers: {
+                    "Authorization": "Bearer " + access_token
+                }
+            })
+            console.log(response)
+            return response.data
+        } catch (err) {
+            throw new Error("Faied to update the school")
+        }
     }
 
     const deleteSchool = async (id) => {
-        setLoading(true);
-        await api({
-            method: "DELETE",
-            url: `/school/${id}`,
-            headers: {
-                'Authorization': 'Bearer ' + access_token
-            }
-        }).then(response => {
-            // console.log(response);
-            if (response.status === 204) {
-                message.success("Successfully deleted");
-            } else {
-                message.error("Something went wrong");
-            }
-            setLoading(false)
-        }).catch(error => {
-            console.log(error);
-            setLoading(false);
-            message.error("Something went wrong");
-        })
+        try {
+            const response = await api({
+                method: "DELETE",
+                url: `/school/${id}`,
+                headers: {
+                    'Authorization': 'Bearer ' + access_token
+                }
+            })
+            return response.data
+        } catch (err) {
+            throw new Error("Failed to delete the school")
+        }
     }
 
-    return { school, defaultGrade, loading, setSchool, updateSchool, updating, schoolOptions, deleteSchool, fetchSchoolById }
+    const { data: school } = useQuery({
+        queryKey: ["school", id],
+        queryFn: fetchSchoolById,
+        retry: false,
+        refetchOnWindowFocus: false
+    })
+
+    const { mutate: updateSchoolMutate, isLoading: updating } = useMutation({
+        mutationFn: (data) => updateSchool(data),
+        onSuccess: () => {
+            message.success("Successfully Updated")
+            queryClient.invalidateQueries({ queryKey: ["school", id] })
+            setEditSchoolModal(false)
+        },
+        onError: (error) => {
+            message.error(error.message)
+        }
+    })
+
+    const { mutate: deleteSchoolMutate, isLoading: loading } = useMutation({
+        mutationFn: (id) => deleteSchool(id),
+        onSuccess: () => {
+            message.success("Successfully Deleted")
+            queryClient.invalidateQueries({ queryKey: ["school", id] })
+        },
+        onError: (error) => {
+            message.error(error.message)
+        }
+    })
+
+
+    return { school, loading, updateSchoolMutate, updating, deleteSchoolMutate, }
 }

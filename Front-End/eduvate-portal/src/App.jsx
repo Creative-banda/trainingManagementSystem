@@ -12,6 +12,7 @@ import AssignTraining from '../components/AssignTraining'
 import Profile from '../components/Profile'
 import ProtectedRoute from '../components/ProtectedRoute'
 import TrainingSheet from '../components/TrainingSheet'
+import SchoolProfile from '../components/SchoolProfile'
 
 function App() {
 
@@ -31,9 +32,9 @@ function App() {
           <Route path="/scheduller" element={<Scheduler />} />
           <Route path='/assign' element={<AssignTraining />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path='/info/school/:id' element={<SchoolProfile />} />
         </Route>
         <Route path='/login' element={<Login />} />
-        <Route path='/school-register' element={<SchoolRegistration />} />
         <Route path='*' element={<h1>Page not found</h1>} />
       </Routes>
     </main>

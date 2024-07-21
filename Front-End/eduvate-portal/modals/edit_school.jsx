@@ -9,7 +9,7 @@ import { useSchoolById } from "../hooks/fetch_schools";
 const EditSchoolModel = ({ schoolData }) => {
     const { editSchoolModel, setEditSchoolModal } = useContext(ModalContext);
     const { grades, gradeLoading } = useGrades();
-    const { updateSchool, updating } = useSchoolById();
+    const { updateSchoolMutate, updating } = useSchoolById(schoolData?.id);
     const [form] = Form.useForm();
     const { userName } = useUserOptions();
     // console.log(id);
@@ -24,10 +24,9 @@ const EditSchoolModel = ({ schoolData }) => {
             am: typeof am === 'object' ? am.value : am,
             om: typeof om === 'object' ? om.value : om
         };
-        console.log(values);
-
-        updateSchool(schoolData?.id, values);
-
+        // console.log(values);
+        // updateSchoolMutate(schoolData?.id, values);
+        updateSchoolMutate(values);
     }
 
     const handleClose = () => {

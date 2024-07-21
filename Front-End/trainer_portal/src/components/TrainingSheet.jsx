@@ -1,24 +1,36 @@
 import { Button, Popover, Table, Tooltip } from 'antd'
-import {  EditOutlined, DeleteOutlined, ReloadOutlined, PlusOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, ReloadOutlined, PlusOutlined } from '@ant-design/icons';
 import { useSheet } from '../../hooks/fetch_sheet';
 import { useLocation, useParams } from 'react-router-dom';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ModalContext } from '../../context/modal_context';
 import TrainingModifyModal from '../../modal/trainingSheetModal';
+import { useTraining } from '../../hooks/training_hook';
 
 function TrainingSheet() {
     const { id } = useParams();
 
     const navigate = useLocation()
-    const {school, subject} = navigate.state;
+    const { school, subject } = navigate.state;
     const { sheetData, loading, refetchSchoolSheet } = useSheet({ id: id, subject: subject });
+    const { attendanceData, attendanceFilter, setAttendanceFilter } = useTraining();
     const { setTrainingSheetModifyState } = useContext(ModalContext);
 
-    // console.log(school);
+    // console.log(school?.teachers);
 
     const openAddSheetData = () => {
         setTrainingSheetModifyState(true);
     }
+
+    console.log(attendanceData);
+
+    useEffect(() => {
+        setAttendanceFilter({
+            ...attendanceFilter,
+            teachers: school?.teachers?.map(teacher => teacher.id),
+            subject: subject
+        })
+    }, [school, subject])
 
     return (
         <div>
@@ -38,14 +50,15 @@ function TrainingSheet() {
                 title={() => (
                     <div className='flex gap-2 items-center'>
                         <Tooltip title="Refresh">
-                            <Button icon={<ReloadOutlined />} onClick={() => refetchSchoolSheet()} />
+                            <Button icon={<ReloadOutlined />} size='small' onClick={() => refetchSchoolSheet()} />
                         </Tooltip>
 
                         <Tooltip title="Add Training Update">
-                            <Button icon={<PlusOutlined />} onClick={() => openAddSheetData()} />
+                            <Button icon={<PlusOutlined />} size='small' onClick={() => openAddSheetData()} />
                         </Tooltip>
                     </div>
                 )} />
+
         </div>
     )
 }
@@ -55,7 +68,7 @@ export default TrainingSheet
 
 export const SchoolSheet = ({ dataSource, loading, title, subject }) => {
     const { setTrainingSheetModifyState } = useContext(ModalContext);
-    const { deleteSheetData } = useSheet({ id: 0, subject: "" })
+    const { deleteSheetDataMutate } = useSheet({ id: 0, subject: "" })
     const [school, setSchool] = useState({ data: {}, id: "" });
     // console.log(sheetData);
     const columns = [
@@ -101,7 +114,7 @@ export const SchoolSheet = ({ dataSource, loading, title, subject }) => {
             key: 7,
             render: (_, rest) => (
                 <div className='flex gap-2'>
-                    <Button icon={<EditOutlined />} onClick={() => {
+                    <Button icon={<EditOutlined />} size='small' onClick={() => {
                         setSchool(rest);
                         setTrainingSheetModifyState(true);
                     }} />
@@ -111,13 +124,13 @@ export const SchoolSheet = ({ dataSource, loading, title, subject }) => {
                         title="Sure want to Delete"
                         content={
                             <div>
-                                <Button icon={<DeleteOutlined />} danger onClick={() => { deleteSheetData(rest.id) }} className='w-full'>
+                                <Button icon={<DeleteOutlined />} size='small' danger onClick={() => { deleteSheetDataMutate(rest.id) }} className='w-full'>
                                     Yes
                                 </Button>
                             </div>
                         }
                     >
-                        <Button icon={<DeleteOutlined />} danger />
+                        <Button icon={<DeleteOutlined />} size='small' danger />
                     </Popover>
                 </div>
             )

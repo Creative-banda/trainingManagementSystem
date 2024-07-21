@@ -24,3 +24,11 @@ export const TrainingRequestStatus = [
     {value: "APPROVED", label: "APPROVED"},
     {value: "REJECTED", label: "REJECTED"},
 ]
+
+export const Subjects = [
+    { value: "MATH", label: "MATH" },
+    { value: "SCIENCE", label: "SCIENCE" },
+    { value: "ENGLISH", label: "ENGLISH" },
+    { value: "CS", label: "COMPUTER SCIENCE" },
+    { value: "ROBOTICS", label: "ROBOTICS" },
+]

@@ -4,25 +4,23 @@ import { ModalContext } from "../context/modal_context"
 import useGrades from "../hooks/fetch_grades";
 import useUserOptions from "../hooks/fetch_user";
 import { LoadingOutlined, SendOutlined } from "@ant-design/icons";
-import useSchoolSubmit from "../hooks/school_hook";
+// import useSchoolSubmit from "../hooks/school_hook";
 import { SchoolCatagory } from "../utils/MenuItems";
+import useSchools from "../hooks/fetch_schools";
 
 const SchoolModal = () => {
     const { addSchoolModal, setSchoolModal } = useContext(ModalContext);
     const { grades, gradeLoading } = useGrades();
     const { userName } = useUserOptions();
     const [form] = Form.useForm();
-    const { registerSchool, error, submitting, response } = useSchoolSubmit();
+    // const { registerSchool, error, submitting, response } = useSchoolSubmit();
+    const { registerSchoolMutate, submitting } = useSchools();
 
 
     const handleSubmit = (value) => {
-        registerSchool(value);
-        if (error) {
-            console.log(error);
-        } else if (response) {
-            form.resetFields();
-            console.log(response);
-        }
+        registerSchoolMutate(value);
+        form.resetFields();
+        setSchoolModal(false);
     }
 
     const handleClose = () => {

@@ -46,7 +46,7 @@ export default SchoolSheets
 
 export const SheetBody = ({ schoolId, subject }) => {
     const { sheetData, refetchSchoolSheet, loading } = useSheet({ id: schoolId, subject: subject });
-    console.log(schoolId)
+    // console.log(schoolId)
 
     return (
         <div className='w-full flex flex-col gap-2'>

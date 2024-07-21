@@ -1,8 +1,9 @@
 import React, { useContext, useState } from 'react'
-import { Button, Table, Select, Tooltip, Popconfirm } from 'antd';
+import { Button, Table, Select, Tooltip, Popconfirm, message } from 'antd';
 import { DeleteOutlined, EyeOutlined, FilterOutlined, PlusOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import { TiPointOfInterest } from "react-icons/ti";
-import { FaMoneyBillTransfer } from "react-icons/fa6";
+import { FaMoneyBillTransfer, FaRegCopy  } from "react-icons/fa6";
+// import { FaRegCopy } from "react-icons/fa";
 import useUserOptions from '../hooks/fetch_user';
 import { ModalContext } from '../context/modal_context';
 import EditModal from '../modals/edit';
@@ -12,6 +13,16 @@ import RequestTraining from './RequestTraining';
 import AddTrainingModal from '../modals/add_training';
 import { useNavigate } from 'react-router-dom';
 import TransferTrainingModal from '../modals/transfter_training';
+
+function copyTextToClipboard(text) {
+  navigator.clipboard.writeText(text).then(() => {
+      message.success('Text copied to clipboard', 1);
+      console.log('Text copied to clipboard');
+  }).catch(err => {
+      console.error('Error copying text to clipboard:', err);
+  });
+}
+
 
 
 export function Training() {
@@ -89,6 +100,18 @@ export function Training() {
     },
     {
       key: 5,
+      title: "Training Link",
+      dataIndex: "trainer",
+      render: (_, { trainer }) => (
+        <div className='flex gap-4 items-center'>
+          <a href={trainer?.meeting_url} className='text-blue-400 hover:text-blue-600 transition' target="_blank" rel="noopener noreferrer"> {trainer?.meeting_url} </a>
+          {/* Add button and when user click on the button the link should be copied */}
+          <FaRegCopy onClick={() => copyTextToClipboard(trainer?.meeting_url)} className='cursor-pointer hover:text-blue-500'/>
+        </div>
+      )
+    },
+    {
+      key: 6,
       title: "Action",
       render: (training) => (
         <div className='flex gap-2'>
@@ -104,7 +127,7 @@ export function Training() {
           </Popconfirm>
         </div>
       )
-    }
+    },
 
   ]
 

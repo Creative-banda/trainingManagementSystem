@@ -60,31 +60,23 @@ export const useSheet = ({ id, subject }) => {
     }
 
     const deleteSheetData = async (id) => {
-        await api({
-            method: 'DELETE',
-            url: `/training/sheet/data/${id}/`,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + access_token
-            }
-        }).then(response => {
-            if (response.status === 204) {
-                console.log(response.data)
-                message.success("Data Deleted");
-            } else {
-                console.log(response);
-                message.error("Data not deleted");
-                setLoading(false);
-            }
-        }).catch(error => {
-            setLoading(false);
-            console.log(error);
-            message.error("Something went wrong");
-        })
+        try {
+            const response = await api({
+                method: 'DELETE',
+                url: `/training/sheet/data/${id}/`,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + access_token
+                }
+            })
+            return response.data
+        } catch (err) {
+            throw new Error("Failed to delete the data")
+        }
     }
 
     const { data: sheetData, isLoading: loading, refetch: refetchSchoolSheet } = useQuery({
-        queryKey: ["schoolSheet", {id, subject}],
+        queryKey: ["schoolSheet", { id, subject }],
         queryFn: fetchSchoolSheet,
         refetchOnWindowFocus: false,
         retry: false,
@@ -100,8 +92,8 @@ export const useSheet = ({ id, subject }) => {
         }
     })
 
-    const {mutate: patchSheetDataMutate} = useMutation({
-        mutationFn: ({data, id}) => patchSheetData({data, id}),
+    const { mutate: patchSheetDataMutate } = useMutation({
+        mutationFn: ({ data, id }) => patchSheetData({ data, id }),
         onSuccess: () => {
             message.success("Data Updated");
             queryClient.invalidateQueries({ queryKey: ["schoolSheet"] })
@@ -111,7 +103,18 @@ export const useSheet = ({ id, subject }) => {
         }
     })
 
+    const { mutate: deleteSheetDataMutate } = useMutation({
+        mutationFn: (id) => deleteSheetData(id),
+        onSuccess: () => {
+            message.success("Data deleted");
+            queryClient.invalidateQueries({ queryKey: ["schoolSheet"] })
+        },
+        onError: () => {
+            message.error("Failed to delete the Data")
+        }
+    })
 
-    return { sheetData, loading, refetchSchoolSheet, postSchoolSheetMutate, patchSheetDataMutate, deleteSheetData }
+
+    return { sheetData, loading, refetchSchoolSheet, postSchoolSheetMutate, patchSheetDataMutate, deleteSheetDataMutate }
 
 }

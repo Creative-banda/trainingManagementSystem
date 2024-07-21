@@ -108,30 +108,24 @@ const useSchools = () => {
 export default useSchools;
 
 
-export const useSchoolById = () => {
+export const useSchoolById = (id) => {
     const [defaultGrade, setDefaultGrades] = useState([]);
 
     const queryClient = useQueryClient();
 
-    const fetchSchoolById = async (id) => {
+    const fetchSchoolById = async () => {
         try {
             const response = await api({
                 method: 'GET',
                 url: `/school/${id}/`,
             })
-            const grades = response?.data?.grades?.map(grade => ({
-                label: grade?.grades,
-                value: grade?.id
-            }))
-
-            setDefaultGrades(grades);
             return response.data
         } catch (error) {
             throw new Error(error.message ? error.message : "Can not fetch school")
         }
     }
 
-    const updateSchool = async (id, data) => {
+    const updateSchool = async (data) => {
         try {
             const response = await api({
                 method: "PUT",

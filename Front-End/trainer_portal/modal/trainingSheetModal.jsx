@@ -1,4 +1,4 @@
-import { Button, Form, Input, Modal } from "antd";
+import { Button, Form, Input, Modal, Select } from "antd";
 import { useContext, useEffect, useState } from "react";
 import { ModalContext } from "../context/modal_context";
 import { useSheet } from "../hooks/fetch_sheet";
@@ -10,7 +10,7 @@ export default function TrainingModifyModal({ sheetData, setSchool, subject }) {
     const { trainingSheetModifyState, setTrainingSheetModifyState } = useContext(ModalContext);
     const [trainingData, setTrainingData] = useState();
     const { patchSheetDataMutate, postSchoolSheetMutate } = useSheet( { id: id, subject: subject });
-    console.log(trainingData);
+    console.log(sheetData);
 
     const handleUpdate = async (val) => {
         if (sheetData.id) {
@@ -65,6 +65,10 @@ export default function TrainingModifyModal({ sheetData, setSchool, subject }) {
                     {
                         name: ["trainerRemark"],
                         value: trainingData?.data?.trainerRemark
+                    },
+                    {
+                        name: ["teachers"],
+                        value: trainingData?.data?.teachers ? trainingData?.data?.teachers : []
                     }
                 ]}
 
@@ -81,6 +85,10 @@ export default function TrainingModifyModal({ sheetData, setSchool, subject }) {
 
                     <Form.Item label="Date" name="date">
                         <Input value={trainingData?.data?.date ? trainingData?.data?.date : new Date().toISOString().split('T')[0]} />
+                    </Form.Item>
+
+                    <Form.Item label="Teachers" name="teachers">
+                        <Select mode="multiple" placeholder="Select Teachers"/>
                     </Form.Item>
 
                 </div>

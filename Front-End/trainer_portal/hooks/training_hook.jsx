@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import api from "../utilities/axios_interceptor"
 import { useToken, useUserInfo } from "./token_hooks";
 import { message } from "antd";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, useQueries } from "@tanstack/react-query";
+import qs from "qs";
 
 const useTrainingById = (id, modal) => {
     const [fetchingTraining, setFetchingTraining] = useState(false);
@@ -92,6 +93,8 @@ export const useTraining = () => {
         active: true
     });
 
+    const [attendanceFilter, setAttendanceFilter] = useState({ teachers: [], subject: "" })
+
     const [trainingBySubject, setTrainingBySubject] = useState({
         cs: [{}],
         robotics: [{}],
@@ -122,6 +125,25 @@ export const useTraining = () => {
                 robotics: roboticsTraining,
                 aeromodelling: aeromodellingTraining,
                 dc: dcTraining
+            })
+            return response.data
+        } catch (error) {
+            throw new Error("Error fetching training.")
+        }
+    }
+
+    const fetchTrainingByRequester = async () => {
+        try {
+            const response = await api({
+                method: 'GET',
+                url: `/training/filter/`,
+                params: {
+                    requestor: userInfo.id,
+                    active: true
+                },
+                headers: {
+                    "Authorization": `Bearer ${useToken().access_token}`
+                }
             })
             return response.data
         } catch (error) {
@@ -197,6 +219,28 @@ export const useTraining = () => {
         }
     }
 
+    const attendance = async (teacher_id, subject) => {
+        try {
+            const response = await api({
+                method: "GET",
+                url: "/teacher/attendance/",
+                params: {
+                    teacher: teacher_id,
+                    subject: subject
+                },
+                headers: {
+                    "Authorization": `Bearer ${useToken().access_token}`
+                },
+                paramsSerializer: params => qs.stringify(params, { arrayFormat: 'repeat' })
+            })
+            console.log(response);
+            console.log(attendanceFilter);
+            return response.data
+        } catch (error) {
+            throw new Error("Error while fetching attendance")
+        }
+    }
+
 
     const { data: trainingsData, isLoading: loadingTraining, refetch: refetchTrainings } = useQuery({
         queryKey: ["trainings"],
@@ -217,13 +261,13 @@ export const useTraining = () => {
     })
 
 
-    const { data: requestedTrainings } = useQuery({
+    const { data: requestedTrainings, refetch: refetchRequestedTraining } = useQuery({
         queryKey: ['requested_training', filters],
         queryFn: (filters) => fetchRequestedTraining(filters)
     })
 
     const { mutate: updateRequestedTrainingMutate } = useMutation({
-        mutationFn: ({ data, id }) =>  updateRequestedTraining(data, id),
+        mutationFn: ({ data, id }) => updateRequestedTraining(data, id),
         onSuccess: () => {
             message.success("Training updated successfully")
             queryClient.invalidateQueries({ queryKey: ['requested_training'] })
@@ -243,5 +287,21 @@ export const useTraining = () => {
         }
     })
 
-    return { trainingsData, loadingTraining, trainingBySubject, filters, setFilters, updateTrainingMutate, requestTrainingMutate, updateRequestedTrainingMutate, requestedTrainings, refetchTrainings }
+    const { data: requester_trainings, isLoading: loading } = useQuery({
+        queryKey: ["training_requester"],
+        queryFn: fetchTrainingByRequester,
+    })
+
+    const attendanceData = useQueries({
+        queries: attendanceFilter.teachers.map(teacher => ({
+            queryKey: ["attendance", teacher, attendanceFilter.subject],
+            queryFn: () => attendance(teacher, attendanceFilter.subject),
+            staleTime: 1000 * 60 * 5 // 5 minutes
+        })),
+
+    })
+
+
+    return { trainingsData, loadingTraining, trainingBySubject, filters, setFilters, updateTrainingMutate, requestTrainingMutate, updateRequestedTrainingMutate, requestedTrainings, refetchTrainings, refetchRequestedTraining, requestTraining, loading, attendanceData, attendanceFilter, setAttendanceFilter }
 }
+

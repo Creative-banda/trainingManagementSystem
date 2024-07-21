@@ -36,9 +36,8 @@ const RootComponent = () => {
                 </div>
 
                 {/* Body Section */}
-                <div className='w-full'>
+                <div className='w-full h-full'>
                     <Outlet />
-
                 </div>
 
             </div>

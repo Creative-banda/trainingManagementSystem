@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 
 const useRequestTraining = () => {
     const [filters, setFilters] = useState({
-        school: "", subject: "", requestor: "", status: "PENDING"
+        school: "", subject: "", requestor: "", status: "PENDING", active:true
     })
 
     const { access_token } = useToken()

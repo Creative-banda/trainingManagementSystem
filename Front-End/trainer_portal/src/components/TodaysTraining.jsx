@@ -7,6 +7,7 @@ import { ModalContext } from '../../context/modal_context';
 import { useNavigate } from 'react-router-dom';
 import { useUserInfo } from '../../hooks/token_hooks';
 import { useEffect } from 'react';
+import { render } from 'react-dom';
 
 function TodaysTraining() {
     const [data, setData] = useState();

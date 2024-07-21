@@ -118,6 +118,7 @@ function Profile() {
                 />
                 <p className='font-bold text-2xl'>{userInfo?.username}</p>
                 <p className=' font-mono italic'>{userInfo?.email}</p>
+                <a href={`${userInfo?.meeting_url}`} target='_blank' className=' text-blue-400'> {userInfo?.meeting_url} </a>
                 <div className='flex gap-2 text-green-500 font-medium'>
                     {
                         userInfo?.role?.map(role => <p key={role.role}>{role.role}</p>)

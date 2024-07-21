@@ -51,7 +51,7 @@ services:
     build: ./Back-End
     container_name: celery_worker
     # command: celery -A training worker -l INFO --concurrency=4 -E
-    command: celery -A training worker --concurrency=4 -l INFO --without-gossip --without-mingle --without-heartbeat -Ofair --pool=solo -E
+    command: celery -A training worker --concurrency=4 -l INFO --without-gossip --without-mingle --without-heartbeat -Ofair --pool=solo -E 
     volumes:
       - ./Back-End:/app
     env_file:
