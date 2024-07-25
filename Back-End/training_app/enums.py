@@ -34,3 +34,13 @@ class TrainingRequestEnum(enum.Enum):
     @classmethod
     def choices(cls):
         return [(x.value, x.name) for x in cls]
+
+@enum.unique
+class TeacherAttendanceEnum(enum.Enum):
+    PRESENT = "PRESENT"
+    ABSENT = "ABSENT"
+    LEAVE = "LEAVE"
+
+    @classmethod
+    def choices(cls):
+        return [(x.value, x.name) for x in cls]

@@ -26,12 +26,12 @@ class TrainingTransferView(APIView):
             trainer_id = request.data.get("trainer_id")
 
             if not training_id or not trainer_id:
-                return Response("Missing training_id or trainer_id", status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "Missing training_id or trainer_id" }, status=status.HTTP_400_BAD_REQUEST)
 
             training = Training.objects.select_related('trainer').prefetch_related('trainings').get(id=training_id)
             all_trainings = training.trainings.all()
             if trainer_id == str(training.trainer.id) or training.trainingStatus != "ONGOING":
-                return Response(f"Cannot transfer training to {training.trainer.username} trainer", status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": f"Cannot transfer training to {training.trainer.username} trainer"}, status=status.HTTP_400_BAD_REQUEST)
 
             # Add new training record using training instance
             with transaction.atomic():
